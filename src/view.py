@@ -1,6 +1,9 @@
+from src.model import Model
+from utils.constants import Constants
+
 import arcade
 from arcade import color
-from src.model import Model
+from random import uniform, randint
 
 
 class View():
@@ -11,10 +14,18 @@ class View():
 
         arcade.set_background_color(color.BLACK)
 
+        self.__stars = [(uniform(0, Constants.WINDOW_WIDTH),
+                         uniform(0, Constants.WINDOW_HEIGHT),
+                         randint(1, 2)) for _ in range(100)]
+
     def draw(self) -> None:
         ''' Renders the screen. '''
 
         arcade.start_render()  # Clear screen to background color
+
+        # Draw stars
+        for x, y, size in self.__stars:
+            arcade.draw_point(x, y, color.WHITE, size)
 
         # Draw player
         self.__model.player.sprite.draw()
