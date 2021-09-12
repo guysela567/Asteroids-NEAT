@@ -20,7 +20,7 @@ class Controller(arcade.Window):
 
     def on_update(self, delta_time: float) -> None:
         ''' Game logic goes here. '''
-        self.__model.update()
+        self.__model.update(delta_time)
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         if key == arcade.key.UP:

@@ -9,9 +9,10 @@ class Constants:
     PLAYER_BOOST_SPEED = 5
 
     # Asteroid config
+    ASTEROID_HITS = 3
     ASTEROID_SPRITE_SCALE = (0.5, 0.3, 0.2)
     ASTEROID_VELOCITY = (2, 3, 5)
 
     # Bullet config
-    BULLET_SPRITE_SCALE = 1.5
-    BULLET_SPEED = 8
+    BULLET_SPRITE_SCALE = 0.5
+    BULLET_SPEED = 15

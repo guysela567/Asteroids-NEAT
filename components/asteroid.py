@@ -25,14 +25,33 @@ class Asteroid:
     def sprite(self) -> Sprite:
         return self.__sprite
 
-    def update(self) -> None:
+    @property
+    def x(self) -> float:
+        return self.__x
+
+    @property
+    def y(self) -> float:
+        return self.__y
+
+    @property
+    def angle(self) -> float:
+        return self.__angle
+
+    @property
+    def hits(self) -> float:
+        return self.__hits
+
+    @property
+    def invincible(self) -> bool:
+        return self.__invincible
+
+    def update(self, delta_time: float) -> None:
         self.__x += self.__vel_x
         self.__y += self.__vel_y
+        self.__handle_offscreen()
 
         self.__sprite.center_x = self.__x
         self.__sprite.center_y = self.__y
-
-        self.__handle_offscreen()
 
     def __handle_offscreen(self) -> bool:
         # left to right

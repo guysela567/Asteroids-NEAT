@@ -1,4 +1,7 @@
 from utils.constants import Constants
+
+from components.bullet import Bullet
+
 from arcade import Sprite
 import math
 
@@ -22,31 +25,49 @@ class Player():
         self.__angle = math.pi * .5
         self.__turn_speed = math.pi * .02
 
+        self.__bullets = []
+
     @property
     def sprite(self) -> Sprite:
         return self.__sprite
 
     def update(self) -> None:
+        # Rotation
         if self.__rotating:
             self.__set_rotation()
 
+        # Boost
         if self.__boosting:
             self.__set_velocity()
 
         self.__x += self.__vel_x
         self.__y += self.__vel_y
+        self.__handle_offscreen()
 
         self.__sprite.center_x = self.__x
         self.__sprite.center_y = self.__y
 
-        self.__handle_offscreen()
+        for bullet in reversed(self.__bullets):
+            if bullet.deleted:
+                self.__bullets.remove(bullet)  # "Kill" deleted bullets
+            else:
+                bullet.update()  # Update bullet if not deleted
 
     @property
     def rotate_dir(self) -> int:
         return self.__rotate_dir
 
+    @property
+    def bullets(self) -> Bullet:
+        return self.__bullets
+
     def shoot(self) -> None:
-        pass
+        # TODO Add shoot cooldown
+
+        x = self.__x + math.cos(self.__angle) * self.__sprite.height * .5
+        y = self.__y + math.sin(self.__angle) * self.__sprite.height * .5
+
+        self.__bullets.append(Bullet(x, y, self.__angle))
 
     def offscreen(self) -> bool:
         # return self.__sprite.

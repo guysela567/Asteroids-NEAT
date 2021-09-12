@@ -29,11 +29,13 @@ class View():
 
         # Draw player
         self.__model.player.sprite.draw()
-        self.__model.player.sprite.draw_hit_box(color.AERO_BLUE)
 
         # Draw asteroids
         for asteroid in self.__model.asteroids:
             asteroid.sprite.draw()
-            asteroid.sprite.draw_hit_box(color.AERO_BLUE)
+
+        # Draw player's bullets
+        for bullet in self.__model.player.bullets:
+            bullet.sprite.draw()
 
         arcade.finish_render()  # Draw frame
