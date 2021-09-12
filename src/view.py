@@ -3,7 +3,7 @@ from utils.constants import Constants
 
 import arcade
 from arcade import color
-from random import uniform, randint
+from random import uniform
 
 
 class View():
@@ -16,7 +16,7 @@ class View():
 
         self.__stars = [(uniform(0, Constants.WINDOW_WIDTH),
                          uniform(0, Constants.WINDOW_HEIGHT),
-                         randint(1, 2)) for _ in range(100)]
+                         uniform(1, 2)) for _ in range(100)]
 
     def draw(self) -> None:
         ''' Renders the screen. '''
