@@ -58,7 +58,7 @@ class Model:
                         self.__asteroids = [Asteroid(uniform(0, Constants.WINDOW_WIDTH),
                                                      uniform(0, Constants.WINDOW_HEIGHT)) for _ in range(4)]
 
-        # TODO Add collision check and handle collisions with player and astroids
+        # TODO Add collision check and handle collisions of player with astroids
 
     @property
     def player(self) -> Player:
