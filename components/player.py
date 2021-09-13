@@ -26,12 +26,14 @@ class Player():
         self.__turn_speed = math.pi * .02
 
         self.__bullets = []
+        self.__can_shoot = True
+        self.__shoot_cooldown_dur = 0
 
     @property
     def sprite(self) -> Sprite:
         return self.__sprite
 
-    def update(self) -> None:
+    def update(self, delta_time: float) -> None:
         # Rotation
         if self.__rotating:
             self.__set_rotation()
@@ -40,18 +42,25 @@ class Player():
         if self.__boosting:
             self.__set_velocity()
 
+        # Manage cooldowns
+        if not self.__can_shoot:
+            if self.__shoot_cooldown_dur < Constants.SHOOT_COOLDOWN:
+                self.__shoot_cooldown_dur += delta_time
+            else:
+                self.__can_shoot = True
+                self.__shoot_cooldown_dur = 0
+
+        # Move player
         self.__x += self.__vel_x
         self.__y += self.__vel_y
         self.__handle_offscreen()
 
+        # Update sprite position
         self.__sprite.center_x = self.__x
         self.__sprite.center_y = self.__y
 
-        for bullet in reversed(self.__bullets):
-            if bullet.deleted:
-                self.__bullets.remove(bullet)  # "Kill" deleted bullets
-            else:
-                bullet.update()  # Update bullet if not deleted
+        # Update bullets
+        self.__update_bullets()
 
     @property
     def rotate_dir(self) -> int:
@@ -61,13 +70,22 @@ class Player():
     def bullets(self) -> Bullet:
         return self.__bullets
 
+    def __update_bullets(self) -> None:
+        for bullet in reversed(self.__bullets):
+            if bullet.deleted:  # Remove deleted bullets
+                self.__bullets.remove(bullet)
+            else:  # Update bullet if not deleted
+                bullet.update()
+
     def shoot(self) -> None:
-        # TODO Add shoot cooldown
+        if not self.__can_shoot:
+            return
 
         x = self.__x + math.cos(self.__angle) * self.__sprite.height * .5
         y = self.__y + math.sin(self.__angle) * self.__sprite.height * .5
 
         self.__bullets.append(Bullet(x, y, self.__angle))
+        self.__can_shoot = False
 
     def offscreen(self) -> bool:
         # return self.__sprite.

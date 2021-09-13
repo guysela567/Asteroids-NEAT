@@ -21,7 +21,7 @@ class Model:
 
     def update(self, delta_time: float) -> None:
         # Update player
-        self.__player.update()
+        self.__player.update(delta_time)
 
         # Update Asteroids
         for asteroid in self.__asteroids:
