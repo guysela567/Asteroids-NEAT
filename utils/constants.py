@@ -1,3 +1,6 @@
+import math
+
+
 class Constants:
     # Window config
     WINDOW_WIDTH = 1000
@@ -6,7 +9,8 @@ class Constants:
 
     # Player config
     PLAYER_SPRITE_SCALE = .5
-    PLAYER_BOOST_SPEED = 5
+    PLAYER_BOOST_SPEED = 7
+    PLAYER_TURN_SPEED = math.pi * .02
 
     # Asteroid config
     ASTEROID_HITS = 3

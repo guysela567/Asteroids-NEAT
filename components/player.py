@@ -24,7 +24,7 @@ class Player():
 
         self.__rotate_dir = 0
         self.__angle = math.pi * .5
-        self.__turn_speed = math.pi * .02
+        self.__turn_speed = Constants.PLAYER_TURN_SPEED
 
         self.__bullets = []
         self.__can_shoot = True
