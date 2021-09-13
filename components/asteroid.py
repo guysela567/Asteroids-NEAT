@@ -1,8 +1,9 @@
 from utils.constants import Constants
-from arcade import Sprite
+from utils.common import Common
 
-from random import randint, uniform
 import math
+from arcade import Sprite
+from random import randint, uniform
 
 
 class Asteroid:
@@ -57,18 +58,5 @@ class Asteroid:
         self.__sprite.center_y = self.__y
 
     def __handle_offscreen(self) -> bool:
-        # left to right
-        if self.__x + self.__sprite.width * .5 < 0:
-            self.__x = Constants.WINDOW_WIDTH + self.__sprite.width * .5
-
-        # right to left
-        if self.__x - self.__sprite.width * .5 > Constants.WINDOW_WIDTH:
-            self.__x = -self.__sprite.width * .5
-
-        # bottom to top
-        if self.__y + self.__sprite.height * .5 < 0:
-            self.__y = Constants.WINDOW_HEIGHT + self.__sprite.height * .5
-
-        # top to bottom
-        if self.__y - self.__sprite.height * .5 > Constants.WINDOW_HEIGHT:
-            self.__y = -self.__sprite.height * .5
+        self.__x, self.__y = Common.handle_offscreen(
+            self.__x, self.__y, self.__sprite)
