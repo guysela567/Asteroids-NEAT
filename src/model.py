@@ -16,8 +16,8 @@ class Model:
                                0.5, Constants.WINDOW_HEIGHT * 0.5)
 
         # Initialize astroids
-        self.__asteroids = [Asteroid(uniform(0, Constants.WINDOW_WIDTH),
-                                     uniform(0, Constants.WINDOW_HEIGHT)) for _ in range(4)]
+        self.__asteroids = []
+        self.__spawn_asteroids()
 
     def update(self, delta_time: float) -> None:
         # Update player
@@ -60,10 +60,15 @@ class Model:
 
         # TODO Add collision check and handle collisions of player with astroids
 
-    @property
+    def __spawn_asteroids(self) -> None:
+        self.__asteroids = [
+            Asteroid(uniform(0, Constants.WINDOW_WIDTH),
+                     uniform(0, Constants.WINDOW_HEIGHT)) for _ in range(4)]
+
+    @ property
     def player(self) -> Player:
         return self.__player
 
-    @property
+    @ property
     def asteroids(self) -> List[Asteroid]:
         return self.__asteroids

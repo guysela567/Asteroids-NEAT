@@ -21,6 +21,9 @@ class Asteroid:
         self.__vel_x = math.cos(self.__angle) * self.__vel
         self.__vel_y = math.sin(self.__angle) * self.__vel
 
+        self.__sprite.center_x = self.__x
+        self.__sprite.center_y = self.__y
+
     @property
     def sprite(self) -> Sprite:
         return self.__sprite
