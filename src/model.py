@@ -65,10 +65,10 @@ class Model:
             Asteroid(uniform(0, Constants.WINDOW_WIDTH),
                      uniform(0, Constants.WINDOW_HEIGHT)) for _ in range(4)]
 
-    @ property
+    @property
     def player(self) -> Player:
         return self.__player
 
-    @ property
+    @property
     def asteroids(self) -> List[Asteroid]:
         return self.__asteroids
