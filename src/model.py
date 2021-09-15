@@ -4,7 +4,7 @@ from components.asteroid import Asteroid
 from utils.constants import Constants
 
 from typing import List
-from random import uniform
+from random import uniform, choice
 import arcade
 import math
 
@@ -16,6 +16,7 @@ class Model:
                                0.5, Constants.WINDOW_HEIGHT * 0.5)
 
         # Initialize astroids
+        self.__asteroid_amount = 4
         self.__asteroids = []
         self.__spawn_asteroids()
 
@@ -53,22 +54,36 @@ class Model:
                     # Delete the bullet that hit the astroid
                     bullet.delete()
 
-                    # Respawn all 4 asteroids if none exist
+                    # Respawn asteroids if none exist
                     if len(self.__asteroids) == 0:
-                        self.__asteroids = [Asteroid(uniform(0, Constants.WINDOW_WIDTH),
-                                                     uniform(0, Constants.WINDOW_HEIGHT)) for _ in range(4)]
+                        self.__asteroid_amount += 1
+                        self.__spawn_asteroids()
 
         # TODO Add collision check and handle collisions of player with astroids
 
     def __spawn_asteroids(self) -> None:
-        self.__asteroids = [
-            Asteroid(uniform(0, Constants.WINDOW_WIDTH),
-                     uniform(0, Constants.WINDOW_HEIGHT)) for _ in range(4)]
+        spawn_gap = 50
 
-    @property
+        def generate_asteroid() -> Asteroid:
+            x_in = uniform(0, 1) > 0.5
+
+            x = uniform(spawn_gap, Constants.WINDOW_WIDTH - spawn_gap) if x_in \
+                else choice([uniform(-spawn_gap * 2, -spawn_gap),
+                             uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_WIDTH])
+
+            y = choice([uniform(-spawn_gap * 2, -spawn_gap),
+                        uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_HEIGHT]) if x_in \
+                else uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)
+
+            return Asteroid(x, y)
+
+        self.__asteroids = [generate_asteroid()
+                            for _ in range(self.__asteroid_amount)]
+
+    @ property
     def player(self) -> Player:
         return self.__player
 
-    @property
+    @ property
     def asteroids(self) -> List[Asteroid]:
         return self.__asteroids

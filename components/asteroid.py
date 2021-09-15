@@ -45,10 +45,6 @@ class Asteroid:
     def hits(self) -> float:
         return self.__hits
 
-    @property
-    def invincible(self) -> bool:
-        return self.__invincible
-
     def update(self, delta_time: float) -> None:
         self.__x += self.__vel_x
         self.__y += self.__vel_y
