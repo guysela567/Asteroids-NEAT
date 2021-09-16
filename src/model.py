@@ -64,7 +64,7 @@ class Model:
     @staticmethod
     def generate_asteroid() -> Asteroid:
         spawn_gap = 50
-        x_in = uniform(0, 1) > 0.5
+        x_in = uniform(0, 1) > 0.5  # X inside the screen or outside
 
         # Inside screen
         x = uniform(spawn_gap, Constants.WINDOW_WIDTH - spawn_gap) if x_in \
@@ -76,13 +76,16 @@ class Model:
                     uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_HEIGHT]) if x_in \
             else uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)  # Inside sreen
 
-        # Adjust the angle based on position
+        # Adjust the angle based on position to
+        # avoid movement being parallel to screen edges
         deg45 = math.pi * .25
+
+        # Up or down
         angle = uniform(deg45, 3 * deg45) if x_in \
-            else uniform(-deg45, deg45)
+            else uniform(-deg45, deg45)  # Right or left
 
         if uniform(0, 1) > 0.5:
-            angle *= -1
+            angle += math.pi  # Invert direction
 
         return Asteroid(x, y, angle=angle)
 

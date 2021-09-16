@@ -1,5 +1,5 @@
+from utils.vector import PositionalVector, DirectionalVector
 from utils.constants import Constants
-from utils.common import Common
 
 from arcade import Sprite
 import math
@@ -7,16 +7,13 @@ import math
 
 class Bullet:
     def __init__(self, x: float, y: float, angle: float) -> None:
-        self.__x = x
-        self.__y = y
+        self.__pos = PositionalVector(x, y)
         self.__angle = angle
 
         self.__sprite = Sprite('assets/sprites/bullet.png',
                                Constants.BULLET_SPRITE_SCALE)
 
-        self.__vel_x = math.cos(self.__angle) * Constants.BULLET_SPEED
-        self.__vel_y = math.sin(self.__angle) * Constants.BULLET_SPEED
-
+        self.__vel = DirectionalVector(Constants.BULLET_SPEED, self.__angle)
         self.__sprite.angle = math.degrees(self.__angle) - 90
 
         self.__distance_traveled = 0
@@ -35,12 +32,12 @@ class Bullet:
         self.__deleted = True
 
     def update(self) -> None:
-        self.__x += self.__vel_x
-        self.__y += self.__vel_y
-        self.__handle_offscreen()
+        self.__pos += self.__vel
+        self.__pos.handle_offscreen(self.__sprite)
 
-        self.__sprite.center_x = self.__x
-        self.__sprite.center_y = self.__y
+        # Update sprite position
+        self.__sprite.center_x = self.__pos.x
+        self.__sprite.center_y = self.__pos.y
 
         # Add travel distance
         self.__distance_traveled += Constants.BULLET_SPEED
@@ -48,7 +45,3 @@ class Bullet:
         # Delete bullet if traveled too much
         if self.__distance_traveled >= self.__max_distance:
             self.__deleted = True
-
-    def __handle_offscreen(self) -> None:
-        self.__x, self.__y = Common.handle_offscreen(
-            self.__x, self.__y, self.__sprite)
