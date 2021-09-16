@@ -39,3 +39,5 @@ class View():
             bullet.sprite.draw()
 
         arcade.finish_render()  # Draw frame
+
+        # TODO add a sprite list
