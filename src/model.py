@@ -61,23 +61,33 @@ class Model:
 
         # TODO Add collision check and handle collisions of player with astroids
 
-    def __spawn_asteroids(self) -> None:
+    @staticmethod
+    def generate_asteroid() -> Asteroid:
         spawn_gap = 50
+        x_in = uniform(0, 1) > 0.5
 
-        def generate_asteroid() -> Asteroid:
-            x_in = uniform(0, 1) > 0.5
+        # Inside screen
+        x = uniform(spawn_gap, Constants.WINDOW_WIDTH - spawn_gap) if x_in \
+            else choice([uniform(-spawn_gap * 2, -spawn_gap),  # Left to screen
+                         uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_WIDTH])  # Right to screen
 
-            x = uniform(spawn_gap, Constants.WINDOW_WIDTH - spawn_gap) if x_in \
-                else choice([uniform(-spawn_gap * 2, -spawn_gap),
-                             uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_WIDTH])
+        y = choice([uniform(-spawn_gap * 2, -spawn_gap),  # Below screen
+                    # Above screen
+                    uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_HEIGHT]) if x_in \
+            else uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)  # Inside sreen
 
-            y = choice([uniform(-spawn_gap * 2, -spawn_gap),
-                        uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_HEIGHT]) if x_in \
-                else uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)
+        # Adjust the angle based on position
+        deg45 = math.pi * .25
+        angle = uniform(deg45, 3 * deg45) if x_in \
+            else uniform(-deg45, deg45)
 
-            return Asteroid(x, y)
+        if uniform(0, 1) > 0.5:
+            angle *= -1
 
-        self.__asteroids = [generate_asteroid()
+        return Asteroid(x, y, angle=angle)
+
+    def __spawn_asteroids(self) -> None:
+        self.__asteroids = [self.generate_asteroid()
                             for _ in range(self.__asteroid_amount)]
 
     @property
