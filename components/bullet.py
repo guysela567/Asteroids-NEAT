@@ -2,6 +2,7 @@ from utils.vector import PositionalVector, DirectionalVector
 from utils.constants import Constants
 
 from arcade import Sprite
+import numpy as np
 import math
 
 
@@ -45,3 +46,7 @@ class Bullet:
         # Delete bullet if traveled too much
         if self.__distance_traveled >= self.__max_distance:
             self.__deleted = True
+
+        # Fade out as more distance is traveled
+        percentage = self.__distance_traveled / self.__max_distance
+        self.__sprite.alpha = np.interp(percentage, [0, 1], [255, 0])

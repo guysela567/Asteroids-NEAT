@@ -94,9 +94,4 @@ class Vector:
         return math.sqrt(math.pow(vect2.x - vect1.x, 2) + math.pow(vect2.y - vect1.y, 2))
 
     def angle_between(vect1: PositionalVector, vect2: PositionalVector) -> float:
-        angle = math.atan((vect2.y - vect1.y) / (vect2.x - vect1.x))
-
-        if angle < 0:
-            angle += math.pi
-
-        return angle
+        return math.atan((vect2.y - vect1.y) / (vect2.x - vect1.x))

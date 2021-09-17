@@ -11,7 +11,7 @@ class Constants:
     PLAYER_SPRITE_SCALE = .5
     PLAYER_BOOST_SPEED = 7
     PLAYER_TURN_SPEED = math.pi * .02
-    PLAYER_AIR_FRICTION = .03
+    PLAYER_AIR_FRICTION = .05
     PLAYER_SHOOT_KNOCKBACK = .5
 
     # Asteroid config
