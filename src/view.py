@@ -14,9 +14,13 @@ class View():
 
         arcade.set_background_color(color.BLACK)
 
+        # Generate stars for background
         self.__stars = [(uniform(0, Constants.WINDOW_WIDTH),
                          uniform(0, Constants.WINDOW_HEIGHT),
                          uniform(1, 2)) for _ in range(100)]
+
+        # Load retro font
+        arcade.load_font('assets/fonts/Hyperspace.ttf')
 
     def draw(self) -> None:
         ''' Renders the screen. '''
@@ -37,6 +41,10 @@ class View():
         # Draw player's bullets
         for bullet in self.__model.player.bullets:
             bullet.sprite.draw()
+
+        # Draw score
+        arcade.draw_text(str(self.__model.score), 25,
+                         Constants.WINDOW_HEIGHT - 75, font_size=36, font_name='Hyperspace')
 
         arcade.finish_render()  # Draw frame
 

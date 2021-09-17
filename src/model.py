@@ -17,9 +17,12 @@ class Model:
                                0.5, Constants.WINDOW_HEIGHT * 0.5)
 
         # Initialize astroids
-        self.__asteroid_amount = 5
+        self.__asteroid_amount = 4
         self.__asteroids = []
         self.__spawn_asteroids()
+
+        # Score system
+        self.__score = 0
 
     def update(self, delta_time: float) -> None:
         # Update player
@@ -49,6 +52,9 @@ class Model:
                             random_angle + math.pi,
                             asteroid.hits + 1))
 
+                    # Add points to score
+                    self.__score += Constants.SCORE_SYSTEM[asteroid.hits]
+
                     # Delete old asteroid
                     self.__asteroids.remove(asteroid)
 
@@ -64,6 +70,7 @@ class Model:
         if any(arcade.check_for_collision(asteroid.sprite, self.__player.sprite)
                for asteroid in self.__asteroids):
             self.__spawn_asteroids()
+            self.__score = 0
 
     @staticmethod
     def generate_asteroid() -> Asteroid:
@@ -101,3 +108,7 @@ class Model:
     @property
     def asteroids(self) -> List[Asteroid]:
         return self.__asteroids
+
+    @property
+    def score(self) -> int:
+        return self.__score

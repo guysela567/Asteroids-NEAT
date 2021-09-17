@@ -23,3 +23,6 @@ class Constants:
     BULLET_SPRITE_SCALE = 0.5
     BULLET_SPEED = 15
     SHOOT_COOLDOWN = .25  # Seconds
+
+    # Score
+    SCORE_SYSTEM = (20, 50, 100)
