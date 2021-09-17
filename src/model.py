@@ -2,6 +2,7 @@ from components.player import Player
 from components.asteroid import Asteroid
 
 from utils.constants import Constants
+from utils.vector import Vector, PositionalVector
 
 from typing import List
 from random import uniform, choice
@@ -16,7 +17,7 @@ class Model:
                                0.5, Constants.WINDOW_HEIGHT * 0.5)
 
         # Initialize astroids
-        self.__asteroid_amount = 4
+        self.__asteroid_amount = 5
         self.__asteroids = []
         self.__spawn_asteroids()
 
@@ -63,29 +64,26 @@ class Model:
 
     @staticmethod
     def generate_asteroid() -> Asteroid:
+        # TODO Needs more refactoring
+
         spawn_gap = 50
-        x_in = uniform(0, 1) > 0.5  # X inside the screen or outside
 
         # Inside screen
-        x = uniform(spawn_gap, Constants.WINDOW_WIDTH - spawn_gap) if x_in \
-            else choice([uniform(-spawn_gap * 2, -spawn_gap),  # Left to screen
-                         uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_WIDTH])  # Right to screen
+        x = uniform(-Constants.WINDOW_WIDTH * .5, Constants.WINDOW_WIDTH * 1.5)
+        x_inside = x > spawn_gap and x < Constants.WINDOW_WIDTH - spawn_gap
 
         y = choice([uniform(-spawn_gap * 2, -spawn_gap),  # Below screen
                     # Above screen
-                    uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_HEIGHT]) if x_in \
+                    uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_HEIGHT]) if x_inside \
             else uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)  # Inside sreen
 
-        # Adjust the angle based on position to
-        # avoid movement being parallel to screen edges
-        deg45 = math.pi * .25
+        # Pick a random point on screen
+        random_point = PositionalVector(uniform(
+            spawn_gap, Constants.WINDOW_WIDTH - spawn_gap),
+            uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap))
 
-        # Up or down
-        angle = uniform(deg45, 3 * deg45) if x_in \
-            else uniform(-deg45, deg45)  # Right or left
-
-        if uniform(0, 1) > 0.5:
-            angle += math.pi  # Invert direction
+        # Get the angle between asteroid's position and random point
+        angle = Vector.angle_between(PositionalVector(x, y), random_point)
 
         return Asteroid(x, y, angle=angle)
 
