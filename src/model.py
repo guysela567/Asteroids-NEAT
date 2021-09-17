@@ -60,7 +60,10 @@ class Model:
                         self.__asteroid_amount += 1
                         self.__spawn_asteroids()
 
-        # TODO Add collision check and handle collisions of player with astroids
+        # Asteroid with player collision
+        if any(arcade.check_for_collision(asteroid.sprite, self.__player.sprite)
+               for asteroid in self.__asteroids):
+            self.__spawn_asteroids()
 
     @staticmethod
     def generate_asteroid() -> Asteroid:
