@@ -22,6 +22,8 @@ class Asteroid:
         self.__sprite.center_x = self.__pos.x
         self.__sprite.center_y = self.__pos.y
 
+        # TODO Add destruction vfx
+
     def update(self, delta_time: float) -> None:
         self.__pos += self.__vel
         self.__pos.handle_offscreen(self.__sprite)

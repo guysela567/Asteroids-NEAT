@@ -51,9 +51,16 @@ class DirectionalVector:
     def __init__(self, mag: float, angle: float) -> None:
         self.__mag = mag
         self.__angle = angle
+        self.__update()
 
+    def __update(self) -> None:
         self.__x = math.cos(self.__angle) * self.__mag
         self.__y = math.sin(self.__angle) * self.__mag
+
+    def lerp_mag(self, to: float, step: float) -> None:
+        # Apple linear interpolation on magnitude
+        self.__mag = (1 - step) * self.__mag + step * to
+        self.__update()
 
     @property
     def x(self) -> float:
@@ -65,18 +72,16 @@ class DirectionalVector:
 
     @property
     def mag(self) -> float:
-        return self.mag
+        return self.__mag
 
     @property
     def angle(self) -> float:
-        return self.angle
+        return self.__angle
 
     @mag.setter
     def mag(self, mag: float) -> None:
         self.__mag = mag
-
-        self.__x = math.cos(self.__angle) * self.__mag
-        self.__y = math.sin(self.__angle) * self.__mag
+        self.__update()
 
     @angle.setter
     def angle(self, angle: float) -> None:

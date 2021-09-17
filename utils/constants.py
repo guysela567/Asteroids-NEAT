@@ -11,6 +11,8 @@ class Constants:
     PLAYER_SPRITE_SCALE = .5
     PLAYER_BOOST_SPEED = 7
     PLAYER_TURN_SPEED = math.pi * .02
+    PLAYER_AIR_FRICTION = .03
+    PLAYER_SHOOT_KNOCKBACK = .5
 
     # Asteroid config
     ASTEROID_HITS = 3
@@ -20,4 +22,4 @@ class Constants:
     # Bullet config
     BULLET_SPRITE_SCALE = 0.5
     BULLET_SPEED = 15
-    SHOOT_COOLDOWN = .1  # Seconds
+    SHOOT_COOLDOWN = .25  # Seconds

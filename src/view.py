@@ -40,4 +40,5 @@ class View():
 
         arcade.finish_render()  # Draw frame
 
-        # TODO add a sprite list
+        # TODO Add a sprite list
+        # TODO Change Sprites

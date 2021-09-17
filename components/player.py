@@ -28,6 +28,8 @@ class Player():
         self.__can_shoot = True
         self.__shoot_cooldown_dur = 0
 
+        # TODO Add teleportation mechanics (cut candidate)
+
     @property
     def sprite(self) -> Sprite:
         return self.__sprite
@@ -39,7 +41,9 @@ class Player():
 
         # Boost
         if self.__boosting:
-            self.__set_velocity()
+            self.__boost()
+        else:
+            self.__vel.lerp_mag(0, Constants.PLAYER_AIR_FRICTION)
 
         # Manage cooldowns
         if not self.__can_shoot:
@@ -85,20 +89,25 @@ class Player():
         self.__bullets.append(Bullet(x, y, self.__angle))
         self.__can_shoot = False
 
+        # Apply knockback force
+        if not self.__boosting:
+            self.__vel.angle = self.__angle
+            self.__vel.mag -= Constants.PLAYER_SHOOT_KNOCKBACK
+
     def __set_rotation(self) -> None:
         self.__angle += self.__turn_speed * self.__rotate_dir
         self.__sprite.angle = math.degrees(self.__angle) - 90
 
-    def __set_velocity(self) -> None:
+    def __boost(self) -> None:
         self.__vel.angle = self.__angle
-        self.__vel.mag = Constants.PLAYER_BOOST_SPEED
+        self.__vel.lerp_mag(Constants.PLAYER_BOOST_SPEED,
+                            Constants.PLAYER_AIR_FRICTION)
 
     def start_boost(self) -> None:
         self.__boosting = True
 
     def stop_boost(self) -> None:
         self.__boosting = False
-        self.__vel.mag = 0
 
     def start_rotate(self, dir: int) -> None:
         self.__rotating = True
