@@ -43,7 +43,7 @@ class Player():
         if self.__boosting:
             self.__boost()
         else:
-            self.__vel.lerp_mag(0, Constants.PLAYER_AIR_FRICTION)
+            self.__slow_down()
 
         # Manage cooldowns
         if not self.__can_shoot:
@@ -102,6 +102,9 @@ class Player():
         self.__vel.angle = self.__angle
         self.__vel.lerp_mag(Constants.PLAYER_BOOST_SPEED,
                             Constants.PLAYER_AIR_FRICTION)
+
+    def __slow_down(self) -> None:
+        self.__vel.lerp_mag(0, Constants.PLAYER_AIR_FRICTION)
 
     def start_boost(self) -> None:
         self.__boosting = True
