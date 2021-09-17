@@ -58,7 +58,7 @@ class DirectionalVector:
         self.__y = math.sin(self.__angle) * self.__mag
 
     def lerp_mag(self, to: float, step: float) -> None:
-        # Apple linear interpolation on magnitude
+        # Apply linear interpolation on magnitude
         self.__mag = (1 - step) * self.__mag + step * to
         self.__update()
 
