@@ -23,6 +23,7 @@ class Model:
 
         # Score system
         self.__score = 0
+        self.__high_score = 0
 
     def update(self, delta_time: float) -> None:
         # Update player
@@ -54,6 +55,10 @@ class Model:
 
                     # Add points to score
                     self.__score += Constants.SCORE_SYSTEM[asteroid.hits]
+
+                    # High score beat
+                    if self.__score > self.__high_score:
+                        self.__high_score = self.__score
 
                     # Delete old asteroid
                     self.__asteroids.remove(asteroid)
@@ -112,3 +117,7 @@ class Model:
     @property
     def score(self) -> int:
         return self.__score
+
+    @property
+    def high_score(self) -> int:
+        return self.__high_score

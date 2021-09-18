@@ -43,8 +43,12 @@ class View():
             bullet.sprite.draw()
 
         # Draw score
-        arcade.draw_text(str(self.__model.score), 25,
-                         Constants.WINDOW_HEIGHT - 75, font_size=36, font_name='Hyperspace')
+        arcade.draw_text(f'SCORE: {self.__model.score}', 25,
+                         100, font_size=36, font_name='Hyperspace')
+
+        # Draw high score
+        arcade.draw_text(f'HIGH SCORE: {self.__model.high_score}', 25,
+                         25, font_size=36, font_name='Hyperspace')
 
         arcade.finish_render()  # Draw frame
 
