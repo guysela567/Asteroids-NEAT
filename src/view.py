@@ -17,7 +17,7 @@ class View():
         # Generate stars for background
         self.__stars = [(uniform(0, Constants.WINDOW_WIDTH),
                          uniform(0, Constants.WINDOW_HEIGHT),
-                         uniform(1, 2)) for _ in range(100)]
+                         uniform(1, 2)) for _ in range(50)]
 
         # Load retro font
         arcade.load_font('assets/fonts/HyperspaceBold.ttf')
