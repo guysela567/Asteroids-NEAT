@@ -19,9 +19,9 @@ class Constants:
     ASTEROID_SPRITE_SCALE = (.4, .3, .2)
     ASTEROID_VELOCITY = (2, 3, 5)
 
-    # Bullet config
-    BULLET_SPRITE_SCALE = 0.5
-    BULLET_SPEED = 15
+    # Projectile config
+    PROJECTILE_SPRITE_SCALE = .25
+    PROJECTILE_SPEED = 15
     SHOOT_COOLDOWN = .25  # Seconds
 
     # Score

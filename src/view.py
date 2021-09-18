@@ -38,9 +38,9 @@ class View():
         for asteroid in self.__model.asteroids:
             asteroid.sprite.draw()
 
-        # Draw player's bullets
-        for bullet in self.__model.player.bullets:
-            bullet.sprite.draw()
+        # Draw player's projectiles
+        for projectile in self.__model.player.projectiles:
+            projectile.sprite.draw()
 
         # Draw score
         arcade.draw_text(f'SCORE: {self.__model.score}', 25,

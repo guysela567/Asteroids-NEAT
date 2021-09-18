@@ -1,7 +1,7 @@
 from utils.vector import PositionalVector, DirectionalVector
 from utils.constants import Constants
 
-from components.bullet import Bullet
+from components.projectile import Projectile
 
 from arcade import Sprite
 import math
@@ -25,7 +25,7 @@ class Player():
 
         self.__vel = DirectionalVector(0, self.__angle)
 
-        self.__bullets = []
+        self.__projectiles = []
         self.__can_shoot = True
         self.__shoot_cooldown_dur = 0
 
@@ -62,23 +62,23 @@ class Player():
         self.__sprite.center_x = self.__pos.x
         self.__sprite.center_y = self.__pos.y
 
-        # Update bullets
-        self.__update_bullets()
+        # Update projectiles
+        self.__update_projectiles()
 
     @property
     def rotate_dir(self) -> int:
         return self.__rotate_dir
 
     @property
-    def bullets(self) -> Bullet:
-        return self.__bullets
+    def projectiles(self) -> Projectile:
+        return self.__projectiles
 
-    def __update_bullets(self) -> None:
-        for bullet in reversed(self.__bullets):
-            if bullet.deleted:  # Remove deleted bullets
-                self.__bullets.remove(bullet)
-            else:  # Update bullet if not deleted
-                bullet.update()
+    def __update_projectiles(self) -> None:
+        for projectile in reversed(self.__projectiles):
+            if projectile.deleted:  # Remove deleted projectiles
+                self.__projectiles.remove(projectile)
+            else:  # Update projectile if not deleted
+                projectile.update()
 
     def shoot(self) -> None:
         if not self.__can_shoot:
@@ -87,7 +87,7 @@ class Player():
         x = self.__pos.x + math.cos(self.__angle) * self.__sprite.height * .5
         y = self.__pos.y + math.sin(self.__angle) * self.__sprite.height * .5
 
-        self.__bullets.append(Bullet(x, y, self.__angle))
+        self.__projectiles.append(Projectile(x, y, self.__angle))
         self.__can_shoot = False
 
         # Apply knockback force

@@ -6,15 +6,16 @@ import numpy as np
 import math
 
 
-class Bullet:
+class Projectile:
     def __init__(self, x: float, y: float, angle: float) -> None:
         self.__pos = PositionalVector(x, y)
         self.__angle = angle
 
-        self.__sprite = Sprite('assets/sprites/bullet.png',
-                               Constants.BULLET_SPRITE_SCALE)
+        self.__sprite = Sprite('assets/sprites/projectile.png',
+                               Constants.PROJECTILE_SPRITE_SCALE)
 
-        self.__vel = DirectionalVector(Constants.BULLET_SPEED, self.__angle)
+        self.__vel = DirectionalVector(
+            Constants.PROJECTILE_SPEED, self.__angle)
         self.__sprite.angle = math.degrees(self.__angle) - 90
 
         self.__distance_traveled = 0
@@ -41,9 +42,9 @@ class Bullet:
         self.__sprite.center_y = self.__pos.y
 
         # Add travel distance
-        self.__distance_traveled += Constants.BULLET_SPEED
+        self.__distance_traveled += Constants.PROJECTILE_SPEED
 
-        # Delete bullet if traveled too much
+        # Delete projectile if traveled too much
         if self.__distance_traveled >= self.__max_distance:
             self.__deleted = True
 

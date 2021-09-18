@@ -35,10 +35,10 @@ class Model:
 
         # Collision Check:
 
-        for bullet in reversed(self.__player.bullets):
+        for projectile in reversed(self.__player.projectiles):
             for asteroid in reversed(self.__asteroids):
-                # Check for any bullet with astroid collision
-                if arcade.check_for_collision(asteroid.sprite, bullet.sprite):
+                # Check for any projectile with astroid collision
+                if arcade.check_for_collision(asteroid.sprite, projectile.sprite):
                     if asteroid.hits < Constants.ASTEROID_HITS - 1:
                         # Split asteroids into two parts
 
@@ -63,8 +63,8 @@ class Model:
                     # Delete old asteroid
                     self.__asteroids.remove(asteroid)
 
-                    # Delete the bullet that hit the astroid
-                    bullet.delete()
+                    # Delete the projectile that hit the astroid
+                    projectile.delete()
 
                     # Respawn asteroids if none exist
                     if len(self.__asteroids) == 0:
