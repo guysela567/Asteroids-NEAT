@@ -50,6 +50,17 @@ class View():
         arcade.draw_text(f'HIGH SCORE: {self.__model.high_score}', 25,
                          25, font_size=36, font_name='Hyperspace')
 
+        # Draw paused text
+        if self.__model.paused:
+            arcade.draw_text('GAME PAUSED',
+                             Constants.WINDOW_WIDTH * .5,
+                             Constants.WINDOW_HEIGHT * .5,
+                             font_name='Hyperspace',
+                             anchor_x='center',
+                             anchor_y='center',
+                             color=color.RED,
+                             font_size=100)
+
         arcade.finish_render()  # Draw frame
 
         # TODO Add a sprite list

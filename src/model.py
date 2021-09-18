@@ -25,6 +25,9 @@ class Model:
         self.__score = 0
         self.__high_score = 0
 
+        # Game logic
+        self.__paused = False
+
     def update(self, delta_time: float) -> None:
         # Update player
         self.__player.update(delta_time)
@@ -121,3 +124,10 @@ class Model:
     @property
     def high_score(self) -> int:
         return self.__high_score
+
+    @property
+    def paused(self) -> bool:
+        return self.__paused
+
+    def toggle_pause(self) -> None:
+        self.__paused = not self.__paused

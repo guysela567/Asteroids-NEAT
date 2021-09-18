@@ -20,9 +20,16 @@ class Controller(arcade.Window):
 
     def on_update(self, delta_time: float) -> None:
         ''' Game logic goes here. '''
-        self.__model.update(delta_time)
+        if not self.__model.paused:
+            self.__model.update(delta_time)
 
     def on_key_press(self, key: int, modifiers: int) -> None:
+        if key == arcade.key.P:
+            self.__model.toggle_pause()
+
+        if self.__model.paused:
+            return
+
         if key == arcade.key.UP:
             self.__model.player.start_boost()
 
