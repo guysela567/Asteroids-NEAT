@@ -20,7 +20,7 @@ class View():
                          uniform(1, 2)) for _ in range(100)]
 
         # Load retro font
-        arcade.load_font('assets/fonts/Hyperspace.ttf')
+        arcade.load_font('assets/fonts/HyperspaceBold.ttf')
 
     def draw(self) -> None:
         ''' Renders the screen. '''
