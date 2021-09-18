@@ -27,10 +27,7 @@ class Controller(arcade.Window):
         if key == arcade.key.P:
             self.__model.toggle_pause()
 
-        if self.__model.paused:
-            return
-
-        if key == arcade.key.UP:
+        elif key == arcade.key.UP:
             self.__model.player.start_boost()
 
         elif key == arcade.key.RIGHT:
