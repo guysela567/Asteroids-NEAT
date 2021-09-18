@@ -13,7 +13,8 @@ class Player():
 
         self.__sprite = Sprite(
             'assets/sprites/player.png',
-            Constants.PLAYER_SPRITE_SCALE)
+            Constants.PLAYER_SPRITE_SCALE,
+            hit_box_algorithm='Detailed')  # Detailed only for the player
 
         self.__boosting = False
         self.__rotating = False

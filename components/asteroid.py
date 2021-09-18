@@ -15,10 +15,18 @@ class Asteroid:
             f'assets/sprites/asteroid{randint(1, 3)}.png',
             Constants.ASTEROID_SPRITE_SCALE[self.__hits])
 
+        # Get a random angle for direction
         self.__angle = uniform(0, math.pi * 2) if angle is None else angle
+
+        # Set velocity vector in that angle
         self.__vel = DirectionalVector(
             Constants.ASTEROID_VELOCITY[self.__hits], self.__angle)
 
+        # Get a random angle for sprite rotation
+        # arcade accepts angles in degrees
+        self.__sprite.angle = uniform(0, 360)
+
+        # Set sprite position early to avoid flickering
         self.__sprite.center_x = self.__pos.x
         self.__sprite.center_y = self.__pos.y
 
