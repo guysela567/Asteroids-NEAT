@@ -37,6 +37,9 @@ class Controller(arcade.Window):
             self.__model.player.start_rotate(1)
 
         elif key == arcade.key.SPACE:
+            if self.__model.player.can_shoot:
+                self.__model.play_sound('fire')
+
             self.__model.player.shoot()
 
     def on_key_release(self, key: int, modifiers: int) -> None:

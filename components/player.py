@@ -35,6 +35,10 @@ class Player():
     def sprite(self) -> Sprite:
         return self.__sprite
 
+    @property
+    def can_shoot(self) -> bool:
+        return self.__can_shoot
+
     def update(self, delta_time: float) -> None:
         # Rotation
         if self.__rotating:

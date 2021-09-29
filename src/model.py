@@ -6,8 +6,9 @@ from utils.vector import Vector, PositionalVector
 
 from typing import List
 from random import uniform, choice
-import arcade
 import math
+
+import arcade
 
 
 class Model:
@@ -28,6 +29,14 @@ class Model:
         # Game logic
         self.__paused = False
 
+        self.__sounds = {
+            'thrust': arcade.load_sound('assets/sounds/thrust.wav'),
+            'fire': arcade.load_sound('assets/sounds/fire.wav'),
+            'explosion0': arcade.load_sound('assets/sounds/bangLarge.wav'),
+            'explosion1': arcade.load_sound('assets/sounds/bangMedium.wav'),
+            'explosion2': arcade.load_sound('assets/sounds/bangSmall.wav'),
+        }
+
     def update(self, delta_time: float) -> None:
         # Update player
         self.__player.update(delta_time)
@@ -36,12 +45,13 @@ class Model:
         for asteroid in self.__asteroids:
             asteroid.update(delta_time)
 
-        # Collision Check:
-
+        # Asteroid with projectile collision
         for projectile in reversed(self.__player.projectiles):
             for asteroid in reversed(self.__asteroids):
                 # Check for any projectile with astroid collision
                 if arcade.check_for_collision(asteroid.sprite, projectile.sprite):
+                    # Play explosion sound
+                    self.play_sound(f'explosion{asteroid.hits}')
                     if asteroid.hits < Constants.ASTEROID_HITS - 1:
                         # Split asteroids into two parts
 
@@ -108,6 +118,9 @@ class Model:
     def __spawn_asteroids(self) -> None:
         self.__asteroids = [self.generate_asteroid()
                             for _ in range(self.__asteroid_amount)]
+
+    def play_sound(self, sound: str) -> None:
+        arcade.play_sound(self.__sounds[sound])
 
     @property
     def player(self) -> Player:
