@@ -26,7 +26,7 @@ class Sprite:
         self.__angle = 0
 
     def collides(self, other: Sprite) -> bool:
-        # return self.__rect.colliderect(other.rect)
+        # Rectangular collision check
         return self.__pos[0] - self.__width * .5 < other.pos[0] + other.width * .5 \
             and self.__pos[0] + self.__width * .5 > other.pos[0] - other.width * .5 \
             and self.__pos[1] - self.__height * .5 < other.pos[1] + other.height * .5 \
@@ -38,16 +38,13 @@ class Sprite:
 
     @angle.setter
     def angle(self, angle: float) -> None:
-        self.__angle = -angle
+        self.__angle = -angle  # Convert from anti-clockwize to clockwize
 
         # Rotate image, copy original to prevent noticable changes in image quality
         self.__image = pg.transform.rotate(self.__original_image, self.__angle)
 
         self.__rect = self.__image.get_rect()  # Update position rectangle
         self.__rect.center = self.__pos  # Keep previous center point
-
-        # Update width and height
-        # self.__width, self.__height = self.__rect[2], self.__rect[3]
 
     @property
     def image(self) -> pg.Surface:
