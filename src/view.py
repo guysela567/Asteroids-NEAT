@@ -2,7 +2,6 @@ from utils.constants import Constants
 
 from components.player import Player
 from components.asteroid import Asteroid
-from components.projectile import Projectile
 
 from typing import List
 
