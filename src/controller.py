@@ -10,13 +10,20 @@ class Controller(arcade.Window):
                          Constants.WINDOW_HEIGHT, Constants.WINDOW_TITLE)
 
         self.__model = Model()
-        self.__view = View(self.__model)
+        self.__view = View()
 
     def start(self):
         arcade.run()
 
     def on_draw(self) -> None:
-        self.__view.draw()
+        self.__view.draw_background()
+        self.__view.draw_sprites(self.__model.player, self.__model.asteroids)
+        self.__view.draw_score(self.__model.score, self.__model.high_score)
+
+        if self.__model.paused:
+            self.__view.draw_paused()
+
+        self.__view.finish_render()
 
     def on_update(self, delta_time: float) -> None:
         ''' Game logic goes here. '''

@@ -1,5 +1,10 @@
-from src.model import Model
 from utils.constants import Constants
+
+from components.player import Player
+from components.asteroid import Asteroid
+from components.projectile import Projectile
+
+from typing import List
 
 import arcade
 from arcade import color
@@ -7,11 +12,8 @@ from random import uniform
 
 
 class View():
-    def __init__(self, model: Model) -> None:
+    def __init__(self) -> None:
         ''' Graphical setup '''
-
-        self.__model = model
-
         arcade.set_background_color(color.BLACK)
 
         # Generate stars for background
@@ -22,46 +24,41 @@ class View():
         # Load retro font
         arcade.load_font('assets/fonts/HyperspaceBold.ttf')
 
-    def draw(self) -> None:
-        ''' Renders the screen. '''
-
+    def draw_background(self) -> None:
         arcade.start_render()  # Clear screen to background color
 
         # Draw stars
         for x, y, size in self.__stars:
             arcade.draw_point(x, y, color.WHITE, size)
 
-        # Draw player
-        self.__model.player.sprite.draw()
+    def finish_render(self) -> None:
+        arcade.finish_render()
+
+    def draw_sprites(self, player: Player, asteroids: List[Asteroid]) -> None:
+        player.sprite.draw()  # Draw player
 
         # Draw asteroids
-        for asteroid in self.__model.asteroids:
+        for asteroid in asteroids:
             asteroid.sprite.draw()
 
-        # Draw player's projectiles
-        for projectile in self.__model.player.projectiles:
+        # Draw projectiles
+        for projectile in player.projectiles:
             projectile.sprite.draw()
 
+    def draw_score(self, score: int, high_score: int) -> None:
         # Draw score
-        arcade.draw_text(f'SCORE: {self.__model.score}', 25,
+        arcade.draw_text(f'SCORE: {score}', 25,
                          100, font_size=36, font_name='Hyperspace')
-
         # Draw high score
-        arcade.draw_text(f'HIGH SCORE: {self.__model.high_score}', 25,
+        arcade.draw_text(f'HIGH SCORE: {high_score}', 25,
                          25, font_size=36, font_name='Hyperspace')
 
-        # Draw paused text
-        if self.__model.paused:
-            arcade.draw_text('GAME PAUSED',
-                             Constants.WINDOW_WIDTH * .5,
-                             Constants.WINDOW_HEIGHT * .5,
-                             font_name='Hyperspace',
-                             anchor_x='center',
-                             anchor_y='center',
-                             color=color.RED,
-                             font_size=100)
-
-        arcade.finish_render()  # Draw frame
-
-        # TODO Add a sprite list
-        # TODO Change Sprites
+    def draw_paused(self) -> None:
+        arcade.draw_text('GAME PAUSED',
+                         Constants.WINDOW_WIDTH * .5,
+                         Constants.WINDOW_HEIGHT * .5,
+                         font_name='Hyperspace',
+                         anchor_x='center',
+                         anchor_y='center',
+                         color=color.RED,
+                         font_size=100)
