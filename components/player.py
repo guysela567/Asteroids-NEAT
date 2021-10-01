@@ -1,9 +1,9 @@
 from utils.vector import PositionalVector, DirectionalVector
 from utils.constants import Constants
+from utils.sprite import Sprite
 
 from components.projectile import Projectile
 
-from arcade import Sprite
 import math
 
 
@@ -14,7 +14,7 @@ class Player():
         self.__sprite = Sprite(
             'assets/sprites/player.png',
             Constants.PLAYER_SPRITE_SCALE,
-            hit_box_algorithm='Detailed')  # Detailed only for the player
+            self.__pos)
 
         self.__boosting = False
         self.__rotating = False
@@ -63,8 +63,7 @@ class Player():
         self.__pos.handle_offscreen(self.__sprite)
 
         # Update sprite position
-        self.__sprite.center_x = self.__pos.x
-        self.__sprite.center_y = self.__pos.y
+        self.__sprite.pos = self.__pos
 
         # Update projectiles
         self.__update_projectiles()
@@ -88,8 +87,8 @@ class Player():
         if not self.__can_shoot:
             return
 
-        x = self.__pos.x + math.cos(self.__angle) * self.__sprite.height * .5
-        y = self.__pos.y + math.sin(self.__angle) * self.__sprite.height * .5
+        x = self.__pos.x - math.cos(self.__angle) * self.__sprite.height * .5
+        y = self.__pos.y - math.sin(self.__angle) * self.__sprite.height * .5
 
         self.__projectiles.append(Projectile(x, y, self.__angle))
         self.__can_shoot = False
@@ -97,7 +96,7 @@ class Player():
         # Apply knockback force
         if not self.__boosting:
             self.__vel.angle = self.__angle
-            self.__vel.mag -= Constants.PLAYER_SHOOT_KNOCKBACK
+            self.__vel.mag += Constants.PLAYER_SHOOT_KNOCKBACK
 
     def __set_rotation(self) -> None:
         self.__angle += self.__turn_speed * self.__rotate_dir
@@ -105,7 +104,7 @@ class Player():
 
     def __boost(self) -> None:
         self.__vel.angle = self.__angle
-        self.__vel.lerp_mag(Constants.PLAYER_BOOST_SPEED,
+        self.__vel.lerp_mag(-Constants.PLAYER_BOOST_SPEED,
                             Constants.PLAYER_AIR_FRICTION)
 
     def __slow_down(self) -> None:

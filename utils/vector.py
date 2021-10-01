@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from utils.constants import Constants
 
+from typing import Tuple
+
 import math
 
 
@@ -10,8 +12,14 @@ class PositionalVector:
         self.__x = x
         self.__y = y
 
-    def __add__(self, other: PositionalVector) -> PositionalVector | DirectionalVector:
+    def __add__(self, other: PositionalVector | DirectionalVector) -> PositionalVector:
         return PositionalVector(self.__x + other.x, self.__y + other.y)
+
+    def __sub__(self, other: PositionalVector | DirectionalVector) -> PositionalVector:
+        return PositionalVector(self.__x - other.x, self.__y - other.y)
+
+    def to_tuple(self) -> Tuple[float, float]:
+        return self.__x, self.__y
 
     def handle_offscreen(self, sprite) -> None:
         # left to right

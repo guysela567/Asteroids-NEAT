@@ -6,6 +6,7 @@ class Constants:
     WINDOW_WIDTH = 1000
     WINDOW_HEIGHT = 800
     WINDOW_TITLE = 'Asteroids'
+    FPS = 60
 
     # Player config
     PLAYER_SPRITE_SCALE = .5

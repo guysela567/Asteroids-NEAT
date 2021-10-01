@@ -8,8 +8,6 @@ from typing import List
 from random import uniform, choice
 import math
 
-import arcade
-
 
 class Model:
     def __init__(self) -> None:
@@ -29,14 +27,6 @@ class Model:
         # Game logic
         self.__paused = False
 
-        self.__sounds = {
-            'thrust': arcade.load_sound('assets/sounds/thrust.wav'),
-            'fire': arcade.load_sound('assets/sounds/fire.wav'),
-            'explosion0': arcade.load_sound('assets/sounds/bangLarge.wav'),
-            'explosion1': arcade.load_sound('assets/sounds/bangMedium.wav'),
-            'explosion2': arcade.load_sound('assets/sounds/bangSmall.wav'),
-        }
-
     def update(self, delta_time: float) -> None:
         # Update player
         self.__player.update(delta_time)
@@ -49,9 +39,8 @@ class Model:
         for projectile in reversed(self.__player.projectiles):
             for asteroid in reversed(self.__asteroids):
                 # Check for any projectile with astroid collision
-                if arcade.check_for_collision(asteroid.sprite, projectile.sprite):
+                if asteroid.sprite.collides(projectile.sprite):
                     # Play explosion sound
-                    self.play_sound(f'explosion{asteroid.hits}')
                     if asteroid.hits < Constants.ASTEROID_HITS - 1:
                         # Split asteroids into two parts
 
@@ -85,12 +74,11 @@ class Model:
                         self.__spawn_asteroids()
 
         # Asteroid with player collision
-        if any(arcade.check_for_collision(asteroid.sprite, self.__player.sprite)
-               for asteroid in self.__asteroids):
+        if any(asteroid.sprite.collides(self.__player.sprite) for asteroid in self.__asteroids):
             self.__spawn_asteroids()
             self.__score = 0
 
-    @staticmethod
+    @ staticmethod
     def generate_asteroid() -> Asteroid:
         # TODO Needs more refactoring
 
@@ -102,7 +90,7 @@ class Model:
 
         y = choice([uniform(-spawn_gap * 2, -spawn_gap),  # Below screen
                     # Above screen
-                    uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_HEIGHT]) if x_inside \
+                   uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_HEIGHT]) if x_inside \
             else uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)  # Inside sreen
 
         # Pick a random point on screen
@@ -118,9 +106,6 @@ class Model:
     def __spawn_asteroids(self) -> None:
         self.__asteroids = [self.generate_asteroid()
                             for _ in range(self.__asteroid_amount)]
-
-    def play_sound(self, sound: str) -> None:
-        arcade.play_sound(self.__sounds[sound])
 
     @property
     def player(self) -> Player:

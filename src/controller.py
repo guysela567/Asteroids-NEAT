@@ -1,58 +1,70 @@
-import arcade
 from utils.constants import Constants
 from src.model import Model
 from src.view import View
 
+import pygame as pg
+from pygame.event import Event
 
-class Controller(arcade.Window):
+
+class Controller:
     def __init__(self) -> None:
-        super().__init__(Constants.WINDOW_WIDTH,
-                         Constants.WINDOW_HEIGHT, Constants.WINDOW_TITLE)
-
         self.__model = Model()
         self.__view = View()
 
     def start(self):
-        arcade.run()
+        while True:
+            # Update model
+            if not self.__model.paused:
+                self.__model.update(1 / Constants.FPS)
 
-    def on_draw(self) -> None:
-        self.__view.draw_background()
-        self.__view.draw_sprites(self.__model.player, self.__model.asteroids)
-        self.__view.draw_score(self.__model.score, self.__model.high_score)
+            # Update view
+            self.__view.draw_background()
 
-        if self.__model.paused:
-            self.__view.draw_paused()
+            self.__view.draw_sprites(self.__model.player,
+                                     self.__model.asteroids)
 
-        self.__view.finish_render()
+            self.__view.draw_score(self.__model.score, self.__model.high_score)
 
-    def on_update(self, delta_time: float) -> None:
-        ''' Game logic goes here. '''
-        if not self.__model.paused:
-            self.__model.update(delta_time)
+            if self.__model.paused:
+                self.__view.draw_paused()
 
-    def on_key_press(self, key: int, modifiers: int) -> None:
-        if key == arcade.key.P:
+            self.__view.finish_render()
+
+            # Handle user input
+            for event in pg.event.get():
+                self.handle_event(event)
+
+    def handle_event(self, event: Event) -> None:
+        if event.type == pg.QUIT:
+            pg.quit()
+            exit()
+
+        elif event.type == pg.KEYDOWN:
+            self.on_key_press(event.key)
+
+        elif event.type == pg.KEYUP:
+            self.on_key_release(event.key)
+
+    def on_key_press(self, key: int) -> None:
+        if key == pg.K_p:
             self.__model.toggle_pause()
 
-        elif key == arcade.key.UP:
+        elif key == pg.K_UP:
             self.__model.player.start_boost()
 
-        elif key == arcade.key.RIGHT:
-            self.__model.player.start_rotate(-1)
-
-        elif key == arcade.key.LEFT:
+        elif key == pg.K_RIGHT:
             self.__model.player.start_rotate(1)
 
-        elif key == arcade.key.SPACE:
-            if self.__model.player.can_shoot:
-                self.__model.play_sound('fire')
+        elif key == pg.K_LEFT:
+            self.__model.player.start_rotate(-1)
 
+        elif key == pg.K_SPACE:
             self.__model.player.shoot()
 
-    def on_key_release(self, key: int, modifiers: int) -> None:
-        if key == arcade.key.UP:
+    def on_key_release(self, key: int) -> None:
+        if key == pg.K_UP:
             self.__model.player.stop_boost()
 
-        elif key == arcade.key.RIGHT and self.__model.player.rotate_dir == -1 \
-                or key == arcade.key.LEFT and self.__model.player.rotate_dir == 1:
+        elif key == pg.K_RIGHT and self.__model.player.rotate_dir == 1 \
+                or key == pg.K_LEFT and self.__model.player.rotate_dir == -1:
             self.__model.player.stop_rotate()
