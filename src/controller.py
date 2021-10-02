@@ -8,8 +8,8 @@ from pygame.event import Event
 
 class Controller:
     def __init__(self) -> None:
-        self.__model = Model()
         self.__view = View()
+        self.__model = Model()
 
     def start(self):
         while True:

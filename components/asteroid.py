@@ -23,10 +23,6 @@ class Asteroid:
         self.__vel = DirectionalVector(
             Constants.ASTEROID_VELOCITY[self.__hits], self.__angle + math.pi)
 
-        # Get a random angle for sprite rotation
-        # pygame accepts angles in degrees
-        # self.__sprite.angle = uniform(0, 360)
-
         # TODO Add destruction vfx
 
     def update(self, delta_time: float) -> None:

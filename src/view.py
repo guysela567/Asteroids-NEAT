@@ -9,7 +9,7 @@ from typing import List
 from random import uniform
 
 import pygame as pg
-from utils.drawing import CTX
+from utils.drawing import Context, Screen
 
 
 class View():
@@ -17,17 +17,16 @@ class View():
         pg.init()
 
         ''' Graphical setup '''
-        self.__screen = pg.display.set_mode([Constants.WINDOW_WIDTH,
-                                             Constants.WINDOW_HEIGHT])
+        self.__screen = Screen(Constants.WINDOW_WIDTH,
+                               Constants.WINDOW_HEIGHT,
+                               Constants.WINDOW_TITLE)
 
-        pg.display.set_caption(Constants.WINDOW_TITLE)
-
-        self.__ctx = CTX(self.__screen)
+        self.__ctx = Context(self.__screen)
 
         # Generate stars for background
         self.__stars = [(uniform(0, Constants.WINDOW_WIDTH),
                          uniform(0, Constants.WINDOW_HEIGHT),
-                         uniform(1, 2)) for _ in range(50)]
+                         uniform(7, 10)) for _ in range(50)]
 
         self.__clock = pg.time.Clock()
 
@@ -72,4 +71,4 @@ class View():
                         center=True)
 
     def draw_sprite(self, sprite: Sprite) -> None:
-        self.__screen.blit(sprite.image, sprite.rect)
+        self.__ctx.image(sprite.image, *sprite.rect)

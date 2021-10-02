@@ -3,6 +3,7 @@ from __future__ import annotations
 from utils.vector import PositionalVector
 
 import pygame as pg
+from utils.drawing import Context
 
 from typing import Tuple
 
@@ -11,17 +12,14 @@ class Sprite:
     def __init__(self, image_path: str, scale: float, pos: PositionalVector):
         self.__pos = pos.to_tuple()
 
-        img = pg.image.load(image_path)
-        w, h = img.get_width(), img.get_height()
-        self.__original_image = pg.transform.scale(img, (int(w * scale),
-                                                         int(h * scale)))
+        # Save original image to maintain it's quality
+        image = Context.load_image(image_path)
+        self.__width, self.__height = map(lambda x: int(x * scale), image.get_size())
+        self.__original_image = Context.resize_image(image, self.__width, self.__height)
 
-        self.__image = self.__original_image
+        self.__image = self.__original_image.copy()
         self.__rect = self.__image.get_rect()
         self.__rect.center = self.__pos
-
-        self.__width = self.__image.get_width()
-        self.__height = self.__image.get_height()
 
         self.__angle = 0
 
@@ -40,8 +38,8 @@ class Sprite:
     def angle(self, angle: float) -> None:
         self.__angle = -angle  # Convert from anti-clockwize to clockwize
 
-        # Rotate image, copy original to prevent noticable changes in image quality
-        self.__image = pg.transform.rotate(self.__original_image, self.__angle)
+        # Rotate original image to prevent big changes in image quality
+        self.__image = Context.rotate_image(self.__original_image, self.__angle)
 
         self.__rect = self.__image.get_rect()  # Update position rectangle
         self.__rect.center = self.__pos  # Keep previous center point
