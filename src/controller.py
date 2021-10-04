@@ -15,6 +15,13 @@ class Controller:
 
     def start(self):
         while True:
+            # Handle user input
+            for event in pg.event.get():
+                self.handle_event(event)
+
+            # AI
+            self.__model.think([random.random() for _ in range(8)])
+
             # Update model
             if not self.__model.paused:
                 self.__model.update(1 / Constants.FPS)
@@ -29,12 +36,6 @@ class Controller:
 
             self.__view.finish_render()
 
-            # Handle user input
-            for event in pg.event.get():
-                self.handle_event(event)
-
-            # AI
-            self.__model.think([random.random() for _ in range(8)])
 
     def handle_event(self, event: Event) -> None:
         if event.type == pg.QUIT:

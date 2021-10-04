@@ -1,6 +1,3 @@
-from os import replace
-from utils.constants import Constants
-
 import pygame as pg
 
 # My wrapper on PyGame to make it more like the processing.org environment combined with HTML Canvas tools
