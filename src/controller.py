@@ -5,6 +5,8 @@ from src.view import View
 import pygame as pg
 from pygame.event import Event
 
+import random
+
 
 class Controller:
     def __init__(self) -> None:
@@ -19,10 +21,7 @@ class Controller:
 
             # Update view
             self.__view.draw_background()
-
-            self.__view.draw_sprites(self.__model.player,
-                                     self.__model.asteroids)
-
+            self.__view.draw_sprites(self.__model.player, self.__model.asteroids)
             self.__view.draw_score(self.__model.score, self.__model.high_score)
 
             if self.__model.paused:
@@ -33,6 +32,9 @@ class Controller:
             # Handle user input
             for event in pg.event.get():
                 self.handle_event(event)
+
+            # AI
+            self.__model.think([random.random() for _ in range(8)])
 
     def handle_event(self, event: Event) -> None:
         if event.type == pg.QUIT:

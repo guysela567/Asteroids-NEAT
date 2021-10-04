@@ -4,16 +4,18 @@ from components.asteroid import Asteroid
 from utils.constants import Constants
 from utils.vector import Vector, PositionalVector
 
+from ai.neural_network import NeuralNetwork
+
 from typing import List
 from random import uniform, choice
+import numpy as np
 import math
 
 
 class Model:
     def __init__(self) -> None:
         # Initialize player
-        self.__player = Player(Constants.WINDOW_WIDTH *
-                               0.5, Constants.WINDOW_HEIGHT * 0.5)
+        self.__player = Player(Constants.WINDOW_WIDTH * 0.5, Constants.WINDOW_HEIGHT * 0.5)
 
         # Initialize astroids
         self.__asteroid_amount = 4
@@ -26,6 +28,9 @@ class Model:
 
         # Game logic
         self.__paused = False
+
+        # AI
+        self.__brain = NeuralNetwork(8, [5], 4)
 
     def update(self, delta_time: float) -> None:
         # Update player
@@ -78,7 +83,27 @@ class Model:
             self.__spawn_asteroids()
             self.__score = 0
 
-    @ staticmethod
+    def think(self, inputs) -> int:
+        results = self.__brain.predict(inputs)
+        print(results)
+
+        if results[0] > 0:
+            if results[1] > 0:
+                self.__player.start_rotate(1)
+            else:
+                self.__player.start_rotate(-1)
+        else:
+            self.__player.stop_rotate()
+
+        if results[2] < 0:
+            self.__player.start_boost()
+        else:
+            self.__player.stop_boost()
+
+        if results[3] > 0:
+            self.__player.shoot()
+
+    @staticmethod
     def generate_asteroid() -> Asteroid:
         # TODO Needs more refactoring
 

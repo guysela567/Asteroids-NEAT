@@ -28,7 +28,7 @@ class NeuralNetwork:
         ])
 
     def predict(self, inputs: List[float]) -> List[float]:
-        return self.__model.predict([inputs])
+        return self.__model.predict([inputs])[0] # flatten output
         
     def copy(self) -> NeuralNetwork:
         model_copy = self.__create_model()
