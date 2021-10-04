@@ -22,10 +22,13 @@ class NeuralNetwork:
 
     def __create_model(self) -> Sequential:
         return Sequential([
-            layers.Dense(self.__hidden_nodes[0], activation='relu', input_shape=(1,)),
-            *[layers.Dense(no, activation='relu') for no in self.__hidden_nodes[:-1]],
+            layers.Dense(self.__hidden_nodes[0], activation='relu', input_shape=(self.__input_nodes,)),
+            *[layers.Dense(no, activation='relu') for no in self.__hidden_nodes[1:]],
             layers.Dense(self.__output_nodes),
         ])
+
+    def predict(self, inputs: List[float]) -> List[float]:
+        return self.__model.predict([inputs])
         
     def copy(self) -> NeuralNetwork:
         model_copy = self.__create_model()

@@ -1,6 +1,5 @@
 from src.controller import Controller
 
-
 def main() -> None:
     ''' Main method '''
     controller = Controller()
