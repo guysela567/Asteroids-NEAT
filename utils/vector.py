@@ -18,6 +18,12 @@ class PositionalVector:
     def __sub__(self, other: PositionalVector | DirectionalVector) -> PositionalVector:
         return PositionalVector(self.__x - other.x, self.__y - other.y)
 
+    def __mul__(self, other: PositionalVector | DirectionalVector) -> PositionalVector:
+        return PositionalVector(self.__x * other.x, self.__y * other.y)
+
+    def __iter__(self) -> iter:
+        return iter((self.__x, self.__y))
+
     def to_tuple(self) -> Tuple[float, float]:
         return self.__x, self.__y
 

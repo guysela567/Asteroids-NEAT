@@ -19,9 +19,6 @@ class Controller:
             for event in pg.event.get():
                 self.handle_event(event)
 
-            # AI
-            self.__model.think([random.random() for _ in range(8)])
-
             # Update model
             if not self.__model.paused:
                 self.__model.update(1 / Constants.FPS)
@@ -34,7 +31,13 @@ class Controller:
             if self.__model.paused:
                 self.__view.draw_paused()
 
+            self.__view.draw_rays(self.__model.player.ray_set)
+
+            for asteroid in self.__model.asteroids:
+                self.__view.draw_poly(asteroid.sprite.rect_verts)
+
             self.__view.finish_render()
+
 
 
     def handle_event(self, event: Event) -> None:

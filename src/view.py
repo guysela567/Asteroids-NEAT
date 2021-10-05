@@ -1,5 +1,6 @@
 from utils.constants import Constants
 from utils.sprite import Sprite
+from utils.geometry.raycasting import RaySet
 
 from components.player import Player
 from components.asteroid import Asteroid
@@ -72,3 +73,15 @@ class View():
 
     def draw_sprite(self, sprite: Sprite) -> None:
         self.__ctx.image(sprite.image, *sprite.rect)
+
+    def draw_rays(self, ray_set: RaySet) -> None:
+        self.__ctx.fill(0, 255, 0)
+        for ray in ray_set:
+            self.__ctx.line(*ray, 5)
+
+    def draw_poly(self, verts: List[Sprite]) -> None:
+        self.__ctx.fill(0, 255, 0)
+        for i in range(len(verts)):
+            pos1 = verts[i]
+            pos2 = verts[i + 1] if i < len(verts) - 1 else verts[0]
+            self.__ctx.line(*pos1, *pos2, 5)

@@ -8,7 +8,7 @@ from ai.neural_network import NeuralNetwork
 
 from typing import List
 from random import uniform, choice
-import numpy as np
+import random
 import math
 
 
@@ -32,6 +32,8 @@ class Model:
         # AI
         self.__brain = NeuralNetwork(8, [5], 4)
 
+        # self.__player.start_boost()
+
     def update(self, delta_time: float) -> None:
         # Update player
         self.__player.update(delta_time)
@@ -40,6 +42,16 @@ class Model:
         for asteroid in self.__asteroids:
             asteroid.update(delta_time)
 
+        # Sprite Collisions
+        self.handle_collisions()
+
+        # AI
+        asteroid_sprite_list = map(lambda a: a.sprite, self.__asteroids)
+        vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
+        # print(vision)
+        # self.think(vision)
+
+    def handle_collisions(self) -> None:
         # Asteroid with projectile collision
         for projectile in reversed(self.__player.projectiles):
             for asteroid in reversed(self.__asteroids):
@@ -85,7 +97,7 @@ class Model:
 
     def think(self, inputs) -> int:
         results = self.__brain.predict(inputs)
-        print(results)
+        # print(results)
 
         if results[0] > 0:
             if results[1] > 0:

@@ -1,6 +1,7 @@
 from utils.vector import PositionalVector, DirectionalVector
 from utils.constants import Constants
 from utils.sprite import Sprite
+from utils.geometry.raycasting import RaySet
 
 from components.projectile import Projectile
 
@@ -28,6 +29,9 @@ class Player():
         self.__projectiles = []
         self.__can_shoot = True
         self.__shoot_cooldown_dur = 0
+
+        # AI
+        self.__ray_set = RaySet(self.__pos, 20)
 
         # TODO Add teleportation mechanics (cut candidate)
 
@@ -67,6 +71,9 @@ class Player():
 
         # Update projectiles
         self.__update_projectiles()
+
+        # Update ray set position
+        self.__ray_set.pos = self.__pos
 
     @property
     def rotate_dir(self) -> int:
@@ -123,3 +130,7 @@ class Player():
     def stop_rotate(self) -> None:
         self.__rotating = False
         self.__rotate_dir = 0
+
+    @property
+    def ray_set(self) -> RaySet:
+        return self.__ray_set

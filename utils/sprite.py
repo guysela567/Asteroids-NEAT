@@ -5,7 +5,7 @@ from utils.vector import PositionalVector
 import pygame as pg
 from utils.drawing import Context
 
-from typing import Tuple
+from typing import List, Tuple
 
 
 class Sprite:
@@ -63,6 +63,14 @@ class Sprite:
     @property
     def rect(self) -> pg.Rect:
         return self.__rect
+
+    @property
+    def rect_verts(self) -> List[Tuple[float, float]]:
+        return (self.__rect.topleft, 
+                self.__rect.topright, 
+                self.__rect.bottomright, 
+                self.__rect.bottomleft)
+
 
     @property
     def alpha(self) -> float:
