@@ -31,7 +31,7 @@ class Player():
         self.__shoot_cooldown_dur = 0
 
         # AI
-        self.__ray_set = RaySet(self.__pos, 20)
+        self.__ray_set = RaySet(self.__pos, 10)
 
         # TODO Add teleportation mechanics (cut candidate)
 

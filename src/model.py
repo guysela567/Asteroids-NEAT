@@ -46,7 +46,7 @@ class Model:
         self.handle_collisions()
 
         # AI
-        asteroid_sprite_list = map(lambda a: a.sprite, self.__asteroids)
+        asteroid_sprite_list = [a.sprite for a in self.__asteroids]
         vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
         # print(vision)
         # self.think(vision)

@@ -105,6 +105,9 @@ class DirectionalVector:
 
 class Vector:
     def distance(vect1: PositionalVector, vect2: PositionalVector) -> float:
+        if vect1 is None or vect2 is None:
+            return 0
+            
         return math.sqrt(math.pow(vect2.x - vect1.x, 2) + math.pow(vect2.y - vect1.y, 2))
 
     def angle_between(vect1: PositionalVector, vect2: PositionalVector) -> float:

@@ -2,6 +2,7 @@ from utils.vector import PositionalVector, DirectionalVector, Vector
 from utils.sprite import Sprite
 
 from typing import List, Tuple
+import numpy as np
 import math
 
 
@@ -10,20 +11,12 @@ class Ray:
         self.__from = pos
         self.__angle = angle
         self.__to = pos + DirectionalVector(1500, angle)
-
-    @property
-    def pos(self) -> PositionalVector:
-        return self.__from
-
-    @pos.setter
-    def pos(self, pos: PositionalVector) -> None:
-        self.__from = pos
-        self.__to = pos + DirectionalVector(1500, self.__angle)
+        self.__intersection = None
 
     def __iter__(self) -> iter:
-        return iter((*self.__from, *self.__to))
+        return iter((*self.__from, *self.end))
 
-    def intersects_line(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> bool:
+    def intersects_line(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> PositionalVector:
         ''' Euclidian Line-Line intersection '''
 
         # Better notation
@@ -36,8 +29,8 @@ class Ray:
         denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
 
         # Parallel lines
-        if denominator == 0:
-            return False
+        if math.isclose(denominator, 0):
+            return None
 
         # Calculate numerators
         numerator_t = (x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)
@@ -48,23 +41,60 @@ class Ray:
         u = numerator_u / denominator
 
         # Check for intersection with u and t
-        return u >= 0 and 0 >= t >= 1
+        return PositionalVector(x1 + t * (x2 - x1), y1 + t * (y2 - y1)) \
+            if u >= 0 and 0 <= t <= 1 else None
     
-    def intersects_polygon(self, verts: List[Tuple[float, float]]) -> bool:
+    def intersects_polygon(self, verts: List[Tuple[float, float]]) -> PositionalVector:
+        closest = None
+        closest_dist = 0
+
         # Iterate through each polygon segment
         for i in range(len(verts)):
             pos1 = verts[i]
             pos2 = verts[i + 1] if i < len(verts) - 1 else verts[0]
 
-            if self.intersects_line(pos1, pos2):
-                return True
-        return False
+            point = self.intersects_line(pos1, pos2)
+            if point is not None:
+                dist = Vector.distance(self.__from, point)
+                if dist < closest_dist or closest is None:
+                    closest = point
+                    closest_dist = dist
 
-    def intersecting_sprite_dist(self, sprite_list: List[Sprite]) -> float:
+        return closest
+
+    def intersect_sprite_list(self, sprite_list: List[Sprite]) -> PositionalVector:
+        closest = None
+        closest_dist = 0
+
+        # Get closest point
         for sprite in sprite_list:
-            if self.intersects_polygon(sprite.rect_verts):
-                return Vector.distance(self.__from, sprite.pos)
-        return 0
+            point = self.intersects_polygon(sprite.rect_verts)
+            if point is not None:
+                dist = Vector.distance(self.__from, point)
+                if dist < closest_dist or closest is None:
+                    closest = point
+                    closest_dist = dist
+
+        self.__intersection = closest
+        return closest
+
+    @property
+    def angle(self) -> float:
+        return self.__angle
+
+    @property
+    def pos(self) -> PositionalVector:
+        return self.__from
+
+    @property
+    def end(self) -> PositionalVector:
+        return self.__to if self.__intersection is None else self.__intersection
+
+    @pos.setter
+    def pos(self, pos: PositionalVector) -> None:
+        self.__from = pos
+        self.__to = pos + DirectionalVector(1500, self.__angle)
+        
 
 class RaySet:
     def __init__(self, pos: PositionalVector, amount: int) -> None:
@@ -83,7 +113,7 @@ class RaySet:
         return any(self.__rays.intersects_polygon(verts))
 
     def intersecting_sprite_dist(self, sprite_list: List[Sprite]) -> List[float]:
-        return [ray.intersecting_sprite_dist(sprite_list) for ray in self.__rays]
+        return [Vector.distance(self.__from, ray.intersect_sprite_list(sprite_list)) for ray in self.__rays]
 
     @property
     def pos(self) -> PositionalVector:
