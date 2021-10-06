@@ -8,13 +8,13 @@ import math
 
 class Ray:
     def __init__(self, pos: PositionalVector, angle: float) -> None:
-        self.__from = pos
+        self.__pos = pos
         self.__angle = angle
-        self.__to = pos + DirectionalVector(1500, angle)
+        self.__end = pos + DirectionalVector(1500, angle)
         self.__intersection = None
 
     def __iter__(self) -> iter:
-        return iter((*self.__from, *self.end))
+        return iter((*self.__pos, *self.end))
 
     def intersects_line(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> PositionalVector:
         ''' Euclidian Line-Line intersection '''
@@ -22,8 +22,8 @@ class Ray:
         # Better notation
         x1, y1 = pos1
         x2, y2 = pos2
-        x3, y3 = self.__from
-        x4, y4 = self.__to
+        x3, y3 = self.__pos
+        x4, y4 = self.__end
 
         # Calculate denominator
         denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
@@ -55,7 +55,7 @@ class Ray:
 
             point = self.intersects_line(pos1, pos2)
             if point is not None:
-                dist = Vector.distance(self.__from, point)
+                dist = Vector.distance(self.__pos, point)
                 if dist < closest_dist or closest is None:
                     closest = point
                     closest_dist = dist
@@ -70,7 +70,7 @@ class Ray:
         for sprite in sprite_list:
             point = self.intersects_polygon(sprite.rect_verts)
             if point is not None:
-                dist = Vector.distance(self.__from, point)
+                dist = Vector.distance(self.__pos, point)
                 if dist < closest_dist or closest is None:
                     closest = point
                     closest_dist = dist
@@ -84,16 +84,16 @@ class Ray:
 
     @property
     def pos(self) -> PositionalVector:
-        return self.__from
+        return self.__pos
 
     @property
     def end(self) -> PositionalVector:
-        return self.__to if self.__intersection is None else self.__intersection
+        return self.__end if self.__intersection is None else self.__intersection
 
     @pos.setter
     def pos(self, pos: PositionalVector) -> None:
-        self.__from = pos
-        self.__to = pos + DirectionalVector(1500, self.__angle)
+        self.__pos = pos
+        self.__end = pos + DirectionalVector(1500, self.__angle)
         
 
 class RaySet:
