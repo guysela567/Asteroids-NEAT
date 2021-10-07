@@ -3,7 +3,7 @@ from utils.constants import Constants
 from utils.sprite import Sprite
 
 import math
-from random import randint, uniform, random
+from random import randint, uniform
 
 
 class Asteroid:
@@ -22,9 +22,6 @@ class Asteroid:
         # Set velocity vector in that angle
         self.__vel = DirectionalVector(
             Constants.ASTEROID_VELOCITY[self.__hits], self.__angle + math.pi)
-
-        # Rotate sprite randomally (90n degrees to maintain hitbox)
-        self.__sprite.angle = 90 * randint(0, 3)
 
         # TODO Add destruction vfx
 
