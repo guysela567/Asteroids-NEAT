@@ -8,7 +8,6 @@ from ai.neural_network import NeuralNetwork
 
 from typing import List
 from random import uniform, choice
-import random
 import math
 
 
@@ -48,8 +47,7 @@ class Model:
         # AI
         asteroid_sprite_list = [a.sprite for a in self.__asteroids]
         vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
-        # print(vision)
-        # self.think(vision)
+        self.think([v / Constants.WINDOW_WIDTH for v in vision])
 
     def handle_collisions(self) -> None:
         # Asteroid with projectile collision
@@ -97,8 +95,7 @@ class Model:
 
     def think(self, inputs) -> int:
         results = self.__brain.predict(inputs)
-        # print(results)
-
+        print(results)
         if results[0] > 0:
             if results[1] > 0:
                 self.__player.start_rotate(1)

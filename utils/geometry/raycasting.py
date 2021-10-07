@@ -10,7 +10,7 @@ class Ray:
     def __init__(self, pos: PositionalVector, angle: float) -> None:
         self.__pos = pos
         self.__angle = angle
-        self.__end = pos + DirectionalVector(1500, angle)
+        self.__dir = DirectionalVector(1, self.__angle)
         self.__intersection = None
 
     def __iter__(self) -> iter:
@@ -23,7 +23,7 @@ class Ray:
         x1, y1 = pos1
         x2, y2 = pos2
         x3, y3 = self.__pos
-        x4, y4 = self.__end
+        x4, y4 = self.__pos + self.__dir
 
         # Calculate denominator
         denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
@@ -88,12 +88,11 @@ class Ray:
 
     @property
     def end(self) -> PositionalVector:
-        return self.__end if self.__intersection is None else self.__intersection
+        return self.__pos + self.__dir if self.__intersection is None else self.__intersection
 
     @pos.setter
     def pos(self, pos: PositionalVector) -> None:
         self.__pos = pos
-        self.__end = pos + DirectionalVector(1500, self.__angle)
         
 
 class RaySet:
