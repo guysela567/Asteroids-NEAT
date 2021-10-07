@@ -95,7 +95,7 @@ class Model:
 
     def think(self, inputs) -> int:
         results = self.__brain.predict(inputs)
-        print(results)
+        # print(results)
         if results[0] > 0:
             if results[1] > 0:
                 self.__player.start_rotate(1)
@@ -141,6 +141,9 @@ class Model:
         self.__asteroids = [self.generate_asteroid()
                             for _ in range(self.__asteroid_amount)]
 
+    def toggle_pause(self) -> None:
+        self.__paused = not self.__paused
+
     @property
     def player(self) -> Player:
         return self.__player
@@ -160,6 +163,3 @@ class Model:
     @property
     def paused(self) -> bool:
         return self.__paused
-
-    def toggle_pause(self) -> None:
-        self.__paused = not self.__paused

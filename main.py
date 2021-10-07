@@ -11,7 +11,7 @@ def main() -> None:
     ''' Main method '''
     # controller = Controller()
     # controller.start()
-    pop = Population(1)
+    pop = Population(10)
     pop.start()
 
 
