@@ -5,6 +5,7 @@ from components.asteroid import Asteroid
 from components.player import Player
 
 from typing import List
+from time import sleep
 
 
 class Controller:

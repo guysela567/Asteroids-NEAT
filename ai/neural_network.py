@@ -1,54 +1,71 @@
 from __future__ import annotations
 
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras import layers, Sequential
-import random
+import math
 
 from typing import List
 
 class NeuralNetwork:
-    def __init__(self, a: int or Sequential, b: List[int], c: int, d: int = None) -> None:
-        if isinstance(a, Sequential):
-            self.__model = a;
-            self.__input_nodes = b;
-            self.__hidden_nodes = c;
-            self.__output_nodes = d;
+    def __init__(self, a: int | NeuralNetwork, b: List[int] = None, c: int = None, d: int = None) -> None:
+        if isinstance(a, NeuralNetwork):
+            # Copy model
+            self.__shape = a.shape
+            self.__weights = a.weights.copy()
+            self.__biases = a.biases.copy()
         else:
-            self.__input_nodes = a;
-            self.__hidden_nodes = b;
-            self.__output_nodes = c;
-            self.__model = self.__create_model()
+            # Create model
+            self.__shape = (a, b, c)
+            
+            self.__weights = [
+                np.random.uniform(-1, 1, size=(self.__shape[1::-1])), # Hidden to input
+                np.random.uniform(-1, 1, size=(self.__shape[:0:-1])), # Output to hidden
+            ]
 
-    def __create_model(self) -> Sequential:
-        return Sequential([
-            layers.Dense(self.__hidden_nodes[0], activation='relu', input_shape=(self.__input_nodes,)),
-            *[layers.Dense(no, activation='relu') for no in self.__hidden_nodes[1:]],
-            layers.Dense(self.__output_nodes),
-        ])
+            self.__biases = [
+                np.random.uniform(-1, 1, size=(self.__shape[1],)), # Hidden biases
+                np.random.uniform(-1, 1, size=(self.__shape[2],)), # Output biases
+            ]
+
+            self.mutate(0.1)
 
     def predict(self, inputs: List[float]) -> List[float]:
-        return self.__model.predict([inputs])[0] # flatten output
+        input = np.array(inputs)
+
+        # Generate hidden output
+        output = self.Tanh(np.dot(self.__weights[0], input) + self.__biases[0])
+
+        # Generate final output
+        output = self.Sigmoid(np.dot(self.__weights[1], output) + self.__biases[1])
+
+        print(output)
+        return output
         
     def copy(self) -> NeuralNetwork:
-        model_copy = self.__create_model()
-        model_copy.set_weights(self.weights)
-        return NeuralNetwork(model_copy, self.__input_nodes, self.__hidden_nodes, self.__output_nodes)
+        return NeuralNetwork(self)
 
     def mutate(self, rate: float) -> None:
-        def mutate_value(val: float, rate: float) -> float:
-            return val + np.random.normal() if random.random() < rate else val
-        
-        self.weights = [mutate_value(arr, rate) for arr in self.weights]
+        mutate_value = lambda val, rate: val + np.random.normal() \
+            if np.random.random() < rate else val
+
+        self.__weights = [mutate_value(arr, rate) for arr in self.__weights]
 
     @property
-    def model(self) -> Sequential:
-        return self.__model
+    def shape(self) -> tuple[int, int, int]:
+        return self.__shape
 
     @property
     def weights(self) -> List[np.ndarray[float]]:
-        return self.__model.get_weights()
+        return self.__weights
 
-    @weights.setter
-    def weights(self, weights: List[np.ndarray[float]]) -> None:
-        self.__model.set_weights(weights)
+    @property
+    def biases(self) -> np.ndarray[float]:
+        return self.__biases
+
+    @property
+    def Tanh(self) -> np.vectorize:
+        return np.vectorize(math.tanh)
+
+    @property
+    def Sigmoid(self) -> np.vectorize:
+        return np.vectorize(lambda x: 1 / (1 + math.exp(-x)))
+    

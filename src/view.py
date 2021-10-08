@@ -19,6 +19,7 @@ from pygame.event import Event
 class View():
     def __init__(self, cnt: Controller = None) -> None:
         self.__controller = Controller() if cnt is None else cnt
+        self.__update_logic = cnt is None
 
         # Graphical setup
         pg.init()
@@ -39,7 +40,8 @@ class View():
     def start(self) -> None:
         while True:
             self.update()
-            self.__controller.update()
+            if self.__update_logic:
+                self.__controller.update()
 
     def update(self) -> None:
         # Handle user input
