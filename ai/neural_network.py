@@ -6,7 +6,7 @@ import math
 from typing import List
 
 class NeuralNetwork:
-    def __init__(self, a: int | NeuralNetwork, b: List[int] = None, c: int = None, d: int = None) -> None:
+    def __init__(self, a: int | NeuralNetwork, b: int = None, c: int = None) -> None:
         if isinstance(a, NeuralNetwork):
             # Copy model
             self.__shape = a.shape
@@ -34,11 +34,8 @@ class NeuralNetwork:
         # Generate hidden output
         output = self.Tanh(np.dot(self.__weights[0], input) + self.__biases[0])
 
-        # Generate final output
-        output = self.Sigmoid(np.dot(self.__weights[1], output) + self.__biases[1])
-
-        print(output)
-        return output
+        # Generate and return final output
+        return self.Sigmoid(np.dot(self.__weights[1], output) + self.__biases[1])
         
     def copy(self) -> NeuralNetwork:
         return NeuralNetwork(self)

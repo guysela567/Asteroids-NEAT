@@ -17,9 +17,8 @@ from pygame.event import Event
 
 
 class View():
-    def __init__(self, cnt: Controller = None) -> None:
-        self.__controller = Controller() if cnt is None else cnt
-        self.__update_logic = cnt is None
+    def __init__(self, controller: Controller) -> None:
+        self.__controller = Controller() if controller is None else controller
 
         # Graphical setup
         pg.init()
@@ -40,14 +39,9 @@ class View():
     def start(self) -> None:
         while True:
             self.update()
-            if self.__update_logic:
-                self.__controller.update()
+            self.__controller.update()
 
-    def update(self) -> None:
-        # Handle user input
-        for event in pg.event.get():
-            self.handle_event(event)
-
+    def draw(self) -> None:
         # Update graphics
         self.draw_background()
         self.draw_sprites(self.__controller.player, self.__controller.asteroids)
@@ -62,6 +56,14 @@ class View():
             self.draw_poly(asteroid.sprite.rect_verts)
 
         self.finish_render()
+
+
+    def update(self) -> None:
+        # Handle user input
+        for event in pg.event.get():
+            self.handle_event(event)
+
+        self.draw()
 
     def handle_event(self, event: Event) -> None:
         if event.type == pg.QUIT:
