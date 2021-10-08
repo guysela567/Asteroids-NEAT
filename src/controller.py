@@ -1,76 +1,60 @@
 from utils.constants import Constants
 from src.model import Model
-from src.view import View
 
-import pygame as pg
-from pygame.event import Event
+from components.asteroid import Asteroid
+from components.player import Player
 
-import random
+from typing import List
+from time import sleep
 
 
 class Controller:
     def __init__(self) -> None:
-        self.__view = View()
         self.__model = Model()
 
-    def start(self):
-        while True:
-            # Handle user input
-            for event in pg.event.get():
-                self.handle_event(event)
+    def update(self) -> None:
+        # Update model
+        if not self.__model.paused:
+            self.__model.update(1 / Constants.FPS)
 
-            # Update model
-            if not self.__model.paused:
-                self.__model.update(1 / Constants.FPS)
+    def toggle_pause(self) -> None:
+        self.__model.toggle_pause()
 
-            # Update view
-            self.__view.draw_background()
-            self.__view.draw_sprites(self.__model.player, self.__model.asteroids)
-            self.__view.draw_score(self.__model.score, self.__model.high_score)
+    def start_boost(self) -> None:
+        self.__model.player.start_boost()
 
-            if self.__model.paused:
-                self.__view.draw_paused()
+    def stop_boost(self) -> None:
+        self.__model.player.stop_boost()
 
-            self.__view.draw_rays(self.__model.player.ray_set)
+    def start_rotate(self, dir: int) -> None:
+        self.__model.player.start_rotate(dir)
 
-            for asteroid in self.__model.asteroids:
-                self.__view.draw_poly(asteroid.sprite.rect_verts)
+    def stop_rotate(self) -> None:
+        self.__model.player.stop_rotate()
+    
+    def shoot(self) -> None:
+        self.__model.player.shoot()
 
-            self.__view.finish_render()
+    @property
+    def model(self) -> Model:
+        return self.__model
+    
+    @property
+    def player(self) -> Player:
+        return self.__model.player
 
+    @property
+    def asteroids(self) -> List[Asteroid]:
+        return self.__model.asteroids
 
+    @property
+    def score(self) -> int:
+        return self.__model.score
 
-    def handle_event(self, event: Event) -> None:
-        if event.type == pg.QUIT:
-            pg.quit()
-            exit()
+    @property
+    def high_score(self) -> int:
+        return self.__model.high_score
 
-        elif event.type == pg.KEYDOWN:
-            self.on_key_press(event.key)
-
-        elif event.type == pg.KEYUP:
-            self.on_key_release(event.key)
-
-    def on_key_press(self, key: int) -> None:
-        if key == pg.K_p:
-            self.__model.toggle_pause()
-
-        elif key == pg.K_UP:
-            self.__model.player.start_boost()
-
-        elif key == pg.K_RIGHT:
-            self.__model.player.start_rotate(1)
-
-        elif key == pg.K_LEFT:
-            self.__model.player.start_rotate(-1)
-
-        elif key == pg.K_SPACE:
-            self.__model.player.shoot()
-
-    def on_key_release(self, key: int) -> None:
-        if key == pg.K_UP:
-            self.__model.player.stop_boost()
-
-        elif key == pg.K_RIGHT and self.__model.player.rotate_dir == 1 \
-                or key == pg.K_LEFT and self.__model.player.rotate_dir == -1:
-            self.__model.player.stop_rotate()
+    @property
+    def paused(self) -> bool:
+        return self.__model.paused

@@ -29,7 +29,7 @@ class Model:
         self.__paused = False
 
         # AI
-        self.__brain = NeuralNetwork(8, [5], 4)
+        self.__brain = NeuralNetwork(8, 5, 4)
 
         # self.__player.start_boost()
 
@@ -95,21 +95,21 @@ class Model:
 
     def think(self, inputs) -> int:
         results = self.__brain.predict(inputs)
-        print(results)
-        if results[0] > 0:
-            if results[1] > 0:
+        # print(results)
+        if results[0] > 0.5:
+            if results[1] > 0.5:
                 self.__player.start_rotate(1)
             else:
                 self.__player.start_rotate(-1)
         else:
             self.__player.stop_rotate()
 
-        if results[2] < 0:
+        if results[2] > 0.5:
             self.__player.start_boost()
         else:
             self.__player.stop_boost()
 
-        if results[3] > 0:
+        if results[3] > 0.5:
             self.__player.shoot()
 
     @staticmethod
@@ -141,6 +141,9 @@ class Model:
         self.__asteroids = [self.generate_asteroid()
                             for _ in range(self.__asteroid_amount)]
 
+    def toggle_pause(self) -> None:
+        self.__paused = not self.__paused
+
     @property
     def player(self) -> Player:
         return self.__player
@@ -160,6 +163,3 @@ class Model:
     @property
     def paused(self) -> bool:
         return self.__paused
-
-    def toggle_pause(self) -> None:
-        self.__paused = not self.__paused
