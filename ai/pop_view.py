@@ -6,7 +6,7 @@ import pygame as pg
 from pygame.event import Event
 
 
-class GeneticView(View):
+class PopulationView(View):
     def __init__(self, population_size) -> None:
         self.__population = Population(population_size)
         super().__init__(self.__population.controllers[0])

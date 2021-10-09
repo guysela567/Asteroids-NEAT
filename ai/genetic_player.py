@@ -16,6 +16,7 @@ class GeneticPlayer:
     def start_controller(self, controller) -> None:
         while True:
             controller.update()
+            controller.think()
             sleep(1 / Constants.FPS)
 
     @property

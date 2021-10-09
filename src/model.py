@@ -29,11 +29,11 @@ class Model:
         self.__paused = False
 
         # AI
-        self.__brain = NeuralNetwork(8, 5, 4)
+        self.__brain = NeuralNetwork(9, 5, 4)
 
         # self.__player.start_boost()
 
-    def update(self, delta_time: float) -> None:
+    def update(self, delta_time: float, ai=False) -> None:
         # Update player
         self.__player.update(delta_time)
 
@@ -43,11 +43,6 @@ class Model:
 
         # Sprite Collisions
         self.handle_collisions()
-
-        # AI
-        asteroid_sprite_list = [a.sprite for a in self.__asteroids]
-        vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
-        self.think([v / Constants.WINDOW_WIDTH for v in vision])
 
     def handle_collisions(self) -> None:
         # Asteroid with projectile collision
@@ -93,21 +88,22 @@ class Model:
             self.__spawn_asteroids()
             self.__score = 0
 
-    def think(self, inputs) -> int:
+    def think(self) -> int:
+        asteroid_sprite_list = [a.sprite for a in self.__asteroids]
+        vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
+
+        angle = self.__player.angle % (math.pi * 2) / (math.pi * 2)
+        inputs = [angle, *(v / Constants.WINDOW_WIDTH for v in vision)]
+
         results = self.__brain.predict(inputs)
-        # print(results)
+        
         if results[0] > 0.5:
-            if results[1] > 0.5:
-                self.__player.start_rotate(1)
-            else:
-                self.__player.start_rotate(-1)
-        else:
-            self.__player.stop_rotate()
+            if results[1] > 0.5: 
+                self.__player.rotate(1)
+            else: self.__player.rotate(-1)
 
         if results[2] > 0.5:
-            self.__player.start_boost()
-        else:
-            self.__player.stop_boost()
+            self.__player.boost()
 
         if results[3] > 0.5:
             self.__player.shoot()

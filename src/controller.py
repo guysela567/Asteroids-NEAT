@@ -35,6 +35,9 @@ class Controller:
     def shoot(self) -> None:
         self.__model.player.shoot()
 
+    def think(self) -> None:
+        self.__model.think()
+
     @property
     def model(self) -> Model:
         return self.__model

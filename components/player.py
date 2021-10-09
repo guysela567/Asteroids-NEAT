@@ -50,7 +50,7 @@ class Player():
 
         # Boost
         if self.__boosting:
-            self.__boost()
+            self.boost()
         else:
             self.__slow_down()
 
@@ -82,6 +82,10 @@ class Player():
     @property
     def projectiles(self) -> Projectile:
         return self.__projectiles
+    
+    @property
+    def angle(self) -> float:
+        return self.__angle
 
     def __update_projectiles(self) -> None:
         for projectile in reversed(self.__projectiles):
@@ -109,7 +113,7 @@ class Player():
         self.__angle += self.__turn_speed * self.__rotate_dir
         self.__sprite.angle = math.degrees(self.__angle) - 90
 
-    def __boost(self) -> None:
+    def boost(self) -> None:
         self.__vel.angle = self.__angle
         self.__vel.lerp_mag(-Constants.PLAYER_BOOST_SPEED,
                             Constants.PLAYER_AIR_FRICTION)
@@ -126,6 +130,10 @@ class Player():
     def start_rotate(self, dir: int) -> None:
         self.__rotating = True
         self.__rotate_dir = dir
+
+    def rotate(self, dir: int) -> None:
+        self.__angle += self.__turn_speed * dir
+        self.__sprite.angle = math.degrees(self.__angle) - 90
 
     def stop_rotate(self) -> None:
         self.__rotating = False
