@@ -29,10 +29,10 @@ class GeneticPlayer:
     @property
     def score(self) -> int:
         ''' Calculate score used to determine player's fitness '''
-        hit_rate = self.__controller.shots_hit / self.__controller.shots_fired \
-            if self.__controller.shots_fired != 0 else 0.5
+        accuracy = self.__controller.shots_hit / self.__controller.shots_fired \
+            if self.__controller.shots_fired != 0 else 0
 
-        return (self.__controller.score + 1) * 10 * self.__controller.lifespan * (hit_rate ** 2)
+        return (self.__controller.score + 1) * 10 * self.__controller.lifespan * (accuracy ** 2)
 
     @property
     def fitness(self) -> float:
