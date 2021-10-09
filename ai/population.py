@@ -41,7 +41,7 @@ class Population:
         r = random()
         while r > 0:
             # reduce by fitness untill value is smaller than zero
-            r -= self.__players[index]
+            r -= self.__players[index].fitness
             index += 1
         # Go back once
         index -= 1
