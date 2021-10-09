@@ -40,7 +40,7 @@ class Controller:
         self.__model.think()
 
     def reset(self) -> None:
-        self.__model.restart()
+        self.__model.reset()
     
     @property
     def player(self) -> Player:
