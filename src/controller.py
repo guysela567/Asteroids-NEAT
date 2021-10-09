@@ -1,3 +1,4 @@
+from ai.neural_network import NeuralNetwork
 from utils.constants import Constants
 from src.model import Model
 
@@ -38,9 +39,8 @@ class Controller:
     def think(self) -> None:
         self.__model.think()
 
-    @property
-    def model(self) -> Model:
-        return self.__model
+    def reset(self) -> None:
+        self.__model.restart()
     
     @property
     def player(self) -> Player:
@@ -61,3 +61,28 @@ class Controller:
     @property
     def paused(self) -> bool:
         return self.__model.paused
+    
+    @property
+    def shots_fired(self) -> float:
+        return self.__model.shots_fired
+    
+    @property
+    def shots_hit(self) -> float:
+        return self.__model.shots_hit
+    
+    @property
+    def lifespan(self) -> int:
+        return self.__model.lifespan
+    
+    @property
+    def dead(self) -> bool:
+        return self.__model.dead
+
+    @property
+    def brain(self) -> NeuralNetwork:
+        return self.__model.brain
+
+    @brain.setter
+    def brain(self, brain: NeuralNetwork) -> None:
+        self.__model.brain = brain
+        

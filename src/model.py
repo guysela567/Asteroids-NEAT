@@ -30,8 +30,10 @@ class Model:
 
         # AI
         self.__brain = NeuralNetwork(9, 5, 4)
-
-        # self.__player.start_boost()
+        self.__shots_fired = 0
+        self.__shots_hit = 0
+        self.__lifespan = 0
+        self.__dead = False
 
     def update(self, delta_time: float, ai=False) -> None:
         # Update player
@@ -44,13 +46,17 @@ class Model:
         # Sprite Collisions
         self.handle_collisions()
 
+        # Add frame to lifespan
+        self.__lifespan += 1
+
     def handle_collisions(self) -> None:
         # Asteroid with projectile collision
         for projectile in reversed(self.__player.projectiles):
             for asteroid in reversed(self.__asteroids):
                 # Check for any projectile with astroid collision
                 if asteroid.sprite.collides(projectile.sprite):
-                    # Play explosion sound
+                    self.__shots_hit += 1
+
                     if asteroid.hits < Constants.ASTEROID_HITS - 1:
                         # Split asteroids into two parts
 
@@ -85,6 +91,7 @@ class Model:
 
         # Asteroid with player collision
         if any(asteroid.sprite.collides(self.__player.sprite) for asteroid in self.__asteroids):
+            self.__dead = True
             self.__spawn_asteroids()
             self.__score = 0
 
@@ -107,6 +114,7 @@ class Model:
 
         if results[3] > 0.5:
             self.__player.shoot()
+            self.__shots_fired += 1
 
     @staticmethod
     def generate_asteroid() -> Asteroid:
@@ -140,6 +148,28 @@ class Model:
     def toggle_pause(self) -> None:
         self.__paused = not self.__paused
 
+    def reset(self) -> None:
+        # Reset player
+        self.__player = Player(Constants.WINDOW_WIDTH * 0.5, Constants.WINDOW_HEIGHT * 0.5)
+
+        # Reset astroids
+        self.__asteroid_amount = 4
+        self.__asteroids = []
+        self.__spawn_asteroids()
+
+        # Reset score system
+        self.__score = 0
+        self.__high_score = 0
+
+        # Reset game logic
+        self.__paused = False
+
+        # Reset genetic information
+        self.__shots_fired = 0
+        self.__shots_hit = 0
+        self.__lifespan = 0
+        self.__dead = False
+
     @property
     def player(self) -> Player:
         return self.__player
@@ -159,3 +189,27 @@ class Model:
     @property
     def paused(self) -> bool:
         return self.__paused
+
+    @property
+    def shots_fired(self) -> int:
+        return self.__shots_fired
+    
+    @property
+    def shots_hit(self) -> int:
+        return self.__shots_hit
+
+    @property
+    def lifespan(self) -> int:
+        return self.__lifespan
+
+    @property
+    def dead(self) -> bool:
+        return self.__dead
+
+    @property
+    def brain(self) -> NeuralNetwork:
+        return self.__brain
+
+    @brain.setter
+    def brain(self, brain: NeuralNetwork) -> None:
+        self.__brain = brain

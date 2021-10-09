@@ -17,7 +17,7 @@ from pygame.event import Event
 
 
 class View():
-    def __init__(self, controller: Controller) -> None:
+    def __init__(self, controller: Controller = None) -> None:
         self.__controller = Controller() if controller is None else controller
 
         # Graphical setup
@@ -162,3 +162,7 @@ class View():
     @controller.setter
     def controller(self, controller: Controller) -> None:
         self.__controller = controller
+
+    @property
+    def ctx(self) -> Context:
+        return self.__ctx
