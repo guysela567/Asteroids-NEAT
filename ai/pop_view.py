@@ -23,7 +23,6 @@ class PopulationView(View):
             if self.controller.dead:
                 self.next_player()
 
-            self.draw_gen_no()
             self.update()
     
     def handle_event(self, event: Event) -> None:
