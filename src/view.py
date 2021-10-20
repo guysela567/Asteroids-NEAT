@@ -55,8 +55,6 @@ class View():
         for asteroid in self.__controller.asteroids:
             self.draw_poly(asteroid.sprite.rect_verts)
 
-        self.finish_render()
-
 
     def update(self) -> None:
         # Handle user input
@@ -64,6 +62,7 @@ class View():
             self.handle_event(event)
 
         self.draw()
+        self.finish_render()
 
     def handle_event(self, event: Event) -> None:
         if event.type == pg.QUIT:

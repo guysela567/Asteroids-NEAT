@@ -112,15 +112,15 @@ class RaySet:
         return any(self.__rays.intersects_polygon(verts))
 
     def intersecting_sprite_dist(self, sprite_list: List[Sprite]) -> List[float]:
-        return [Vector.distance(self.__from, ray.intersect_sprite_list(sprite_list)) for ray in self.__rays]
+        return [Vector.distance(self.__pos, ray.intersect_sprite_list(sprite_list)) for ray in self.__rays]
 
     @property
     def pos(self) -> PositionalVector:
-        return self.__from
+        return self.__pos
 
     @pos.setter
     def pos(self, pos: PositionalVector) -> None:
-        self.__from = pos
+        self.__pos = pos
         
         for ray in self.__rays:
             ray.pos = pos

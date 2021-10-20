@@ -8,7 +8,7 @@ from ai.pop_view import PopulationView
 
 def main() -> None:
     ''' Main method '''
-    game = PopulationView(85)
+    game = PopulationView(50)
     game.start()
 
 

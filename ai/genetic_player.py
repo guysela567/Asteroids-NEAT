@@ -20,7 +20,7 @@ class GeneticPlayer:
 
             controller.update()
             controller.think()
-            sleep(1 / Constants.FPS)
+            sleep(1 / (Constants.FPS * 10))
 
     @property
     def controller(self) -> Controller:
@@ -29,10 +29,11 @@ class GeneticPlayer:
     @property
     def score(self) -> int:
         ''' Calculate score used to determine player's fitness '''
-        accuracy = self.__controller.shots_hit / self.__controller.shots_fired \
-            if self.__controller.shots_fired != 0 else 0
 
-        return (self.__controller.score + 1) * 10 * self.__controller.lifespan * (accuracy ** 2)
+        accuracy = self.__controller.shots_hit / self.__controller.shots_fired \
+            if self.__controller.shots_fired != 0 else 1
+
+        return (self.__controller.score + 1) * 10 * self.__controller.lifespan * ((accuracy + 1) ** 2)
 
     @property
     def fitness(self) -> float:
