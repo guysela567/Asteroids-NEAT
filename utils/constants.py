@@ -23,7 +23,7 @@ class Constants:
     # Projectile config
     PROJECTILE_SPRITE_SCALE = .25
     PROJECTILE_SPEED = 15
-    SHOOT_COOLDOWN = .25  # Seconds
+    SHOOT_COOLDOWN = 2  # Seconds
 
     # Score
     SCORE_SYSTEM = (20, 50, 100)

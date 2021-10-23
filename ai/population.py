@@ -1,4 +1,4 @@
-from ai.genetic_player import GeneticPlayer
+from ai.simulation import Simulation
 from ai.neural_network import NeuralNetwork
 from src.controller import Controller
 
@@ -9,8 +9,8 @@ from random import random
 class Population:
     def __init__(self, size: int) -> None:
         self.__size = size
-        self.__players = [GeneticPlayer() for _ in range(self.__size)]
-        self.__gen_no = 0
+        self.__players = [Simulation() for _ in range(self.__size)]
+        self.__gen_no = 1
 
     def start(self) -> None:
         for player in self.__players:
@@ -47,12 +47,12 @@ class Population:
         index -= 1
 
         chosen = self.controllers[index].brain.copy()
-        chosen.mutate(0.1)
+        chosen.mutate(0.01)
         return chosen
 
 
     @property
-    def players(self) -> List[GeneticPlayer]:
+    def players(self) -> List[Simulation]:
         return self.__players
     
     @property
