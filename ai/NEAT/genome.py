@@ -179,7 +179,7 @@ class Genome:
         '''
 
         is_new = True
-        innovation_number = Innovation.NEXT_INNOVATION_NUMBER
+        innovation_number = Innovation.next_innovation_number
 
         for history in innovation_history:
             if history.matches(self, from_node, to_node):
@@ -193,7 +193,7 @@ class Genome:
             # If it is a new mutation, add it to the innovation history list
             prior_innovations = [gene.innovation_number for gene in self.__genes]
             innovation_history.append(ConnectionHistory(from_node.number, to_node, innovation_number, prior_innovations))
-            Innovation.NEXT_INNOVATION_NUMBER += 1
+            Innovation.next_innovation_number += 1
 
         return innovation_number
     
@@ -241,6 +241,76 @@ class Genome:
         # 1% chance of adding a new node
         if random.random() < 0.01:
             self.add_node(innovation_history)
+
+    def matching_gene_index(self, innovation_number: int) -> int:
+        '''
+        Returns index of gene if the given innovation number.
+        Returns -1 if no gene was found.
+        '''
+
+        for i, gene in enumerate(self.__genes):
+            if gene.innovation_number == innovation_number:
+                return i
+        return -1
+
+    def crossover(self, parent2: Genome) -> Genome:
+        '''
+        Applies crossover of this genome as first parent and given genome as second parent,
+        when this genome is the fittest. This will combine the two genomes to one
+        genome inheriting from both of them, using the connections' innovation numbers.
+        Genes that don't match are called disjoint and access genes,
+        These genes are inherited to the child from the fittest parent ie. this genome.
+        '''
+
+        # Copy attributes to child
+        child = Genome(self.__inputs, self.__outputs, crossover=True)
+        child.layers = self.__layers
+        child.next_node = self.__next_node
+        child.bias_node = self.bias_node
+
+        # Start setting up child's genes
+        child_genes: list[ConnectionGene] = []
+        genes_enabled: list[bool] = [] # For each genes, set if it's enabled
+
+        for gene in self.__genes:
+            set_enabled = True # node is enabled by default
+            # Get matching gene with the same innovation number
+            second_parent_gene = parent2.matching_gene_index(gene.innovation_number)
+
+            if second_parent_gene != -1: # There is a match
+
+                # if at least one of the parents doesnt have the gene enabled
+                # then disable child's gene 75% of the time
+                if not gene.enabled or not parent2.genes[second_parent_gene].enabled:
+                    if random.random() < 0.75:
+                        set_enabled = False
+
+                if random.random() < 0.5: # Get gene from this genome 50% of the time
+                    child_genes.append(gene)
+                else: # Else get gene from second parent
+                    child_genes.append(parent2.genes[second_parent_gene])
+
+            else: # Second parent does not have a matching gene
+                child_genes.append(gene) # Add disjoint or access gene of the fittest
+
+            # Add is_enabled to enabled genes list
+            genes_enabled.append(set_enabled) 
+
+        # Copy nodes from this genome to child
+        # The child's nodes list is the same as this genome's since it's the fittest
+        for node in self.__nodes:
+            child.nodes.append(node.clone())
+
+        # Copy connections to child's genes
+        for i, gene in enumerate(child_genes):
+            from_node = child.get_node(gene.from_node.number)
+            to_node = child.get_node(gene.to_node.number)
+            child.genes.append(gene.clone(from_node, to_node))
+            child.genes[i] = genes_enabled[i] # disable gene if needed
+
+        # Finally connect child's nodes
+        child.connect_nodes()
+        return child
     
     def clone(self) -> Genome:
         ''' Returns a copy of this genome. '''

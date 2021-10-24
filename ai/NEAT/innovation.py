@@ -1,2 +1,2 @@
 class Innovation:
-    NEXT_INNOVATION_NUMBER = 1
+    next_innovation_number = 1
