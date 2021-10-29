@@ -89,6 +89,9 @@ class Population:
         # due to flooring the number of children for each specie
         if len(children) < len(self.__players):
             children.append(self.__players[0].clone()) # Clone first player of last generation
+            # Due to species list being sorted from best to worst,
+            # for each generation excluding the first one, the first 
+            # player in the list will always be from the previous best species
 
         # If number of children is still not enough
         # then add a child of best specie untill the number of children gets big enough
@@ -126,6 +129,7 @@ class Population:
             # If none were similar enough or species list is empty
             if not species_found: # Create a new species based on this player
                 self.__species.add(sim)
+
 
     def next_gen(self) -> None:
         ''' Deprecated. '''
