@@ -55,7 +55,7 @@ class ConnectionGene:
 
     @property
     def enabled(self) -> bool:
-        return self.enabled
+        return self.__enabled
 
     @property
     def innovation_number(self) -> int:
