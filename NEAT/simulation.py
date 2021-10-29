@@ -1,36 +1,25 @@
 from __future__ import annotations
-from utils.constants import Constants
+
 from src.controller import Controller
 from NEAT.genome import Genome
-
-from _thread import start_new_thread
-
-import time
 
 
 class Simulation:
     def __init__(self) -> None:
-       self.__controller = Controller(ai=True)
-       self.__fitness = 0
+        ''' Simulates a thinking AI player. '''
 
-    def start(self) -> None:
-        start_new_thread(self.start_controller, (self.__controller,))
+        self.__controller = Controller(ai=True)
+        self.__fitness = 0
 
-    def start_controller(self, controller: Controller) -> None:
-        while True:
-            if controller.dead: 
-                return
+    def update(self, iterations: int = 1) -> None:
+        ''' Updates the simulation. '''
 
-            self.__controller.update()
-            self.__controller.think()
-            time.sleep(1 / (Constants.FPS * 10))
-
-    def update(self) -> None:
+        for _ in range(iterations):
             self.__controller.update()
             self.__controller.think()
 
     def calculation_fitness(self) -> None:
-        ''' Calculate score used to determine player's fitness '''
+        ''' Calculates score used to determine player's fitness '''
 
         accuracy = self.__controller.shots_hit / self.__controller.shots_fired \
             if self.__controller.shots_fired != 0 else -.5
@@ -67,6 +56,10 @@ class Simulation:
     @property
     def brain(self) -> Genome:
         return self.__controller.brain
+    
+    @property
+    def dead(self) -> bool:
+        return self.__controller.dead
 
     @fitness.setter
     def fitness(self, fitness: float) -> None:

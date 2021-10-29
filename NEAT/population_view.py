@@ -14,8 +14,8 @@ class PopulationView(View):
         self.__index = 0
 
     def start(self) -> None:
-        self.__population.start()
         while True:
+            self.__population.update(iterations=10)
             if self.__population.all_dead:
                 self.__population.next_gen()
                 self.controller = self.__population.controllers[0]

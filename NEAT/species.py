@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from simulation import Simulation
+from NEAT.simulation import Simulation
 from NEAT.genome import Genome
 from NEAT.connection_history import ConnectionHistory
 

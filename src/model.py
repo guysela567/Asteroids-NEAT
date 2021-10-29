@@ -33,7 +33,6 @@ class Model:
         self.__ai = ai
         if self.__ai:
             self.__brain = Genome(9, 4)
-            self.__brain.generate_phenotype()
             self.__shots_fired = 0
             self.__shots_hit = 0
             self.__lifespan = 0

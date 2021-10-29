@@ -158,10 +158,14 @@ class View():
     def controller(self) -> Controller:
         return self.__controller
 
-    @controller.setter
-    def controller(self, controller: Controller) -> None:
-        self.__controller = controller
-
     @property
     def ctx(self) -> Context:
         return self.__ctx
+    
+    @property
+    def clock(self) -> pg.time.Clock:
+        return self.__clock
+
+    @controller.setter
+    def controller(self, controller: Controller) -> None:
+        self.__controller = controller

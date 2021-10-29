@@ -18,17 +18,17 @@ class Node:
     def engage(self) -> None:
         ''' Sends its output to the inputs of the nodes its connected to. '''
 
-        if self.__layer == 0: # No activation for inputs and bias
-            self.__output_value = self.sigmoid(self.__input_sum)
+        if self.__layer != 0: # No activation for inputs and bias
+            self.__output_value = Node.sigmoid(self.__input_sum)
             
         # For each connection, add the weighted output to the sum of inputs of the connected node
         for connection in self.__output_connections:
             if connection.enabled:
                 connection.to_node.input_sum += connection.weight * self.__output_value
 
-    def sigmoid(self, x: float) -> float:
+    @staticmethod
+    def sigmoid(x: float) -> float:
         ''' Sigmoid activation function.  '''
-
         return 1 / (1 + math.exp(-4.9 * x))
 
     def is_connected_to(self, node: Node) -> bool:

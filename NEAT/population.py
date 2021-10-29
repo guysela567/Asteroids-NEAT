@@ -1,23 +1,56 @@
+from __future__ import annotations
+
 from src.controller import Controller
 
 from NEAT.simulation import Simulation
 from NEAT.genome import Genome
-
-from typing import List
-from random import random
+from NEAT.connection_history import ConnectionHistory
+from NEAT.species import Species
 
 
 class Population:
     def __init__(self, size: int) -> None:
+        '''
+        The population of all thinking beings.
+        Applies the principles of natural selection for each simulation.
+        '''
+
         self.__size = size
-        self.__players = [Simulation() for _ in range(self.__size)]
         self.__generation = 1
 
-    def start(self) -> None:
-        for player in self.__players:
-            player.start()
+        # TODO: ADD:
+        # self.__best_player: Simulation = None
+        # self.__best_score = 0
+        # self.__gen_players: list[Simulation] = []
+        # self.__mass_extinction_event = False
+        
+        self.species: list[Species] = []
+
+        # Record of all mutations in this population
+        self.__innovation_history: list[ConnectionHistory] = []
+
+        # Populate with simulations
+        self.__players = [Simulation() for _ in range(self.__size)]
+        for sim in self.__players:
+            sim.brain.mutate(self.__innovation_history)
+            sim.brain.generate_phenotype()
+
+    def update(self, iterations: int = 1) -> None:
+        ''' Updates the population. '''
+
+        self.update_alive(iterations=iterations)
+
+    def update_alive(self, iterations: int = 1) -> None:
+        ''' Updates all alive simulations. '''
+
+        for sim in self.__players:
+            if not sim.dead:
+                sim.update(iterations=iterations)
+
 
     def next_gen(self) -> None:
+        ''' Deprecated. '''
+
         self.__generation += 1
         self.calculate_fitness()
         
@@ -25,37 +58,12 @@ class Population:
             player.controller.brain = self.pool_selection()
             player.controller.reset()
 
-    def calculate_fitness(self) -> None:
-        score_sum = sum(p.score for p in self.__players)
-
-        for player in self.__players:
-            player.fitness = player.score / score_sum
-
-    def pool_selection(self) -> Genome:
-        # TODO: Add crossover
-        
-        index = 0
-        # Pick a random number between 0 and 1
-        # This allows weaker players to continue to next generation
-        # While still letting the majority of the strong players in
-        r = random()
-        while r > 0:
-            # reduce by fitness untill value is smaller than zero
-            r -= self.__players[index].fitness
-            index += 1
-        # Go back once
-        index -= 1
-
-        chosen = self.controllers[index].brain.clone()
-        # chosen.mutate(0.01)
-        return chosen
-
     @property
-    def players(self) -> List[Simulation]:
+    def players(self) -> list[Simulation]:
         return self.__players
     
     @property
-    def controllers(self) -> List[Controller]:
+    def controllers(self) -> list[Controller]:
         return [p.controller for p in self.__players]
 
     @property
