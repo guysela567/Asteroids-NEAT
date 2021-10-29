@@ -8,6 +8,7 @@ from NEAT.population_view import PopulationView
 
 def main() -> None:
     ''' Main method '''
+
     game = PopulationView(50)
     game.start()
 

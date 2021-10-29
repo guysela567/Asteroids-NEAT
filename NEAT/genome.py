@@ -83,7 +83,6 @@ class Genome:
 
         # Save outputs in a list
         outputs = []
-        print(self.__outputs)
         for i in range(self.__outputs):
             outputs.append(self.__nodes[self.__inputs + i].output_value)
 

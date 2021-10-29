@@ -29,6 +29,25 @@ class Simulation:
             self.__controller.update()
             self.__controller.think()
 
+    def calculation_fitness(self) -> None:
+        ''' Calculate score used to determine player's fitness '''
+
+        accuracy = self.__controller.shots_hit / self.__controller.shots_fired \
+            if self.__controller.shots_fired != 0 else -.5
+
+        self.__fitness = ((self.__controller.score + 1) * 10 + self.__controller.lifespan * 5) * ((accuracy + 1) ** 2)
+
+    def crossover(self, parent2: Simulation) -> Simulation:
+        '''
+        Crossovers this simulation with another parent and returns the child,
+        while This parent is the fittest.
+        '''
+
+        child = Simulation()
+        child.brain = self.brain.crossover(parent2.brain)
+        child.brain.generate_phenotype()
+        return child
+
     def clone(self) -> Simulation:
         ''' Returns a copy of this simulation with the same genome brain. '''
 
@@ -40,15 +59,6 @@ class Simulation:
     @property
     def controller(self) -> Controller:
         return self.__controller
-
-    @property
-    def score(self) -> int:
-        ''' Calculate score used to determine player's fitness '''
-
-        accuracy = self.__controller.shots_hit / self.__controller.shots_fired \
-            if self.__controller.shots_fired != 0 else -.5
-
-        return ((self.__controller.score + 1) * 10 + self.__controller.lifespan * 5) * ((accuracy + 1) ** 2)
     
     @property
     def fitness(self) -> float:

@@ -173,3 +173,7 @@ class Species:
 
         for sim in self.__players:
             sim.fitness /= len(self.__players)
+
+    @property
+    def avg_fitness(self) -> float:
+        return self.__avg_fitness
