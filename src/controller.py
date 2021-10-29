@@ -1,6 +1,7 @@
-from ai.neural_network import NeuralNetwork
 from utils.constants import Constants
 from src.model import Model
+
+from NEAT.genome import Genome
 
 from components.asteroid import Asteroid
 from components.player import Player
@@ -10,8 +11,8 @@ from time import sleep
 
 
 class Controller:
-    def __init__(self) -> None:
-        self.__model = Model()
+    def __init__(self, ai: bool = False) -> None:
+        self.__model = Model(ai=ai)
 
     def update(self) -> None:
         # Update model
@@ -79,10 +80,10 @@ class Controller:
         return self.__model.dead
 
     @property
-    def brain(self) -> NeuralNetwork:
+    def brain(self) -> Genome:
         return self.__model.brain
 
     @brain.setter
-    def brain(self, brain: NeuralNetwork) -> None:
+    def brain(self, brain: Genome) -> None:
         self.__model.brain = brain
         

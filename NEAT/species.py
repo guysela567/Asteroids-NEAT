@@ -1,7 +1,11 @@
-from ai.simulation import Simulation
-from ai.NEAT.genome import Genome
+from __future__ import annotations
+
+from simulation import Simulation
+from NEAT.genome import Genome
+from NEAT.connection_history import ConnectionHistory
 
 import math
+import random
 
 
 class Species:
@@ -26,8 +30,11 @@ class Species:
         self.__WEIGHT_DIFFERENCE_COEFFICIENT = 0.5
         self.__COMPATABILITY_THREASHOLD = 3
 
+    def __contains__(self, genome: Genome) -> bool:
+        return self.same_species(genome)
+
     def same_species(self, genome: Genome) -> bool:
-        ''' Returns whether the given genome belonds to this species. '''
+        ''' Returns whether the given genome belongs to this species. '''
 
         excess_and_disjoint = Species.get_excess_disjoint(genome, self.__rep)
         avg_weight_diff = Species.get_avg_weight_diff(genome, self.__rep)
@@ -85,12 +92,13 @@ class Species:
     def sort_species(self) -> None:
         ''' Sorts the species' simulations by fitness in descending order. '''
 
-        self.__players.sort(key=lambda sim: sim.fitness, reverse=True) # Sort list
-
         # No players
         if len(self.__players) == 0:
             self.__staleness = 200
             return
+
+        # Sort list by fitness
+        self.__players.sort(key=lambda sim: sim.fitness, reverse=True)
         
         # New best was found
         best = self.__players[0]
@@ -106,3 +114,62 @@ class Species:
 
         self.__avg_fitness = sum(sim.fitness for sim in self.__players) / len(self.__players)
         
+    def get_child(self, innovation_history: list[ConnectionHistory]) -> Simulation:
+        ''' Gets a child from two players in this species. '''
+
+        baby = None
+        # 25% chance to skip crossover
+        if random.random() < 0.25:
+            baby = self.select_player().clone()
+        else: # Do crossover of two random parents
+            parent1 = self.select_player()
+            parent2 = self.select_player()
+
+            # Crossover the best parent with the second parent
+            baby = parent1.crossover(parent2) \
+                if parent1.fitness > parent2.fitness \
+                    else parent2.crossover(parent1)
+
+        # Mutate child's brain
+        baby.brain.mutate(innovation_history)
+        return baby
+    
+    def select_player(self) -> Simulation:
+        '''
+        Gets a player based on its fitness.
+        Better players will have a higher chance of getting picked,
+        while worse players will still have a small chance of being picked.
+        '''
+
+        # Get a number between 0 and fitness sum of all players
+        fitness_sum = sum(sim.fitness for sim in self.__players)
+        random_value = random.uniform(0, fitness_sum)
+
+        # The closer the accumalating sum gets to the random value,
+        # the easier for worse players to get chosen
+        accumalating_sum = 0
+        for sim in self.__players:
+            accumalating_sum += sim.fitness
+            if accumalating_sum > random_value:
+                return sim
+
+        return self.__players[0] # If by any chance this didn't work
+
+    def cull(self):
+        '''
+        As a part of the natural selection process, 
+        this method kills the bottom half of the species' players
+        That didn't make it to the next generation.
+        '''
+
+        if len(self.__players > 2): # If length is greater than or equals to 2 keep all players
+            self.__players = self.__players[len(self.__players) // 2:]
+
+    def apply_fitness_sharing(self) -> None:
+        '''
+        In order to protect innovative and unique players, the fitness of each player
+        is divided by the number of the players in its species.
+        '''
+
+        for sim in self.__players:
+            sim.fitness /= len(self.__players)

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from ai.NEAT.connection_history import ConnectionHistory
-from ai.NEAT.connection_gene import ConnectionGene
-from ai.NEAT.node import Node
-from ai.NEAT.innovation import Innovation
+from NEAT.connection_history import ConnectionHistory
+from NEAT.connection_gene import ConnectionGene
+from NEAT.node import Node
+from NEAT.innovation import Innovation
 
 import random
 
@@ -37,6 +37,12 @@ class Genome:
         self.__bias_node = self.__next_node
         self.__nodes.append(Node(self.__bias_node))
         self.__next_node += 1
+
+        # Add output nodes
+        for i in range(self.__outputs):
+            self.__nodes.append(Node(i + self.__inputs))
+            self.__nodes[i + self.__inputs].layer = 1
+            self.__next_node += 1
 
     def get_node(self, number: int) -> Node:
         ''' Returns the node with a matching number. '''
@@ -77,6 +83,7 @@ class Genome:
 
         # Save outputs in a list
         outputs = []
+        print(self.__outputs)
         for i in range(self.__outputs):
             outputs.append(self.__nodes[self.__inputs + i].output_value)
 
@@ -96,7 +103,7 @@ class Genome:
         self.__phenotype = []
 
         # For each layer add its nodes
-        for layer in self.__layers:
+        for layer in range(self.__layers):
             for node in self.__nodes:
                 if (node.layer == layer):
                     self.__phenotype.append(node)

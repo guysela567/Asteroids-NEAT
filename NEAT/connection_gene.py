@@ -1,6 +1,8 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 
-from ai.NEAT.node import Node
+if TYPE_CHECKING:
+    from NEAT.node import Node
 
 import random
 

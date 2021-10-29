@@ -1,6 +1,6 @@
 from utils.constants import Constants
 from src.view import View
-from ai.population import Population
+from NEAT.population import Population
 
 import pygame as pg
 from pygame.event import Event
@@ -49,7 +49,7 @@ class PopulationView(View):
             self.draw_poly(asteroid.sprite.rect_verts)
         
         self.ctx.fill(255)
-        self.ctx.text(f'Generation No. {self.__population.gen_no}', 
+        self.ctx.text(f'Generation No. {self.__population.generation}', 
                       Constants.WINDOW_WIDTH - 150, 50, center=True)
         self.ctx.text(f'Player No. {self.__index}', 
                       Constants.WINDOW_WIDTH - 150, 100, center=True)

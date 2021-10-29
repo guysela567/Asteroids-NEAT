@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from utils.constants import Constants
 from utils.sprite import Sprite
 from utils.geometry.raycasting import RaySet
@@ -7,8 +9,6 @@ from components.player import Player
 from components.asteroid import Asteroid
 
 from src.controller import Controller
-
-from typing import List
 
 from random import uniform
 
@@ -111,7 +111,7 @@ class View():
         pg.display.flip()
         self.__clock.tick(Constants.FPS)
 
-    def draw_sprites(self, player: Player, asteroids: List[Asteroid]) -> None:
+    def draw_sprites(self, player: Player, asteroids: list[Asteroid]) -> None:
         self.draw_sprite(player.sprite)  # Draw player
 
         # Draw asteroids
@@ -147,7 +147,7 @@ class View():
         for ray in ray_set:
             self.__ctx.line(*ray, 5)
 
-    def draw_poly(self, verts: List[Sprite]) -> None:
+    def draw_poly(self, verts: list[Sprite]) -> None:
         self.__ctx.fill(0, 255, 0)
         for i in range(len(verts)):
             pos1 = verts[i]

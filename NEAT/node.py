@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ai.NEAT.connection_gene import ConnectionGene
+from NEAT.connection_gene import ConnectionGene
 
 import math
 

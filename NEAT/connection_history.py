@@ -1,7 +1,10 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 
-from ai.NEAT.genome import Genome
-from ai.NEAT.node import Node
+if TYPE_CHECKING:
+    from NEAT.genome import Genome
+    
+from NEAT.node import Node
 
 
 class ConnectionHistory:
