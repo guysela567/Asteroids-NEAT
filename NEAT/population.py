@@ -3,9 +3,10 @@ from __future__ import annotations
 from src.controller import Controller
 
 from NEAT.simulation import Simulation
-from NEAT.genome import Genome
 from NEAT.connection_history import ConnectionHistory
 from NEAT.species import Species
+
+import math
 
 
 class Population:
@@ -18,13 +19,13 @@ class Population:
         self.__size = size
         self.__generation = 1
 
-        # TODO: ADD:
+        # TODO: ADD the following features:
         # self.__best_player: Simulation = None
         # self.__best_score = 0
         # self.__gen_players: list[Simulation] = []
         # self.__mass_extinction_event = False
         
-        self.species: list[Species] = []
+        self.__species: list[Species] = []
 
         # Record of all mutations in this population
         self.__innovation_history: list[ConnectionHistory] = []
@@ -47,6 +48,84 @@ class Population:
             if not sim.dead:
                 sim.update(iterations=iterations)
 
+    def done(self) -> None:
+        ''' Returns whether all player simulations are dead. '''
+
+        for sim in self.__players:
+            if not sim.dead:
+                return False
+        return True
+
+    def natural_selection(self) -> None:
+        '''
+        Simulates nature's natural selection process,
+        called at the end of each generation.
+        '''
+
+        self.speciate() # Seperate into species
+        self.calculate_fitness() # Calculate fitness for each simulation
+        self.sort_species() # Sort from best to worst, based on fitness
+        self.cull_species() # Kill genomes that have not survived
+        self.kill_stale_species() # Kill species which have not improved for a while
+        self.kll_bad_species() # Kill species which cannot reproduce
+        
+        print(f'new generation: {self.__generation}')
+        print(f'number of muatations: {len(self.__innovation_history)}')
+        print(f'number of species: {len(self.__species)}')
+        print('------------------------------------------------------')
+
+        # Repopulate with new simulations
+        avg_sum = self.get_avg_fitness_sum()
+        children: list[Simulation] = []
+        for s in self.__species:
+            # Clone the champion without mutations
+            children.append(s.champion.clone())
+            # -1 since champion was already added
+            children_number = math.floor((s.avg_fitness / avg_sum) * len(self.__players)) - 1
+            for _ in range(children_number): # Add children
+                children.append(s.get_child(self.__innovation_history))
+        
+        # Sometimes resulted children amount will not be enough
+        # due to flooring the number of children for each specie
+        if len(children) < len(self.__players):
+            children.append(self.__players[0].clone()) # Clone first player of last generation
+
+        # If number of children is still not enough
+        # then add a child of best specie untill the number of children gets big enough
+        while len(children) < len(self.__players):
+            children.append(self.__species[0].get_child(self.__innovation_history))
+
+        # Copy children to new players
+        self.__players = children.copy()
+        for sim in self.__players:
+            sim.brain.generate_phenotype() # Generate neural network for each child
+
+        self.__generation += 1
+        
+    def speciate(self) -> None:
+        '''
+        Seperates the population's players into species based on their similarity 
+        to the leaders of each species in the previous generation.
+        '''
+
+        # Empty all species
+        for s in self.__species:
+            s.players = []
+        
+        # Iterate through each simulation
+        for sim in self.__players:
+            species_found = False
+
+            # Check for each species if simulation fits
+            for s in self.__species:
+                if sim.brain in s:
+                    s.add_to_species(sim)
+                    species_found = True
+                    break
+            
+            # If none were similar enough or species list is empty
+            if not species_found: # Create a new species based on this player
+                self.__species.add(sim)
 
     def next_gen(self) -> None:
         ''' Deprecated. '''

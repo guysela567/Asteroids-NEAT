@@ -24,6 +24,7 @@ class Species:
         self.__players.append(sim)
         self.__best_fitness = sim.fitness # Only genome so it's the best
         self.__rep = sim.brain.clone() # Best player's brain to compare new genomes to
+        self.__champion = sim.clone()
 
         # Compatability
         self.__EXCESS_COEFFICIENT = 1
@@ -105,6 +106,7 @@ class Species:
         if best.fitness > self.__best_fitness:
             self.__best_fitness = best.fitness
             self.__rep = best.brain.clone()
+            self.__champion = best.clone()
             self.__staleness = 0
         else: # No improvements
             self.__staleness += 1
@@ -177,3 +179,15 @@ class Species:
     @property
     def avg_fitness(self) -> float:
         return self.__avg_fitness
+    
+    @property
+    def champion(self) -> Simulation:
+        return self.__champion
+    
+    @property
+    def players(self) -> list[Simulation]:
+        return self.__players
+
+    @players.setter
+    def players(self, players: list[Simulation]) -> None:
+        self.__players = players
