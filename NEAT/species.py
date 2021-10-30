@@ -42,7 +42,7 @@ class Species:
 
         # Normalizes the delta function for large genomes
         normalizer = len(genome.genes) - 20
-        if normalizer > 1: # Constrain to 1
+        if normalizer < 1: # Must be bigger than or equal to 1
             normalizer = 1
 
         # The delta function itself
