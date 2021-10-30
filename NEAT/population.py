@@ -66,7 +66,7 @@ class Population:
         self.calculate_fitness() # Calculate fitness for each simulation
         self.sort_species() # Sort from best to worst, based on fitness
         self.cull_species() # Kill genomes that have not survived
-        self.kill_stale_species() # Kill species which have not improved for a while
+        self.kill_stale_species(15) # Kill species which have not improved for a while
         self.kll_bad_species() # Kill species which cannot reproduce
         
         print(f'new generation: {self.__generation}')
@@ -122,24 +122,74 @@ class Population:
             # Check for each species if simulation fits
             for s in self.__species:
                 if sim.brain in s:
-                    s.add_to_species(sim)
+                    s.add(sim)
                     species_found = True
                     break
             
             # If none were similar enough or species list is empty
-            if not species_found: # Create a new species based on this player
-                self.__species.add(sim)
-
-
-    def next_gen(self) -> None:
-        ''' Deprecated. '''
-
-        self.__generation += 1
-        self.calculate_fitness()
+            # then create a new species based on this player
+            if not species_found:
+                self.__species.append(Species(sim))
+            
+    def calculate_fitness(self) -> None:
+        ''' Calculates the fitness of all of the simulations. '''
         
-        for player in self.__players:
-            player.controller.brain = self.pool_selection()
-            player.controller.reset()
+        for sim in self.__players:
+            sim.calculate_fitness()
+
+    def sort_species(self) -> None:
+        '''
+        Sorts the players within each species 
+        and sorts the species based their fitness,
+        from the highest to the lowest
+        '''
+
+        # Sort players in each species
+        for s in self.__species:
+            s.sort_species()
+
+        # Sort species list
+        self.__species.sort(key=lambda s: s.best_fitness, reverse=True)
+
+    def kill_stale_species(self, generations: float) -> None:
+        '''
+        Kills all species which have not seen an improvement 
+        in the past given generations amount.
+        '''
+
+        # Start from index 2 in order to protect the two best species
+        # while also promoting innovation by having multiple species
+        for i in range(2, len(self.__species)):
+            if self.__species[i].staleness >= generations:
+                del self.__species[i]
+                # Go one back since the species in the list 
+                # have shifted backwards due to removing one spcies
+                i -= 1
+    
+    def kill_bad_species(self) -> None:
+        ''' Removes the species which cannot reproduce. '''
+
+        avg_sum = self.get_avg_fitness_sum()
+
+        # Skip best species
+        for i in range(1, len(self.__species)):
+            # Compare this species with the rest of the species
+            if (self.__species[i].avg_fitness / avg_sum) * len(self.__players) < 1:
+                # Kill it if it far worse than the rest
+                del self.__species[i]
+                # Go one back since the species in the list 
+                # have shifted backwards due to removing one spcies
+                i -= 1
+
+    def cull_species(self) -> None:
+        ''' Kills the bottom half of simulations for each species '''
+
+        for s in self.__species:
+            s.cull()
+            # Apply fitness sharing and set average fitness 
+            # for the updated amount of simulations
+            s.apply_fitness_sharing()
+            s.set_avg_fitness()
 
     @property
     def players(self) -> list[Simulation]:

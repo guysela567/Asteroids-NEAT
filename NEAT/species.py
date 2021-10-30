@@ -51,7 +51,9 @@ class Species:
             
         return self.__COMPATABILITY_THREASHOLD > compatability
 
-    def add_to_species(self, sim: Simulation) -> None:
+    def add(self, sim: Simulation) -> None:
+        ''' Ads the given simulation to the species. '''
+
         self.__players.append(sim)
 
     @staticmethod
@@ -187,6 +189,14 @@ class Species:
     @property
     def players(self) -> list[Simulation]:
         return self.__players
+
+    @property
+    def best_fitness(self) -> float:
+        return self.__best_fitness
+
+    @property
+    def staleness(self) -> int:
+        return self.__staleness
 
     @players.setter
     def players(self, players: list[Simulation]) -> None:

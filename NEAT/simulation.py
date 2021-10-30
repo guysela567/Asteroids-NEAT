@@ -18,7 +18,7 @@ class Simulation:
             self.__controller.update()
             self.__controller.think()
 
-    def calculation_fitness(self) -> None:
+    def calculate_fitness(self) -> None:
         ''' Calculates score used to determine player's fitness '''
 
         accuracy = self.__controller.shots_hit / self.__controller.shots_fired \
