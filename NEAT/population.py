@@ -159,11 +159,12 @@ class Population:
         # Start from index 2 in order to protect the two best species
         # while also promoting innovation by having multiple species
         for i in range(2, len(self.__species)):
-            if self.__species[i].staleness >= generations:
-                del self.__species[i]
-                # Go one back since the species in the list 
-                # have shifted backwards due to removing one spcies
-                i -= 1
+            if i < len(self.__species): # Iteration on changing size
+                if self.__species[i].staleness >= generations:
+                    del self.__species[i]
+                    # Go one back since the species in the list 
+                    # have shifted backwards due to removing one spcies
+                    i -= 1
     
     def kill_bad_species(self) -> None:
         ''' Removes the species which cannot reproduce. '''
@@ -172,13 +173,14 @@ class Population:
 
         # Skip best species
         for i in range(1, len(self.__species)):
-            # Compare this species with the rest of the species
-            if (self.__species[i].avg_fitness / avg_sum) * len(self.__players) < 1:
-                # Kill it if it far worse than the rest
-                del self.__species[i]
-                # Go one back since the species in the list 
-                # have shifted backwards due to removing one spcies
-                i -= 1
+            if i < len(self.__species): # Iteration on changing size
+                # Compare this species with the rest of the species
+                if (self.__species[i].avg_fitness / avg_sum) * len(self.__players) < 1:
+                    # Kill it if it far worse than the rest
+                    del self.__species[i]
+                    # Go one back since the species in the list 
+                    # have shifted backwards due to removing one species
+                    i -= 1
 
     def cull_species(self) -> None:
         ''' Kills the bottom half of simulations for each species '''
