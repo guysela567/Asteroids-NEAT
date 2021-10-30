@@ -94,8 +94,6 @@ class Species:
     def sort_species(self) -> None:
         ''' Sorts the species' simulations by fitness in descending order. '''
 
-        print(f'Before sort: {len(self.__players)}')
-
         # No players
         if len(self.__players) == 0:
             self.__staleness = 200
@@ -113,8 +111,6 @@ class Species:
             self.__staleness = 0
         else: # No improvements
             self.__staleness += 1
-
-        print(f'After sort: {len(self.__players)}')
 
     def set_avg_fitness(self) -> None:
         ''' Sets average fitness of this species' simulations. '''
@@ -169,12 +165,8 @@ class Species:
         That didn't make it to the next generation.
         '''
 
-        print(f'Before cull: {len(self.__players)}')
-
         if len(self.__players) > 2: # If length is lesser than or equals to 2 keep all players
             self.__players = self.__players[len(self.__players) // 2:]
-
-        print(f'After cull: {len(self.__players)}')
 
     def apply_fitness_sharing(self) -> None:
         '''

@@ -129,7 +129,7 @@ class Population:
             # If none were similar enough or species list is empty
             # then create a new species based on this player
             if not species_found:
-                self.__species.append(Species(sim.clone()))
+                self.__species.append(Species(sim))
             
     def calculate_fitness(self) -> None:
         ''' Calculates the fitness of all of the simulations. '''
