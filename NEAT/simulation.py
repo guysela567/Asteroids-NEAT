@@ -19,12 +19,12 @@ class Simulation:
             self.__controller.think()
 
     def calculate_fitness(self) -> None:
-        ''' Calculates score used to determine player's fitness '''
+        ''' Calculates score used to determine player's survival in next generations. '''
 
-        accuracy = self.__controller.shots_hit / self.__controller.shots_fired \
-            if self.__controller.shots_fired != 0 else -.5
-
-        self.__fitness = ((self.__controller.score + 1) * 10 + self.__controller.lifespan * 5) * ((accuracy + 1) ** 2)
+        accuracy = self.__controller.shots_hit / self.__controller.shots_fired
+        self.__fitness = (self.__controller.score + 1) * 10
+        self.__fitness *= self.__controller.lifespan
+        self.__fitness *= accuracy ** 2
 
     def crossover(self, parent2: Simulation) -> Simulation:
         '''

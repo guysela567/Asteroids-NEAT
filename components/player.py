@@ -31,17 +31,7 @@ class Player():
         self.__shoot_cooldown_dur = 0
 
         # AI
-        self.__ray_set = RaySet(self.__pos, 8)
-
-        # TODO Add teleportation mechanics (cut candidate)
-
-    @property
-    def sprite(self) -> Sprite:
-        return self.__sprite
-
-    @property
-    def can_shoot(self) -> bool:
-        return self.__can_shoot
+        self.__ray_set = RaySet(self.__pos, self.__angle, Constants.RAY_AMOUNT)
 
     def update(self, delta_time: float) -> None:
         # Rotation
@@ -75,18 +65,6 @@ class Player():
         # Update ray set position
         self.__ray_set.pos = self.__pos
 
-    @property
-    def rotate_dir(self) -> int:
-        return self.__rotate_dir
-
-    @property
-    def projectiles(self) -> Projectile:
-        return self.__projectiles
-    
-    @property
-    def angle(self) -> float:
-        return self.__angle
-
     def __update_projectiles(self) -> None:
         for projectile in reversed(self.__projectiles):
             if projectile.deleted:  # Remove deleted projectiles
@@ -105,12 +83,13 @@ class Player():
         self.__can_shoot = False
 
         # Apply knockback force
-        if not self.__boosting:
-            self.__vel.angle = self.__angle
-            self.__vel.mag += Constants.PLAYER_SHOOT_KNOCKBACK
+        # if not self.__boosting:
+        #     self.__vel.angle = self.__angle
+        #     self.__vel.mag += Constants.PLAYER_SHOOT_KNOCKBACK
 
     def __set_rotation(self) -> None:
         self.__angle += self.__turn_speed * self.__rotate_dir
+        self.__ray_set.rotate(self.__turn_speed * self.__rotate_dir)
         self.__sprite.angle = math.degrees(self.__angle) - 90
 
     def boost(self) -> None:
@@ -134,6 +113,7 @@ class Player():
     def rotate(self, dir: int) -> None:
         self.__angle += self.__turn_speed * dir
         self.__sprite.angle = math.degrees(self.__angle) - 90
+        self.__ray_set.rotate(self.__turn_speed * self.__rotate_dir)
 
     def stop_rotate(self) -> None:
         self.__rotating = False
@@ -142,3 +122,23 @@ class Player():
     @property
     def ray_set(self) -> RaySet:
         return self.__ray_set
+
+    @property
+    def sprite(self) -> Sprite:
+        return self.__sprite
+
+    @property
+    def can_shoot(self) -> bool:
+        return self.__can_shoot
+
+    @property
+    def rotate_dir(self) -> int:
+        return self.__rotate_dir
+
+    @property
+    def projectiles(self) -> Projectile:
+        return self.__projectiles
+    
+    @property
+    def angle(self) -> float:
+        return self.__angle

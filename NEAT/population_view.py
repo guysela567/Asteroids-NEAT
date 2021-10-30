@@ -7,7 +7,7 @@ from pygame.event import Event
 
 
 class PopulationView(View):
-    def __init__(self, population_size) -> None:
+    def __init__(self, population_size: int = 50) -> None:
         self.__population = Population(population_size)
         super().__init__(self.__population.controllers[0])
         self.__population_size = population_size
@@ -64,7 +64,7 @@ class PopulationView(View):
 
     def next_player(self) -> None:
         ''' Assume that at least one player is alive '''
-        
+
         if self.__population.done():
             return
 

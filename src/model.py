@@ -29,14 +29,15 @@ class Model:
         # Game logic
         self.__paused = False
 
-        # AI
+        # AI and stats
         self.__ai = ai
-        if self.__ai:
-            self.__brain = Genome(9, 4)
-            self.__shots_fired = 0
-            self.__shots_hit = 0
-            self.__lifespan = 0
-            self.__dead = False
+        self.__shots_fired = 4
+        self.__shots_hit = 1
+        self.__lifespan = 0
+        self.__dead = False
+
+        if self.__ai: # Generate neural network only if ai is true
+            self.__brain = Genome(Constants.RAY_AMOUNT + 1, 4)
 
     def update(self, delta_time: float, ai=False) -> None:
         # Update player
@@ -48,7 +49,7 @@ class Model:
 
         # Sprite Collisions
         self.handle_collisions()
-
+        
         # Add frame to lifespan
         self.__lifespan += 1
 
@@ -105,20 +106,21 @@ class Model:
         asteroid_sprite_list = [a.sprite for a in self.__asteroids]
         vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
 
-        angle = self.__player.angle % (math.pi * 2) / (math.pi * 2)
-        inputs = [angle, *(v / Constants.WINDOW_WIDTH for v in vision)]
+        can_shoot = 1 if self.__player.can_shoot else 0
+        inputs = [1 / v if v != 0 else 0 for v in vision]
+        inputs.append(can_shoot)
 
         results = self.__brain.feed_forward(inputs)
         
-        if results[0] > 0.5:
-            if results[1] > 0.5: 
+        if results[0] > .5:
+            if results[1] > .5: 
                 self.__player.rotate(1)
             else: self.__player.rotate(-1)
 
-        if results[2] > 0.5:
+        if results[2] > .5:
             self.__player.boost()
 
-        if results[3] > 0.5:
+        if results[3] > .5:
             self.__player.shoot()
             self.__shots_fired += 1
 

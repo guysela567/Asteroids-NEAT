@@ -78,6 +78,9 @@ class Ray:
         self.__intersection = closest
         return closest
 
+    def rotate(self, angle: float) -> None:
+        self.__dir.angle += angle
+
     @property
     def angle(self) -> float:
         return self.__angle
@@ -96,11 +99,11 @@ class Ray:
         
 
 class RaySet:
-    def __init__(self, pos: PositionalVector, amount: int) -> None:
+    def __init__(self, pos: PositionalVector, angle: float, amount: int) -> None:
         self.__pos = pos
 
         angle_gap = math.pi * 2 / amount
-        self.__rays = [Ray(self.__pos, angle_gap * i) for i in range(amount)]
+        self.__rays = [Ray(self.__pos, angle + angle_gap * i) for i in range(amount)]
 
     def __iter__(self) -> iter:
         return iter(self.__rays)
@@ -113,6 +116,10 @@ class RaySet:
 
     def intersecting_sprite_dist(self, sprite_list: List[Sprite]) -> List[float]:
         return [Vector.distance(self.__pos, ray.intersect_sprite_list(sprite_list)) for ray in self.__rays]
+
+    def rotate(self, angle: float) -> None:
+        for ray in self.__rays:
+            ray.rotate(angle)
 
     @property
     def pos(self) -> PositionalVector:
