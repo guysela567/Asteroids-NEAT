@@ -4,7 +4,6 @@ from NEAT.simulation import Simulation
 from NEAT.genome import Genome
 from NEAT.connection_history import ConnectionHistory
 
-import math
 import random
 
 
@@ -38,7 +37,7 @@ class Species:
         ''' Returns whether the given genome belongs to this species. '''
 
         excess_and_disjoint = Species.get_excess_disjoint(genome, self.__rep)
-        avg_weight_diff = Species.get_avg_weight_diff(genome, self.__rep)
+        avg_weight_diff = Species.avg_weight_difference(genome, self.__rep)
 
         # Normalizes the delta function for large genomes
         normalizer = len(genome.genes) - 20
@@ -84,7 +83,7 @@ class Species:
             for g2 in brain2.genes:
                 if g1.innovation_number == g2.innovation_number:
                     matching_count += 1
-                    total_diff += math.abs(g1.weight - g2.weight)
+                    total_diff += abs(g1.weight - g2.weight)
                     break # Only two genes of two genomes can match
 
         if matching_count == 0: # Divide by 0 error
@@ -166,7 +165,7 @@ class Species:
         That didn't make it to the next generation.
         '''
 
-        if len(self.__players > 2): # If length is greater than or equals to 2 keep all players
+        if len(self.__players) > 2: # If length is lesser than or equals to 2 keep all players
             self.__players = self.__players[len(self.__players) // 2:]
 
     def apply_fitness_sharing(self) -> None:

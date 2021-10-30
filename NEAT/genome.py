@@ -312,7 +312,7 @@ class Genome:
             from_node = child.get_node(gene.from_node.number)
             to_node = child.get_node(gene.to_node.number)
             child.genes.append(gene.clone(from_node, to_node))
-            child.genes[i] = genes_enabled[i] # disable gene if needed
+            child.genes[i].enabled = genes_enabled[i] # disable gene if needed
 
         # Finally connect child's nodes
         child.connect_nodes()

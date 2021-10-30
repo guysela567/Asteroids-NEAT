@@ -61,16 +61,17 @@ class Population:
         Simulates nature's natural selection process,
         called at the end of each generation.
         '''
-
+        
+        self.__generation += 1
         self.speciate() # Seperate into species
         self.calculate_fitness() # Calculate fitness for each simulation
         self.sort_species() # Sort from best to worst, based on fitness
         self.cull_species() # Kill genomes that have not survived
         self.kill_stale_species(15) # Kill species which have not improved for a while
-        self.kll_bad_species() # Kill species which cannot reproduce
+        self.kill_bad_species() # Kill species which cannot reproduce
         
         print(f'new generation: {self.__generation}')
-        print(f'number of muatations: {len(self.__innovation_history)}')
+        print(f'number of mutations: {len(self.__innovation_history)}')
         print(f'number of species: {len(self.__species)}')
         print('------------------------------------------------------')
 
@@ -102,8 +103,6 @@ class Population:
         self.__players = children.copy()
         for sim in self.__players:
             sim.brain.generate_phenotype() # Generate neural network for each child
-
-        self.__generation += 1
         
     def speciate(self) -> None:
         '''
@@ -191,17 +190,22 @@ class Population:
             s.apply_fitness_sharing()
             s.set_avg_fitness()
 
+    def get_avg_fitness_sum(self) -> float:
+        ''' Returns the average fitness sum of all species in the population. '''
+
+        return sum(s.avg_fitness for s in self.__species)
+
     @property
     def players(self) -> list[Simulation]:
         return self.__players
     
     @property
     def controllers(self) -> list[Controller]:
-        return [p.controller for p in self.__players]
+        return [sim.controller for sim in self.__players]
 
     @property
     def all_dead(self) -> bool:
-        return all(c.dead for c in self.controllers)
+        return all(sim.dead for sim in self.__players)
 
     @property
     def generation(self) -> int:

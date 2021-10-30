@@ -44,6 +44,7 @@ class Simulation:
         copy.brain = self.brain
         copy.brain.generate_phenotype()
         copy.fitness = self.__fitness
+        return copy
 
     @property
     def controller(self) -> Controller:

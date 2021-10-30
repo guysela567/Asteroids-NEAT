@@ -15,13 +15,14 @@ class PopulationView(View):
 
     def start(self) -> None:
         while True:
-            self.__population.update(iterations=10)
-            if self.__population.all_dead:
-                self.__population.next_gen()
+            if not self.__population.done():
+                self.__population.update(iterations=10)
+                if self.controller.dead:
+                    self.next_player()
+            else:
+                self.__population.natural_selection()
                 self.controller = self.__population.controllers[0]
-
-            if self.controller.dead:
-                self.next_player()
+                self.__index = 0
 
             self.update()
     
@@ -63,6 +64,10 @@ class PopulationView(View):
 
     def next_player(self) -> None:
         ''' Assume that at least one player is alive '''
+        
+        if self.__population.done():
+            return
+
         self.next_index()
         while self.controller.dead:
             self.next_index()
