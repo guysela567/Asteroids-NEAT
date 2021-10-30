@@ -113,12 +113,12 @@ class Model:
         results = self.__brain.feed_forward(inputs)
         
         if results[0] > .5:
-            if results[1] > .5: 
-                self.__player.rotate(1)
-            else: self.__player.rotate(-1)
-
-        if results[2] > .5:
             self.__player.boost()
+
+        if results[1] > .5: 
+            self.__player.rotate(1)
+        elif results[2] > .5:
+            self.__player.rotate(-1)
 
         if results[3] > .5:
             self.__player.shoot()

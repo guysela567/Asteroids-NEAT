@@ -16,7 +16,7 @@ class PopulationView(View):
     def start(self) -> None:
         while True:
             if not self.__population.done():
-                self.__population.update(iterations=10)
+                self.__population.update(iterations=1)
                 if self.controller.dead:
                     self.next_player()
             else:

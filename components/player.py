@@ -113,7 +113,7 @@ class Player():
     def rotate(self, dir: int) -> None:
         self.__angle += self.__turn_speed * dir
         self.__sprite.angle = math.degrees(self.__angle) - 90
-        self.__ray_set.rotate(self.__turn_speed * self.__rotate_dir)
+        self.__ray_set.rotate(self.__turn_speed * dir)
 
     def stop_rotate(self) -> None:
         self.__rotating = False

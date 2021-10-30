@@ -33,6 +33,7 @@ class Population:
         # Populate with simulations
         self.__players = [Simulation() for _ in range(self.__size)]
         for sim in self.__players:
+            for _ in range(10): sim.brain.add_connection(self.__innovation_history)
             sim.brain.mutate(self.__innovation_history)
             sim.brain.generate_phenotype()
 
@@ -128,7 +129,7 @@ class Population:
             # If none were similar enough or species list is empty
             # then create a new species based on this player
             if not species_found:
-                self.__species.append(Species(sim))
+                self.__species.append(Species(sim.clone()))
             
     def calculate_fitness(self) -> None:
         ''' Calculates the fitness of all of the simulations. '''
