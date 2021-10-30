@@ -63,7 +63,7 @@ class PopulationView(View):
         self.controller = self.__population.controllers[self.__index]
 
     def next_player(self) -> None:
-        ''' Assume that at least one player is alive '''
+        ''' Assume that at least one player is alive. '''
 
         if self.__population.done():
             return

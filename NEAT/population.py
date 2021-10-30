@@ -33,7 +33,8 @@ class Population:
         # Populate with simulations
         self.__players = [Simulation() for _ in range(self.__size)]
         for sim in self.__players:
-            for _ in range(10): sim.brain.add_connection(self.__innovation_history)
+            # Start with 5 connections and one extra mutation
+            for _ in range(5): sim.brain.add_connection(self.__innovation_history)
             sim.brain.mutate(self.__innovation_history)
             sim.brain.generate_phenotype()
 
@@ -187,11 +188,14 @@ class Population:
         ''' Kills the bottom half of simulations for each species '''
 
         for s in self.__species:
-            s.cull()
-            # Apply fitness sharing and set average fitness 
-            # for the updated amount of simulations
-            s.apply_fitness_sharing()
-            s.set_avg_fitness()
+            # As a result of re-speciating, some sepcies
+            # may be kept without any players
+            if len(s.players) > 0:
+                s.cull()
+                # Apply fitness sharing and set average fitness 
+                # for the updated amount of simulations
+                s.apply_fitness_sharing()
+                s.set_avg_fitness()
 
     def get_avg_fitness_sum(self) -> float:
         ''' Returns the average fitness sum of all species in the population. '''
