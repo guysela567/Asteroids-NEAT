@@ -40,8 +40,8 @@ class Genome:
 
         # Add output nodes
         for i in range(self.__outputs):
-            self.__nodes.append(Node(i + self.__inputs))
-            self.__nodes[i + self.__inputs].layer = 1
+            self.__nodes.append(Node(i + self.__inputs + 1))
+            self.__nodes[i + self.__inputs + 1].layer = 1
             self.__next_node += 1
 
     def get_node(self, number: int) -> Node:
