@@ -140,9 +140,10 @@ class Model:
             else uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)  # Inside sreen
 
         # Pick a random point on screen
-        random_point = PositionalVector(uniform(
-            spawn_gap, Constants.WINDOW_WIDTH - spawn_gap),
-            uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap))
+        # random_point = PositionalVector(uniform(
+        #     spawn_gap, Constants.WINDOW_WIDTH - spawn_gap),
+        #     uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap))
+        random_point = PositionalVector(Constants.WINDOW_WIDTH * .5, Constants.WINDOW_HEIGHT * .5)
 
         # Get the angle between asteroid's position and random point
         angle = Vector.angle_between(PositionalVector(x, y), random_point)

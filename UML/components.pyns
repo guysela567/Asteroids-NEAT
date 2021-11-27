@@ -1,0 +1,26 @@
+# PynSource Version 1.2
+{'type':'meta', 'info1':'Lorem ipsum dolor sit amet, consectetur adipiscing elit is latin. Comments are saved.'}
+{'type':'umlshape', 'id':'Player', 'x':1393, 'y':275, 'width':70, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Asteroid', 'x':635, 'y':274, 'width':90, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Projectile', 'x':1135, 'y':538, 'width':110, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'PositionalVector', 'x':1065, 'y':723, 'width':170, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'DirectionalVector', 'x':589, 'y':730, 'width':180, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Sprite', 'x':1025, 'y':274, 'width':70, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'RaySet', 'x':1391, 'y':946, 'width':70, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Ray', 'x':660, 'y':945, 'width':40, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'edge', 'id':'Projectile_to_Player', 'source':'Projectile', 'target':'Player', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'PositionalVector_to_Asteroid', 'source':'PositionalVector', 'target':'Asteroid', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'DirectionalVector_to_Asteroid', 'source':'DirectionalVector', 'target':'Asteroid', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Sprite_to_Asteroid', 'source':'Sprite', 'target':'Asteroid', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'PositionalVector_to_Player', 'source':'PositionalVector', 'target':'Player', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'DirectionalVector_to_Player', 'source':'DirectionalVector', 'target':'Player', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'RaySet_to_Player', 'source':'RaySet', 'target':'Player', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Sprite_to_Player', 'source':'Sprite', 'target':'Player', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'DirectionalVector_to_Projectile', 'source':'DirectionalVector', 'target':'Projectile', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Sprite_to_Projectile', 'source':'Sprite', 'target':'Projectile', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'PositionalVector_to_Projectile', 'source':'PositionalVector', 'target':'Projectile', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'PositionalVector_to_Ray', 'source':'PositionalVector', 'target':'Ray', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'PositionalVector_to_RaySet', 'source':'PositionalVector', 'target':'RaySet', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'DirectionalVector_to_Ray', 'source':'DirectionalVector', 'target':'Ray', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Ray_to_RaySet', 'source':'Ray', 'target':'RaySet', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'PositionalVector_to_Sprite', 'source':'PositionalVector', 'target':'Sprite', 'uml_edge_type': 'composition'}

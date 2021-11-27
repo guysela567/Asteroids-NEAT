@@ -10,7 +10,7 @@ from src.view import View
 def main() -> None:
     ''' Main method '''
 
-    game = PopulationView(250)
+    game = PopulationView(300)
     game.start()
 
 
