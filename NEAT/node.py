@@ -42,7 +42,7 @@ class Node:
         if node.layer == self.__layer:
             return False
 
-        if node.layer < self.layer: # Other node connects to this node
+        if node.layer < self.layer: # The other node connects to this node
             if any(connection.to_node == self for connection in node.output_connections):
                 return True
         else: # This node connects to the other node

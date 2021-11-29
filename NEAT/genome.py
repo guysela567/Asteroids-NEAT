@@ -33,16 +33,17 @@ class Genome:
             self.__nodes.append(Node(i))
             self.__next_node += 1
         
+
+        # Add output nodes
+        for i in range(self.__outputs):
+            self.__nodes.append(Node(i + self.__inputs))
+            self.__nodes[-1].layer = 1
+            self.__next_node += 1
+
         # Add bias node
         self.__bias_node = self.__next_node
         self.__nodes.append(Node(self.__bias_node))
         self.__next_node += 1
-
-        # Add output nodes
-        for i in range(self.__outputs):
-            self.__nodes.append(Node(i + self.__inputs + 1))
-            self.__nodes[i + self.__inputs + 1].layer = 1
-            self.__next_node += 1
 
     def get_node(self, number: int) -> Node:
         ''' Returns the node with a matching number. '''
@@ -119,15 +120,15 @@ class Genome:
         random_connection = random.choice(self.__genes)
 
         # Disconnect bias only if it's the only connection
-        while random_connection.from_node == self.__nodes[self.__bias_node] and len(self.__genes) > 1:
+        while random_connection.from_node == self.__nodes[self.__bias_node] and len(self.__genes) > 0:
             random_connection = random.choice(self.__genes)
-
+            
         # Disable original connection
         random_connection.enabled = False
 
         # Create a new node
-        self.__nodes.append(Node(self.__next_node))
-        new_node = self.get_node(self.__next_node)
+        new_node = Node(self.__next_node)
+        self.__nodes.append(new_node)
         self.__next_node += 1
 
         # Add the connection to the new node with a weight of 1
@@ -140,13 +141,17 @@ class Genome:
 
         # New node's layer is one past the origin node's layer
         new_node.layer = random_connection.from_node.layer + 1
+
+        # Connect new node to bias with a weight of 0
+        innovation_number = self.get_innovation_number(innovation_history, self.__nodes[self.__bias_node], new_node)
+        self.__genes.append(ConnectionGene(self.__nodes[self.__bias_node], new_node, 0, innovation_number))
         
         # If the new node's layer is the same as the original connection's out node's layer
         # incriment all layers starting from the new node's layer
         if new_node.layer == random_connection.to_node.layer:
-            for node in self.__nodes:
-                if node.layer >= new_node.layer:
-                    node.layer += 1
+            for i in range(0, len(self.__nodes) - 1): # Skip newest node
+                if self.__nodes[i].layer >= new_node.layer:
+                    self.__nodes[i].layer += 1
         
         # Add 1 to the genome layers
         self.__layers += 1
@@ -170,13 +175,16 @@ class Genome:
             n1 = random.choice(self.__nodes)
             n2 = random.choice(self.__nodes)
 
-        # If the first node is after the second than switch
+        # If the first node is after the second then switch
         if n1.layer > n2.layer:
-            n1, n2 = n1, n2
+            n1, n2 = n2, n1
 
         # Add the connection
         innovation_number = self.get_innovation_number(innovation_history, n1, n2)
         self.__genes.append(ConnectionGene(n1, n2, random.uniform(-1, 1), innovation_number))
+
+        # Connect nodes
+        self.connect_nodes()
 
     def get_innovation_number(self, innovation_history: list[ConnectionHistory], from_node: Node, to_node: Node) -> int:
         '''
