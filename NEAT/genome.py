@@ -120,7 +120,7 @@ class Genome:
         random_connection = random.choice(self.__genes)
 
         # Disconnect bias only if it's the only connection
-        while random_connection.from_node == self.__nodes[self.__bias_node] and len(self.__genes) > 0:
+        while random_connection.from_node == self.__nodes[self.__bias_node] and len(self.__genes) > 1:
             random_connection = random.choice(self.__genes)
             
         # Disable original connection
@@ -142,9 +142,10 @@ class Genome:
         # New node's layer is one past the origin node's layer
         new_node.layer = random_connection.from_node.layer + 1
 
-        # Connect new node to bias with a weight of 0
-        innovation_number = self.get_innovation_number(innovation_history, self.__nodes[self.__bias_node], new_node)
-        self.__genes.append(ConnectionGene(self.__nodes[self.__bias_node], new_node, 0, innovation_number))
+        # Connect new node to bias with a weight of 0, if it's not already connected
+        if random_connection.from_node != self.__nodes[self.__bias_node]:
+            innovation_number = self.get_innovation_number(innovation_history, self.__nodes[self.__bias_node], new_node)
+            self.__genes.append(ConnectionGene(self.__nodes[self.__bias_node], new_node, 0, innovation_number))
         
         # If the new node's layer is the same as the original connection's out node's layer
         # incriment all layers starting from the new node's layer
