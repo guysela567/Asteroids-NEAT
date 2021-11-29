@@ -46,14 +46,12 @@ class DemoView:
                     self.__ctx.fill(255, 0, 0)
                 else: 
                     self.__ctx.fill(0, 0, 255)
-            else:
-                self.__ctx.fill(0)
 
-            weight = int(np.interp(abs(gene.weight), [0, 1], [1, 5]))
+                weight = int(np.interp(abs(gene.weight), [0, 1], [1, 5]))
 
-            from_pos = node_poses[node_numbers.index(gene.from_node.number)]
-            to_pos = node_poses[node_numbers.index(gene.to_node.number)]
-            self.__ctx.line(*from_pos, *to_pos, weight)
+                from_pos = node_poses[node_numbers.index(gene.from_node.number)]
+                to_pos = node_poses[node_numbers.index(gene.to_node.number)]
+                self.__ctx.line(*from_pos, *to_pos, weight)
 
         self.__ctx.stroke(0)
         self.__ctx.stroke_weight(1)
@@ -91,7 +89,5 @@ class DemoView:
                 self.__controller.add_connection()
             elif event.key == pg.K_DOWN:
                 self.__controller.add_node()
-                for node in self.__controller.network.nodes:
-                    print(node.number, node.layer)
             elif event.key == pg.K_SPACE:
                 self.__controller.mutate_weights()
