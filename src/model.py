@@ -1,18 +1,19 @@
+from __future__ import annotations
+
 from components.player import Player
 from components.asteroid import Asteroid
 
 from utils.constants import Constants
 from utils.vector import Vector, PositionalVector
 
-from ai.neural_network import NeuralNetwork
+from NEAT.genome import Genome
 
-from typing import List
 from random import uniform, choice
 import math
 
 
 class Model:
-    def __init__(self) -> None:
+    def __init__(self, ai: bool = False) -> None:
         # Initialize player
         self.__player = Player(Constants.WINDOW_WIDTH * 0.5, Constants.WINDOW_HEIGHT * 0.5)
 
@@ -28,12 +29,17 @@ class Model:
         # Game logic
         self.__paused = False
 
-        # AI
-        self.__brain = NeuralNetwork(8, 5, 4)
+        # AI and stats
+        self.__ai = ai
+        self.__shots_fired = 4
+        self.__shots_hit = 1
+        self.__lifespan = 0
+        self.__dead = False
 
-        # self.__player.start_boost()
+        if self.__ai: # Generate neural network only if ai is true
+            self.__brain = Genome(Constants.RAY_AMOUNT + 1, 4)
 
-    def update(self, delta_time: float) -> None:
+    def update(self, delta_time: float, ai=False) -> None:
         # Update player
         self.__player.update(delta_time)
 
@@ -43,11 +49,9 @@ class Model:
 
         # Sprite Collisions
         self.handle_collisions()
-
-        # AI
-        asteroid_sprite_list = [a.sprite for a in self.__asteroids]
-        vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
-        self.think([v / Constants.WINDOW_WIDTH for v in vision])
+        
+        # Add frame to lifespan
+        self.__lifespan += 1
 
     def handle_collisions(self) -> None:
         # Asteroid with projectile collision
@@ -55,7 +59,8 @@ class Model:
             for asteroid in reversed(self.__asteroids):
                 # Check for any projectile with astroid collision
                 if asteroid.sprite.collides(projectile.sprite):
-                    # Play explosion sound
+                    self.__shots_hit += 1
+
                     if asteroid.hits < Constants.ASTEROID_HITS - 1:
                         # Split asteroids into two parts
 
@@ -90,27 +95,34 @@ class Model:
 
         # Asteroid with player collision
         if any(asteroid.sprite.collides(self.__player.sprite) for asteroid in self.__asteroids):
+            self.__dead = True
             self.__spawn_asteroids()
             self.__score = 0
 
-    def think(self, inputs) -> int:
-        results = self.__brain.predict(inputs)
-        # print(results)
-        if results[0] > 0.5:
-            if results[1] > 0.5:
-                self.__player.start_rotate(1)
-            else:
-                self.__player.start_rotate(-1)
-        else:
-            self.__player.stop_rotate()
+    def think(self) -> int:
+        if not self.__ai:
+            return
 
-        if results[2] > 0.5:
-            self.__player.start_boost()
-        else:
-            self.__player.stop_boost()
+        asteroid_sprite_list = [a.sprite for a in self.__asteroids]
+        vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
 
-        if results[3] > 0.5:
+        can_shoot = 1 if self.__player.can_shoot else 0
+        inputs = [1 / v if v != 0 else 0 for v in vision]
+        inputs.append(can_shoot)
+
+        results = self.__brain.feed_forward(inputs)
+        
+        if results[0] > .5:
+            self.__player.boost()
+
+        if results[1] > .5: 
+            self.__player.rotate(1)
+        elif results[2] > .5:
+            self.__player.rotate(-1)
+
+        if results[3] > .5:
             self.__player.shoot()
+            self.__shots_fired += 1
 
     @staticmethod
     def generate_asteroid() -> Asteroid:
@@ -128,9 +140,10 @@ class Model:
             else uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)  # Inside sreen
 
         # Pick a random point on screen
-        random_point = PositionalVector(uniform(
-            spawn_gap, Constants.WINDOW_WIDTH - spawn_gap),
-            uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap))
+        # random_point = PositionalVector(uniform(
+        #     spawn_gap, Constants.WINDOW_WIDTH - spawn_gap),
+        #     uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap))
+        random_point = PositionalVector(Constants.WINDOW_WIDTH * .5, Constants.WINDOW_HEIGHT * .5)
 
         # Get the angle between asteroid's position and random point
         angle = Vector.angle_between(PositionalVector(x, y), random_point)
@@ -138,18 +151,40 @@ class Model:
         return Asteroid(x, y, angle=angle)
 
     def __spawn_asteroids(self) -> None:
-        self.__asteroids = [self.generate_asteroid()
+        self.__asteroids = [Model.generate_asteroid()
                             for _ in range(self.__asteroid_amount)]
 
     def toggle_pause(self) -> None:
         self.__paused = not self.__paused
+
+    def reset(self) -> None:
+        # Reset player
+        self.__player = Player(Constants.WINDOW_WIDTH * 0.5, Constants.WINDOW_HEIGHT * 0.5)
+
+        # Reset astroids
+        self.__asteroid_amount = 4
+        self.__asteroids = []
+        self.__spawn_asteroids()
+
+        # Reset score system
+        self.__score = 0
+        self.__high_score = 0
+
+        # Reset game logic
+        self.__paused = False
+
+        # Reset genetic information
+        self.__shots_fired = 0
+        self.__shots_hit = 0
+        self.__lifespan = 0
+        self.__dead = False
 
     @property
     def player(self) -> Player:
         return self.__player
 
     @property
-    def asteroids(self) -> List[Asteroid]:
+    def asteroids(self) -> list[Asteroid]:
         return self.__asteroids
 
     @property
@@ -163,3 +198,27 @@ class Model:
     @property
     def paused(self) -> bool:
         return self.__paused
+
+    @property
+    def shots_fired(self) -> int:
+        return self.__shots_fired
+    
+    @property
+    def shots_hit(self) -> int:
+        return self.__shots_hit
+
+    @property
+    def lifespan(self) -> int:
+        return self.__lifespan
+
+    @property
+    def dead(self) -> bool:
+        return self.__dead
+
+    @property
+    def brain(self) -> Genome:
+        return self.__brain
+
+    @brain.setter
+    def brain(self, brain: Genome) -> None:
+        self.__brain = brain

@@ -1,0 +1,31 @@
+# PynSource Version 1.2
+{'type':'meta', 'info1':'Lorem ipsum dolor sit amet, consectetur adipiscing elit is latin. Comments are saved.'}
+{'type':'umlshape', 'id':'ConnectionGene', 'x':1778, 'y':874, 'width':150, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Node', 'x':1126, 'y':58, 'width':50, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'ConnectionHistory', 'x':1062, 'y':406, 'width':180, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Genome', 'x':407, 'y':875, 'width':70, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Innovation', 'x':1586, 'y':87, 'width':110, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Population', 'x':1096, 'y':797, 'width':110, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Species', 'x':1033, 'y':583, 'width':80, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Simulation', 'x':899, 'y':741, 'width':110, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'PopulationView', 'x':1326, 'y':491, 'width':150, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'View', 'x':1377, 'y':718, 'width':50, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'umlshape', 'id':'Controller', 'x':899, 'y':845, 'width':110, 'height':28, 'attrs': '', 'meths': ''}
+{'type':'edge', 'id':'Node_to_ConnectionGene', 'source':'Node', 'target':'ConnectionGene', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Genome_to_ConnectionHistory', 'source':'Genome', 'target':'ConnectionHistory', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Node_to_ConnectionHistory', 'source':'Node', 'target':'ConnectionHistory', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Node_to_Genome', 'source':'Node', 'target':'Genome', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'ConnectionGene_to_Genome', 'source':'ConnectionGene', 'target':'Genome', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Genome_to_Genome', 'source':'Genome', 'target':'Genome', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Node_to_Node', 'source':'Node', 'target':'Node', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'ConnectionGene_to_Node', 'source':'ConnectionGene', 'target':'Node', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Species_to_Population', 'source':'Species', 'target':'Population', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Simulation_to_Population', 'source':'Simulation', 'target':'Population', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'ConnectionHistory_to_Population', 'source':'ConnectionHistory', 'target':'Population', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'PopulationView_to_View', 'source':'PopulationView', 'target':'View', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'Population_to_PopulationView', 'source':'Population', 'target':'PopulationView', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Simulation_to_Simulation', 'source':'Simulation', 'target':'Simulation', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Controller_to_Simulation', 'source':'Controller', 'target':'Simulation', 'uml_edge_type': 'generalisation'}
+{'type':'edge', 'id':'Genome_to_Simulation', 'source':'Genome', 'target':'Simulation', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Simulation_to_Species', 'source':'Simulation', 'target':'Species', 'uml_edge_type': 'composition'}
+{'type':'edge', 'id':'Genome_to_Species', 'source':'Genome', 'target':'Species', 'uml_edge_type': 'composition'}

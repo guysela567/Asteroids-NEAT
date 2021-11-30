@@ -10,7 +10,7 @@ class Constants:
 
     # Player config
     PLAYER_SPRITE_SCALE = .5
-    PLAYER_BOOST_SPEED = 7
+    PLAYER_BOOST_SPEED = 20
     PLAYER_TURN_SPEED = math.pi * .02
     PLAYER_AIR_FRICTION = .05
     PLAYER_SHOOT_KNOCKBACK = .5
@@ -18,12 +18,15 @@ class Constants:
     # Asteroid config
     ASTEROID_HITS = 3
     ASTEROID_SPRITE_SCALE = (.4, .3, .2)
-    ASTEROID_VELOCITY = (2, 3, 5)
+    ASTEROID_VELOCITY = (8, 12, 20)
 
     # Projectile config
     PROJECTILE_SPRITE_SCALE = .25
-    PROJECTILE_SPEED = 15
+    PROJECTILE_SPEED = 30
     SHOOT_COOLDOWN = .25  # Seconds
 
     # Score
     SCORE_SYSTEM = (20, 50, 100)
+
+    # AI
+    RAY_AMOUNT = 30
