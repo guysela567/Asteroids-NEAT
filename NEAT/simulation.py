@@ -24,7 +24,7 @@ class Simulation:
         accuracy = self.__controller.shots_hit / self.__controller.shots_fired
         self.__fitness = (self.__controller.score + 1) * 50
         self.__fitness += self.__controller.lifespan
-        self.__fitness *= accuracy ** 3
+        self.__fitness *= accuracy ** 2
 
     def crossover(self, parent2: Simulation) -> Simulation:
         '''
