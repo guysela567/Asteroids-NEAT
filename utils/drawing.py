@@ -1,21 +1,49 @@
+from __future__ import annotations
+
 import pygame as pg
+from pygame.event import Event
+from pygame.time import Clock
 
-# My wrapper on PyGame to make it more like the processing.org environment combined with HTML Canvas tools
+
+# My wrapper on PyGame to make it more like the processing.org 
+# environment combined with HTML Canvas tools 
 
 
-class Screen:
-    def __init__(self, width, height, title) -> None:
+class Canvas:
+    def __init__(self, width: int, height: int, title: str, fps: int) -> None:
         self.__display = pg.display.set_mode((width, height))
         pg.display.set_caption(title)
+        self.__clock = Clock()
+        self.__fps = fps
+        self.__width = width
+        self.__height = height
+        self.__title = title
+
+    def update(self) -> None:
+        pg.display.flip()
+        self.__clock.tick(self.__fps)
 
     @property
     def display(self) -> pg.Surface:
         return self.__display
 
+    @property
+    def width(self) -> float:
+        return self.__width
+    
+    @property
+    def height(self) -> float:
+        return self.__height
+    
+    @property
+    def title(self) -> float:
+        return self.__title
 
 class Context:
-    def __init__(self, screen: Screen) -> None:
-        self.__display = screen.display
+    def __init__(self, canvas: Canvas) -> None:
+        pg.init()
+
+        self.__display = canvas.display
 
         self.__fill_color = (255, 255, 255)
         self.__stroke_color = (0, 0, 0)
@@ -35,7 +63,11 @@ class Context:
 
         self.__display.fill((r, g, b))
 
-    def fill(self, r: int, g: int = None, b: int = None) -> None:
+    def fill(self, r: int | tuple, g: int = None, b: int = None) -> None:
+        if type(r) == tuple:
+            self.__fill_color = r
+            return
+
         # R, G, B are all the same
         g = r if g is None else g
         b = r if b is None else b
@@ -49,7 +81,11 @@ class Context:
     def no_stroke(self) -> None:
         self.__stroking = False
 
-    def stroke(self, r: int, g: int = None, b: int = None) -> None:
+    def stroke(self, r: int or tuple, g: int = None, b: int = None) -> None:
+        if type(r) == tuple:
+            self.__stroke_color = r
+            return
+
         # R, G, B are all the same
         g = r if g is None else g
         b = r if b is None else b
@@ -112,3 +148,167 @@ class Context:
     def font_family(self, name: str) -> None:
         self.__font_family = name
         self.__font = pg.font.SysFont(self.__font_family, self.__font_size)
+
+class Screen(Context):
+    def __init__(self, width: float, height: float, title: str, fps: int) -> None:
+        '''
+        Screen consisting of canvas, drawing methods and event handlers.
+
+        Args:
+            width (float): Width of the screen.
+            height (float): Height of the screen.
+            title (str): Caption of the screen.
+            fps (int): Frame rate in which the screen updates.
+        '''
+
+        self.__canvas = Canvas(width, height, title, fps)
+        super().__init__(self.__canvas)
+        
+        self.__keys = {k[2:]: v for k, v in pg.constants.__dict__.items() if k.startswith('K_')}
+    
+    def start(self) -> None:
+        ''' Starts the main loop. handles events in each frame. '''
+
+        while True:
+            if hasattr(self, 'update'):
+                self.update()
+
+            if hasattr(self, 'draw'):
+                self.draw()
+        
+            for event in pg.event.get():
+                self.handle_event(event)
+            
+            self.__canvas.update()
+    
+    def handle_event(self, event: Event) -> None:
+        ''' Handles all events registered by pygame. '''
+
+        if event.type == pg.QUIT:
+            pg.quit()
+            exit()
+        
+        elif event.type == pg.KEYDOWN and hasattr(self, 'on_key_down'):
+            self.on_key_down(event.key)
+
+        elif event.type == pg.KEYUP and hasattr(self, 'on_key_up'):
+            self.on_key_up(event.key)
+        
+        elif event.type == pg.MOUSEBUTTONDOWN and hasattr(self, 'on_mouse_down'):
+            self.on_mouse_down()
+
+        elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouse_up'):
+            self.on_mouse_up()
+
+    @property
+    def width(self) -> int:
+        return self.__canvas.width
+    
+    @property
+    def height(self) -> int:
+        return self.__canvas.height
+
+    @property
+    def keys(self) -> dict[str, str]:
+        return self.__keys
+
+class Button:
+    def __init__(self, ctx: Context, x: float, y: float, w: float, h: float, color: tuple, caption: str) -> None:
+        self.__ctx = ctx
+        self.__x = x
+        self.__y = y
+        self.__w = w
+        self.__h = h
+        self.__color = color
+        self.__caption = caption
+
+    def draw(self) -> None:
+        self.__ctx.stroke(0)
+        self.__ctx.fill(self.__color)
+        self.__ctx.rect(self.__x, self.__y, self.__w, self.__h)
+        self.__ctx.fill(0)
+        self.__ctx.text(self.__caption, self.__x + self.__w * .5, self.__y + self.__h * .5, center=True)
+        self.__ctx.no_stroke()
+
+    def mouse_hover(self) -> None:
+        x, y = pg.mouse.get_pos()
+        
+        return self.__x < x < self.__x + self.__w \
+            and self.__y < y < self.__y + self.__h
+
+    @property
+    def caption(self) -> str:
+        return self.__caption
+
+    @caption.setter
+    def caption(self, caption: str) -> None:
+        self.__caption = caption
+
+
+    def __init__(self, width: float, height: float, title: str, fps: int) -> None:
+        '''
+        Screen consisting of canvas, drawing methods and event handlers.
+
+        Args:
+            width (float): Width of the screen.
+            height (float): Height of the screen.
+            title (str): Caption of the screen.
+            fps (int): Frame rate in which the screen updates.
+        '''
+
+        self.__canvas = Canvas(width, height, title, fps)
+        super().__init__(self.__canvas)
+        
+        self.__keys = {k[2:]: v for k, v in pg.constants.__dict__.items() if k.startswith('K_')}
+    
+    def start(self) -> None:
+        ''' Starts the main loop. '''
+
+        while True:
+            self.update()
+
+    def update(self) -> None:
+        ''' Gets called in each frame. handles events in the main loop. '''
+
+        if hasattr(self, 'draw'):
+            self.draw()
+        
+        for event in pg.event.get():
+            self.handle_event(event)
+        
+        self.__canvas.update()
+    
+    def handle_event(self, event: Event) -> None:
+        ''' Handles all events registered by pygame. '''
+
+        if event.type == pg.QUIT:
+            pg.quit()
+            exit()
+        
+        elif event.type == pg.KEYDOWN and hasattr(self, 'on_keydown'):
+            self.on_keydown(event.key)
+
+        elif event.type == pg.KEYUP and hasattr(self, 'on_keyup'):
+            self.on_keyup(event.key)
+        
+        elif event.type == pg.MOUSEBUTTONDOWN and hasattr(self, 'on_mousedown'):
+            self.on_mousedown()
+
+        elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouseup'):
+            self.on_mouseup()
+
+    @property
+    def ctx(self) -> Context:
+        return self.__ctx
+
+    @property
+    def width(self) -> int:
+        return self.__canvas.width
+    
+    @property
+    def height(self) -> int:
+        return self.__canvas.height
+
+    @property
+    def keys(self) -> dict[str, str]:
+        return self.__keys

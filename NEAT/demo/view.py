@@ -1,4 +1,4 @@
-from utils.drawing import Context, Screen
+from utils.drawing import Screen
 from NEAT.demo.controller import DemoController
 from NEAT.genome import Genome
 from NEAT.node import Node
@@ -11,19 +11,13 @@ from pygame.time import Clock
 import numpy as np
 
 
-class DemoView:
+class DemoView(Screen):
     def __init__(self) -> None:
+        super().__init__(800, 600, 'NEAT Demo', 60)
         self.__controller = DemoController()
 
-        pg.init()
-        self.__screen = Screen(800, 600, 'NEAT Demo')
-        self.__ctx = Context(self.__screen)
-        self.__clock = Clock()
-
-    def start(self) -> None:
-        while True:
-            self.update()
-            self.__controller.update()
+    def update(self) -> None:
+        self.__controller.update()
 
     def draw_network(self, network: Genome, x: float, y: float, w: float, h: float, r: float) -> None:
         nodes_by_layers: list[list[Node]] = []
@@ -43,51 +37,34 @@ class DemoView:
         for gene in network.genes:
             if gene.enabled:
                 if gene.weight > 0:
-                    self.__ctx.fill(255, 0, 0)
+                    self.fill(255, 0, 0)
                 else: 
-                    self.__ctx.fill(0, 0, 255)
+                    self.fill(0, 0, 255)
 
                 weight = int(np.interp(abs(gene.weight), [0, 1], [1, 5]))
 
                 from_pos = node_poses[node_numbers.index(gene.from_node.number)]
                 to_pos = node_poses[node_numbers.index(gene.to_node.number)]
-                self.__ctx.line(*from_pos, *to_pos, weight)
+                self.line(*from_pos, *to_pos, weight)
 
-        self.__ctx.stroke(0)
-        self.__ctx.stroke_weight(1)
-        self.__ctx.font_size(20)
+        self.stroke(0)
+        self.stroke_weight(1)
+        self.font_size(20)
         for pos, num in zip(node_poses, node_numbers):
-            self.__ctx.fill(255)
-            self.__ctx.circle(*pos, r)
-            self.__ctx.fill(0)
-            self.__ctx.text(str(num), *pos, center=True)
+            self.fill(255)
+            self.circle(*pos, r)
+            self.fill(0)
+            self.text(str(num), *pos, center=True)
             
 
     def draw(self) -> None:
-        self.__ctx.background(180)
+        self.background(180)
         self.draw_network(self.__controller.network, 0, 0, 800, 600, 20)
-
-    def finish_render(self) -> None:
-        pg.display.flip()
-        self.__clock.tick(60)
     
-    def update(self) -> None:
-        # Handle user input
-        for event in pg.event.get():
-            self.handle_event(event)
-
-        self.draw()
-        self.finish_render()
-    
-    def handle_event(self, event: Event) -> None:
-        if event.type == pg.QUIT:
-            pg.quit()
-            exit()
-
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_UP:
-                self.__controller.add_connection()
-            elif event.key == pg.K_DOWN:
-                self.__controller.add_node()
-            elif event.key == pg.K_SPACE:
-                self.__controller.mutate_weights()
+    def on_key_down(self, key: int) -> None:
+        if key == self.keys['UP']:
+            self.__controller.add_connection()
+        elif key == self.keys['DOWN']:
+            self.__controller.add_node()
+        elif key == self.keys['SPACE']:
+            self.__controller.mutate_weights()

@@ -39,7 +39,7 @@ class Model:
         if self.__ai: # Generate neural network only if ai is true
             self.__brain = Genome(Constants.RAY_AMOUNT + 1, 4)
 
-    def update(self, delta_time: float, ai=False) -> None:
+    def update(self, delta_time: float) -> None:
         # Update player
         self.__player.update(delta_time)
 
