@@ -59,7 +59,6 @@ class PopulationView(View):
                 to_pos = node_poses[node_numbers.index(gene.to_node.number)]
                 self.line(*from_pos, *to_pos, weight)
 
-        self.stroke_weight(1)
         self.font_size(20)
         for pos, num in zip(node_poses, node_numbers):
             self.fill(255, 255, 0)
@@ -67,7 +66,6 @@ class PopulationView(View):
             if show_labels:
                 self.fill(0)
                 self.text(str(num), *pos, center=True)
-        self.no_stroke()
 
     def draw(self) -> None:
         # Update graphics

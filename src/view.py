@@ -23,10 +23,12 @@ class View(Screen):
         self.__controller = Controller() if controller is None else controller
 
         # Graphical setup
+        self.no_stroke()
+
         # Generate stars for background
         self.__stars = [(uniform(0, Constants.WINDOW_WIDTH),
                          uniform(0, Constants.WINDOW_HEIGHT),
-                         uniform(7, 10)) for _ in range(50)]
+                         uniform(1, 3)) for _ in range(50)]
 
     def draw(self) -> None:
         # Update graphics
