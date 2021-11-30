@@ -12,9 +12,6 @@ from src.controller import Controller
 
 from random import uniform
 
-import pygame as pg
-from pygame.event import Event
-
 
 class View(Screen):
     def __init__(self, controller: Controller = None) -> None:

@@ -1,12 +1,9 @@
+from __future__ import annotations
+
 from utils.drawing import Screen
 from NEAT.demo.controller import DemoController
 from NEAT.genome import Genome
 from NEAT.node import Node
-from utils.vector import PositionalVector
-
-import pygame as pg
-from pygame.event import Event
-from pygame.time import Clock
 
 import numpy as np
 
@@ -21,7 +18,7 @@ class DemoView(Screen):
 
     def draw_network(self, network: Genome, x: float, y: float, w: float, h: float, r: float) -> None:
         nodes_by_layers: list[list[Node]] = []
-        node_poses: list[PositionalVector] = []
+        node_poses: list[tuple[int, int]] = []
         node_numbers: list[int] = []
 
         for layer in range(network.layers):
@@ -31,7 +28,7 @@ class DemoView(Screen):
             node_x = x + ((layer + 1) * w) / (network.layers + 1)
             for i, node in enumerate(nodes_by_layers[layer]):
                 node_y = y + ((i + 1) * h) / (len(nodes_by_layers[layer]) + 1)
-                node_poses.append(PositionalVector(node_x, node_y))
+                node_poses.append((node_x, node_y))
                 node_numbers.append(node.number)
 
         for gene in network.genes:
@@ -45,12 +42,16 @@ class DemoView(Screen):
 
                 from_pos = node_poses[node_numbers.index(gene.from_node.number)]
                 to_pos = node_poses[node_numbers.index(gene.to_node.number)]
+                # if to_pos[0] == 780:
+                #     print('yes', gene.to_node.layer, network.layers, gene.to_node.number)
                 self.line(*from_pos, *to_pos, weight)
 
         self.stroke(0)
         self.stroke_weight(1)
         self.font_size(20)
         for pos, num in zip(node_poses, node_numbers):
+            # if pos.x == 780:
+            #     print('yes')
             self.fill(255)
             self.circle(*pos, r)
             self.fill(0)

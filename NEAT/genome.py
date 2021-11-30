@@ -154,8 +154,8 @@ class Genome:
                 if self.__nodes[i].layer >= new_node.layer:
                     self.__nodes[i].layer += 1
         
-        # Add 1 to the genome layers
-        self.__layers += 1
+            # Add 1 to the genome layers
+            self.__layers += 1
         
         # Finally reconnect all nodes
         self.connect_nodes()
