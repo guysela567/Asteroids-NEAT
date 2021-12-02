@@ -29,7 +29,7 @@ class ConnectionGene:
         if rand < 0.1: # Completely change the weight
             self.__weight = random.uniform(-1, 1)
         else: # Change it by a small amount
-            self.__weight += random.gauss(0, 1) / 100
+            self.__weight += random.gauss(0, 0.1)
 
             # Keep the weight between it's -1 to 1 bounds
             self.__weight = min(1, max(-1, self.__weight))

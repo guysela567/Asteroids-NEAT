@@ -34,7 +34,7 @@ class Population:
         self.__players = [Simulation() for _ in range(self.__size)]
         for sim in self.__players:
             # Start with 10 connections and one extra mutation
-            for _ in range(10): sim.brain.add_connection(self.__innovation_history)
+            # for _ in range(10): sim.brain.add_connection(self.__innovation_history)
             sim.brain.mutate(self.__innovation_history)
             sim.brain.generate_phenotype()
 
