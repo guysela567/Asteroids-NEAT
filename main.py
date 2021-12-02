@@ -11,7 +11,7 @@ from NEAT.demo.view import DemoView
 def main() -> None:
     ''' Main method '''
 
-    game = PopulationView(250)
+    game = PopulationView()
     game.start()
 
 

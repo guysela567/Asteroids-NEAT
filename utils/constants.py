@@ -30,3 +30,4 @@ class Constants:
 
     # AI
     RAY_AMOUNT = 30
+    POPULATION_SIZE = 300
