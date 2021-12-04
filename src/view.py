@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from utils.constants import Constants
-from utils.sprite import Sprite
 from utils.geometry.raycasting import RaySet
-from utils.drawing import Screen
+from utils.geometry.collision import SpriteDimensions, Hitbox
+from utils.drawing import Screen, Image
 
 from components.player import Player
 from components.asteroid import Asteroid
@@ -19,6 +19,17 @@ class View(Screen):
                          Constants.WINDOW_HEIGHT, 
                          Constants.WINDOW_TITLE, 
                          Constants.FPS)
+
+        
+        self.__sprites = {
+            'asteroid': [Image(f'assets/sprites/asteroid{i}.png') for i in range(1, 4)],
+            'player': [Image('assets/sprites/player.png')],
+            'projectile': [Image('assets/sprites/projectile.png')]
+        }
+
+        for sprite, images in self.__sprites.items():
+            dims = [image.size for image in images]
+            SpriteDimensions.dimensions[sprite] = dims
 
         self.__controller = Controller() if controller is None else controller
 
@@ -41,8 +52,8 @@ class View(Screen):
 
         self.draw_rays(self.__controller.player.ray_set)
 
-        for asteroid in self.__controller.asteroids:
-            self.draw_poly(asteroid.sprite.rect_verts)
+        # for asteroid in self.__controller.asteroids:
+        #     self.draw_poly(asteroid.sprite.rect_verts)
 
     def update(self) -> None:
         self.__controller.update()
@@ -80,15 +91,15 @@ class View(Screen):
             self.circle(x, y, size)
 
     def draw_sprites(self, player: Player, asteroids: list[Asteroid]) -> None:
-        self.draw_sprite(player.sprite)  # Draw player
+        self.draw_sprite('player', player.hitbox, player.angle)  # Draw player
 
         # Draw asteroids
         for asteroid in asteroids:
-            self.draw_sprite(asteroid.sprite)
+            self.draw_sprite('asteroid', asteroid.hitbox, asteroid.angle)
 
         # Draw projectiles
         for projectile in player.projectiles:
-            self.draw_sprite(projectile.sprite)
+            self.draw_sprite('projectile', projectile.hitbox, projectile.angle)
 
     def draw_score(self, score: int, high_score: int) -> None:
         self.font_size(36)
@@ -107,15 +118,18 @@ class View(Screen):
                         Constants.WINDOW_HEIGHT * .5,
                         center=True)
 
-    def draw_sprite(self, sprite: Sprite) -> None:
-        self.image(sprite.image, *sprite.rect)
+    def draw_sprite(self, component: str, hitbox: Hitbox, angle: float) -> None:
+        image = self.__sprites[component][hitbox.index]
+        image.resize(hitbox.width, hitbox.height)
+        image.rotate(angle, tuple(hitbox.pos))
+        self.image(image, *image.get_rect_from_center(tuple(hitbox.pos)))
 
     def draw_rays(self, ray_set: RaySet) -> None:
         self.fill(0, 255, 0)
         for ray in ray_set:
             self.line(*ray, 5)
 
-    def draw_poly(self, verts: list[Sprite]) -> None:
+    def draw_poly(self, verts) -> None:
         self.fill(0, 255, 0)
         for i in range(len(verts)):
             pos1 = verts[i]

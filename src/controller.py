@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from utils.constants import Constants
 from src.model import Model
 
@@ -5,9 +7,6 @@ from NEAT.genome import Genome
 
 from components.asteroid import Asteroid
 from components.player import Player
-
-from typing import List
-from time import sleep
 
 
 class Controller:
@@ -48,7 +47,7 @@ class Controller:
         return self.__model.player
 
     @property
-    def asteroids(self) -> List[Asteroid]:
+    def asteroids(self) -> list[Asteroid]:
         return self.__model.asteroids
 
     @property

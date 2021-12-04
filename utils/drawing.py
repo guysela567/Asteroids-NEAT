@@ -9,6 +9,44 @@ from pygame.time import Clock
 # environment combined with HTML Canvas tools 
 
 
+class Image:
+    def __init__(self, image_path: str) -> None:
+        base_image = pg.image.load(image_path) # Load image
+
+        # Save original image in order to maintain it's quality
+        self.__original = base_image.convert_alpha()
+        self.__surface = base_image.convert_alpha() # The surface used for viewing
+        self.__base = base_image.convert_alpha() # Keep original size for resizing
+    
+    def resize(self, width: int, height: int) -> None:
+        self.__original = pg.transform.smoothscale(self.__base, (width, height))
+        self.__surface = self.__original.convert_alpha()
+
+    def rotate(self, angle: float, anchor: tuple[float, float]) -> None:
+        self.__angle = -angle  # Convert from anti-clockwize to clockwize
+
+        # Rotate original image to prevent big changes in image quality
+        self.__surface = pg.transform.rotate(self.__original, self.__angle)
+
+    def get_rect_from_center(self, point: tuple[float, float]) -> tuple[int, int, int, int]:
+        return tuple(self.__surface.get_rect(center=point))
+
+    @property
+    def surface(self) -> pg.Surface:
+        return self.__surface
+
+    @property
+    def size(self) -> tuple[int, int]:
+        return self.__surface.get_size()
+    
+    @property
+    def alpha(self) -> float:
+        return self.__surface.get_alpha()
+
+    @alpha.setter
+    def alpha(self, alpha: float) -> None:
+        self.__surface.set_alpha(alpha)
+
 class Canvas:
     def __init__(self, width: int, height: int, title: str, fps: int) -> None:
         self.__display = pg.display.set_mode((width, height))
@@ -112,20 +150,13 @@ class Context:
             pg.draw.rect(self.__display, self.__stroke_color,
                          (x, y, w, h), self.__weight)
 
-    @staticmethod
-    def load_image(path: str) -> pg.Surface:
-        return pg.image.load(path)
-
-    @staticmethod
-    def resize_image(image: pg.Surface, width: int, height: int) -> pg.Surface:
-        return pg.transform.scale(image, (width, height))
-
-    @staticmethod
-    def rotate_image(image: pg.Surface, angle: float) -> pg.Surface:
-        return pg.transform.rotate(image, angle)
-
-    def image(self, image: pg.Surface, x: float, y: float, w: float, h: float) -> None:
-        self.__display.blit(pg.transform.scale(image, (w, h)), (x, y))
+    def image(self, image: Image, x: float, y: float, w: float, h: float, alpha: float = None) -> None:
+        if alpha is None:
+            self.__display.blit(pg.transform.scale(image.surface, (w, h)), (x, y))
+        else:
+            temp = image.__surface.copy()
+            temp.set_alpha(alpha)
+            self.__display.blit(pg.transform.scale(temp, (w, h)), (x, y))
 
     def text(self, text: str, x: float, y: float, center: bool = False) -> None:
         text_surface = self.__font.render(text, True, self.__fill_color)
