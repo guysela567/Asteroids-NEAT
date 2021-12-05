@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from utils.vector import PositionalVector, DirectionalVector
 from utils.constants import Constants
-from utils.sprite import Sprite
+from utils.geometry.collision import Hitbox, SpriteDimensions
 from utils.geometry.raycasting import RaySet
 
 from components.projectile import Projectile
@@ -12,10 +14,7 @@ class Player():
     def __init__(self, x, y) -> None:
         self.__pos = PositionalVector(x, y)
 
-        self.__sprite = Sprite(
-            'assets/sprites/player.png',
-            Constants.PLAYER_SPRITE_SCALE,
-            self.__pos)
+        self.__hitbox = Hitbox(self.__pos, 'player', Constants.PLAYER_SPRITE_SCALE)
 
         self.__boosting = False
         self.__rotating = False
@@ -54,10 +53,10 @@ class Player():
 
         # Move player
         self.__pos += self.__vel
-        self.__pos.handle_offscreen(self.__sprite)
+        self.__pos.handle_offscreen(self.__hitbox)
 
-        # Update sprite position
-        self.__sprite.pos = self.__pos
+        # Update hitbox position
+        self.__hitbox.pos = self.__pos
 
         # Update projectiles
         self.__update_projectiles()
@@ -76,8 +75,8 @@ class Player():
         if not self.__can_shoot:
             return
 
-        x = self.__pos.x - math.cos(self.__angle) * self.__sprite.height * .5
-        y = self.__pos.y - math.sin(self.__angle) * self.__sprite.height * .5
+        x = self.__pos.x - math.cos(self.__angle) * self.__hitbox.height * .5
+        y = self.__pos.y - math.sin(self.__angle) * self.__hitbox.height * .5
 
         self.__projectiles.append(Projectile(x, y, self.__angle))
         self.__can_shoot = False
@@ -90,7 +89,6 @@ class Player():
     def __set_rotation(self) -> None:
         self.__angle += self.__turn_speed * self.__rotate_dir
         self.__ray_set.rotate(self.__turn_speed * self.__rotate_dir)
-        self.__sprite.angle = math.degrees(self.__angle) - 90
 
     def boost(self) -> None:
         self.__vel.angle = self.__angle
@@ -112,7 +110,6 @@ class Player():
 
     def rotate(self, dir: int) -> None:
         self.__angle += self.__turn_speed * dir
-        self.__sprite.angle = math.degrees(self.__angle) - 90
         self.__ray_set.rotate(self.__turn_speed * dir)
 
     def stop_rotate(self) -> None:
@@ -124,8 +121,8 @@ class Player():
         return self.__ray_set
 
     @property
-    def sprite(self) -> Sprite:
-        return self.__sprite
+    def hitbox(self) -> Hitbox:
+        return self.__hitbox
 
     @property
     def can_shoot(self) -> bool:
@@ -136,9 +133,10 @@ class Player():
         return self.__rotate_dir
 
     @property
-    def projectiles(self) -> Projectile:
+    def projectiles(self) -> list[Projectile]:
         return self.__projectiles
     
     @property
     def angle(self) -> float:
-        return self.__angle
+        deg = -(int(math.degrees(self.__angle)) - 90) % 360
+        return deg if deg > 0 else 360 - deg

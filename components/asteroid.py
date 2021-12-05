@@ -1,20 +1,17 @@
 from utils.vector import PositionalVector, DirectionalVector
 from utils.constants import Constants
-from utils.sprite import Sprite
+from utils.geometry.collision import Hitbox
 
 import math
 from random import randint, uniform
 
 
 class Asteroid:
-    def __init__(self, x, y, angle: float = None, hits: int = 0) -> None:
+    def __init__(self, x: float, y: float, angle: float = None, hits: int = 0) -> None:
         self.__pos = PositionalVector(x, y)
         self.__hits = hits
 
-        self.__sprite = Sprite(
-            f'assets/sprites/asteroid{randint(1, 3)}.png',
-            Constants.ASTEROID_SPRITE_SCALE[self.__hits],
-            self.__pos)
+        self.__hitbox = Hitbox(self.__pos, 'asteroid', Constants.ASTEROID_SPRITE_SCALE[self.__hits])
 
         # Get a random angle for direction
         self.__angle = uniform(0, math.pi * 2) if angle is None else angle
@@ -27,14 +24,14 @@ class Asteroid:
 
     def update(self, delta_time: float) -> None:
         self.__pos += self.__vel
-        self.__pos.handle_offscreen(self.__sprite)
+        self.__pos.handle_offscreen(self.__hitbox)
 
-        # Update sprite position
-        self.__sprite.pos = self.__pos
+        # Update hitbox position
+        self.__hitbox.pos = self.__pos
 
     @property
-    def sprite(self) -> Sprite:
-        return self.__sprite
+    def hitbox(self) -> Hitbox:
+        return self.__hitbox
 
     @property
     def x(self) -> float:
@@ -45,9 +42,14 @@ class Asteroid:
         return self.__pos.y
 
     @property
-    def angle(self) -> float:
-        return self.__angle
-
-    @property
     def hits(self) -> float:
         return self.__hits
+    
+    @property
+    def sprite_index(self) -> None:
+        return self.__hitbox.index
+
+    @property
+    def angle(self) -> float:
+        deg = -(int(math.degrees(self.__angle)) - 90) % 360
+        return deg if deg > 0 else 360 - deg

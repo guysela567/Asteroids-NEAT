@@ -1,8 +1,8 @@
-from utils.vector import PositionalVector, DirectionalVector, Vector
-from utils.sprite import Sprite
+from __future__ import annotations
 
-from typing import List, Tuple
-import numpy as np
+from utils.vector import PositionalVector, DirectionalVector, Vector
+from utils.geometry.collision import Hitbox
+
 import math
 
 
@@ -16,7 +16,7 @@ class Ray:
     def __iter__(self) -> iter:
         return iter((*self.__pos, *self.end))
 
-    def intersects_line(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> PositionalVector:
+    def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> PositionalVector:
         ''' Euclidian Line-Line intersection '''
 
         # Better notation
@@ -44,7 +44,7 @@ class Ray:
         return PositionalVector(x1 + t * (x2 - x1), y1 + t * (y2 - y1)) \
             if u >= 0 and 0 <= t <= 1 else None
     
-    def intersects_polygon(self, verts: List[Tuple[float, float]]) -> PositionalVector:
+    def intersects_polygon(self, verts: list[tuple[float, float]]) -> PositionalVector:
         closest = None
         closest_dist = 0
 
@@ -62,7 +62,7 @@ class Ray:
 
         return closest
 
-    def intersect_sprite_list(self, sprite_list: List[Sprite]) -> PositionalVector:
+    def intersect_sprite_list(self, sprite_list: list[Hitbox]) -> PositionalVector:
         closest = None
         closest_dist = 0
 
@@ -108,13 +108,13 @@ class RaySet:
     def __iter__(self) -> iter:
         return iter(self.__rays)
 
-    def intersects_line(self, pos1: Tuple[float, float], pos2: Tuple[float, float]) -> bool:
+    def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> bool:
         return any(self.__rays.intersects_line(pos1, pos2))
     
-    def intersects_polygon(self, verts: List[Tuple[float, float]]) -> bool:
+    def intersects_polygon(self, verts: list[tuple[float, float]]) -> bool:
         return any(self.__rays.intersects_polygon(verts))
 
-    def intersecting_sprite_dist(self, sprite_list: List[Sprite]) -> List[float]:
+    def intersecting_sprite_dist(self, sprite_list: list[Hitbox]) -> list[float]:
         return [Vector.distance(self.__pos, ray.intersect_sprite_list(sprite_list)) for ray in self.__rays]
 
     def rotate(self, angle: float) -> None:

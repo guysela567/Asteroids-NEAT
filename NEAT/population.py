@@ -33,8 +33,6 @@ class Population:
         # Populate with simulations
         self.__players = [Simulation() for _ in range(self.__size)]
         for sim in self.__players:
-            # Start with 10 connections and one extra mutation
-            # for _ in range(10): sim.brain.add_connection(self.__innovation_history)
             sim.brain.mutate(self.__innovation_history)
             sim.brain.generate_phenotype()
 
@@ -197,10 +195,6 @@ class Population:
     @property
     def players(self) -> list[Simulation]:
         return self.__players
-    
-    @property
-    def controllers(self) -> list[Controller]:
-        return [sim.controller for sim in self.__players]
 
     @property
     def all_dead(self) -> bool:

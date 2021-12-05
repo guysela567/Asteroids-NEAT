@@ -13,9 +13,10 @@ import math
 
 
 class Model:
-    def __init__(self, ai: bool = False) -> None:
+    def __init__(self, ai: bool = False) -> None:    
         # Initialize player
-        self.__player = Player(Constants.WINDOW_WIDTH * 0.5, Constants.WINDOW_HEIGHT * 0.5)
+        self.__player = Player(Constants.WINDOW_WIDTH * 0.5, 
+                               Constants.WINDOW_HEIGHT * 0.5)
 
         # Initialize astroids
         self.__asteroid_amount = 4
@@ -58,7 +59,7 @@ class Model:
         for projectile in reversed(self.__player.projectiles):
             for asteroid in reversed(self.__asteroids):
                 # Check for any projectile with astroid collision
-                if asteroid.sprite.collides(projectile.sprite):
+                if asteroid.hitbox.collides(projectile.hitbox):
                     self.__shots_hit += 1
 
                     if asteroid.hits < Constants.ASTEROID_HITS - 1:
@@ -94,7 +95,7 @@ class Model:
                         self.__spawn_asteroids()
 
         # Asteroid with player collision
-        if any(asteroid.sprite.collides(self.__player.sprite) for asteroid in self.__asteroids):
+        if any(asteroid.hitbox.collides(self.__player.hitbox) for asteroid in self.__asteroids):
             self.__dead = True
             self.__spawn_asteroids()
             self.__score = 0
@@ -103,7 +104,7 @@ class Model:
         if not self.__ai:
             return
 
-        asteroid_sprite_list = [a.sprite for a in self.__asteroids]
+        asteroid_sprite_list = [a.hitbox for a in self.__asteroids]
         vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
 
         can_shoot = 1 if self.__player.can_shoot else 0
@@ -123,7 +124,7 @@ class Model:
         if results[3] > .5:
             self.__player.shoot()
             self.__shots_fired += 1
-
+    
     @staticmethod
     def generate_asteroid() -> Asteroid:
         # TODO Needs more refactoring
