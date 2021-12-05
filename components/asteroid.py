@@ -44,11 +44,12 @@ class Asteroid:
     @property
     def hits(self) -> float:
         return self.__hits
-
-    @property
-    def angle(self) -> float:
-        return math.degrees(self.__angle) - 90
     
     @property
     def sprite_index(self) -> None:
         return self.__hitbox.index
+
+    @property
+    def angle(self) -> float:
+        deg = -(int(math.degrees(self.__angle)) - 90) % 360
+        return deg if deg > 0 else 360 - deg

@@ -29,5 +29,5 @@ class Constants:
     SCORE_SYSTEM = (20, 50, 100)
 
     # AI
-    RAY_AMOUNT = 30
+    RAY_AMOUNT = 8
     POPULATION_SIZE = 300

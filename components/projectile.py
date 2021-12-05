@@ -48,4 +48,5 @@ class Projectile:
 
     @property
     def angle(self) -> float:
-        return math.degrees(self.__angle) - 90
+        deg = -(int(math.degrees(self.__angle)) - 90) % 360
+        return deg if deg > 0 else 360 - deg

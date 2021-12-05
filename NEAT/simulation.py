@@ -1,29 +1,28 @@
 from __future__ import annotations
 
 from src.controller import Controller
-from NEAT.genome import Genome
 
 
-class Simulation:
+class Simulation(Controller):
     def __init__(self) -> None:
         ''' Simulates a thinking AI player. '''
-
-        self.__controller = Controller(ai=True)
+        
+        super().__init__(ai=True)
         self.__fitness = 0
 
     def update(self, iterations: int = 1) -> None:
         ''' Updates the simulation. '''
 
         for _ in range(iterations):
-            self.__controller.update()
-            self.__controller.think()
+            super().update()
+            self.think()
 
     def calculate_fitness(self) -> None:
         ''' Calculates score used to determine player's survival in next generations. '''
 
-        accuracy = self.__controller.shots_hit / self.__controller.shots_fired
-        self.__fitness = (self.__controller.score + 1) * 100
-        self.__fitness += self.__controller.lifespan
+        accuracy = self.shots_hit / self.shots_fired
+        self.__fitness = (self.score + 1) * 100
+        self.__fitness += self.lifespan
         self.__fitness *= accuracy ** 2
 
     def crossover(self, parent2: Simulation) -> Simulation:
@@ -45,27 +44,11 @@ class Simulation:
         copy.brain.generate_phenotype()
         copy.fitness = self.__fitness
         return copy
-
-    @property
-    def controller(self) -> Controller:
-        return self.__controller
     
     @property
     def fitness(self) -> float:
         return self.__fitness
 
-    @property
-    def brain(self) -> Genome:
-        return self.__controller.brain
-    
-    @property
-    def dead(self) -> bool:
-        return self.__controller.dead
-
     @fitness.setter
     def fitness(self, fitness: float) -> None:
         self.__fitness = fitness
-
-    @brain.setter
-    def brain(self, brain: Genome) -> None:
-        self.__controller.brain = brain

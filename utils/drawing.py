@@ -4,32 +4,32 @@ import pygame as pg
 from pygame.event import Event
 from pygame.time import Clock
 
+from functools import lru_cache
+
 
 # My wrapper on PyGame to make it more like the processing.org 
 # environment combined with HTML Canvas tools 
 
 
 class Image:
-    def __init__(self, image_path: str) -> None:
-        base_image = pg.image.load(image_path) # Load image
-
-        # Save original image in order to maintain it's quality
-        self.__original = base_image.convert_alpha()
+    def __init__(self, image: str | pg.Surface) -> None:
+        base_image = image if isinstance(image, pg.Surface) else pg.image.load(image) # Load image
         self.__surface = base_image.convert_alpha() # The surface used for viewing
-        self.__base = base_image.convert_alpha() # Keep original size for resizing
-    
-    def resize(self, width: int, height: int) -> None:
-        self.__original = pg.transform.smoothscale(self.__base, (width, height))
-        self.__surface = self.__original.convert_alpha()
 
-    def rotate(self, angle: float, anchor: tuple[float, float]) -> None:
-        self.__angle = -angle  # Convert from anti-clockwize to clockwize
+    @staticmethod
+    @lru_cache
+    def resize(image: Image, width: int, height: int) -> Image:
+        new_surf = pg.transform.smoothscale(image.surface, (width, height)).convert_alpha()
+        return Image(new_surf)
 
-        # Rotate original image to prevent big changes in image quality
-        self.__surface = pg.transform.rotate(self.__original, self.__angle)
+    @staticmethod
+    @lru_cache
+    def rotate(image: Image, angle: int) -> Image:
+        new_surf = pg.transform.rotate(image.surface, angle)
+        return Image(new_surf)
 
-    def get_rect_from_center(self, point: tuple[float, float]) -> tuple[int, int, int, int]:
-        return tuple(self.__surface.get_rect(center=point))
+    def get_rect(self, point: tuple[float, float]) -> tuple[int, int, int, int]:
+        return self.__surface.get_rect(center=point)
 
     @property
     def surface(self) -> pg.Surface:
@@ -44,7 +44,7 @@ class Image:
         return self.__surface.get_alpha()
 
     @alpha.setter
-    def alpha(self, alpha: float) -> None:
+    def alpha(self, alpha: int) -> None:
         self.__surface.set_alpha(alpha)
 
 class Canvas:

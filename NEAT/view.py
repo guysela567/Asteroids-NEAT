@@ -9,8 +9,10 @@ import numpy as np
 
 class PopulationView(View):
     def __init__(self, population_size: int = Constants.POPULATION_SIZE) -> None:
+        super().__init__()
+
         self.__population = Population(population_size)
-        super().__init__(self.__population.controllers[0])
+        self.controller = self.__population.players[0]
         self.__population_size = population_size
         self.__index = 0
 
@@ -21,7 +23,7 @@ class PopulationView(View):
                 self.next_player()
         else:
             self.__population.natural_selection()
-            self.controller = self.__population.controllers[0]
+            self.controller = self.__population.players[0]
             self.__index = 0
     
     def on_key_down(self, key: int) -> None:
@@ -78,8 +80,8 @@ class PopulationView(View):
 
         self.draw_rays(self.controller.player.ray_set)
 
-        for asteroid in self.controller.asteroids:
-            self.draw_poly(asteroid.sprite.rect_verts)
+        # for asteroid in self.controller.asteroids:
+        #     self.draw_poly(asteroid.hitbox.rect_verts)
         
         self.fill(255)
         self.text(f'Generation No. {self.__population.generation}', 
@@ -93,7 +95,7 @@ class PopulationView(View):
         if self.__index == self.__population_size:
             self.__index = 0
 
-        self.controller = self.__population.controllers[self.__index]
+        self.controller = self.__population.players[self.__index]
 
     def next_player(self) -> None:
         ''' Assume that at least one player is alive. '''

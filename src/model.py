@@ -104,7 +104,7 @@ class Model:
         if not self.__ai:
             return
 
-        asteroid_sprite_list = [a.sprite for a in self.__asteroids]
+        asteroid_sprite_list = [a.hitbox for a in self.__asteroids]
         vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
 
         can_shoot = 1 if self.__player.can_shoot else 0

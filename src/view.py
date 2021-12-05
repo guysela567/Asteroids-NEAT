@@ -114,15 +114,15 @@ class View(Screen):
         self.fill(255, 0, 0)
         self.font_size(100)
         self.text('GAME PAUSED',
-                        Constants.WINDOW_WIDTH * .5,
-                        Constants.WINDOW_HEIGHT * .5,
-                        center=True)
+                  Constants.WINDOW_WIDTH * .5,
+                  Constants.WINDOW_HEIGHT * .5,
+                  center=True)
 
     def draw_sprite(self, component: str, hitbox: Hitbox, angle: float) -> None:
-        image = self.__sprites[component][hitbox.index]
-        image.resize(hitbox.width, hitbox.height)
-        image.rotate(angle, tuple(hitbox.pos))
-        self.image(image, *image.get_rect_from_center(tuple(hitbox.pos)))
+        raw_image = self.__sprites[component][hitbox.index]
+        image = Image.rotate(Image.resize(raw_image, hitbox.width, hitbox.height), angle)
+
+        self.image(image, *image.get_rect(tuple(hitbox.pos)))
 
     def draw_rays(self, ray_set: RaySet) -> None:
         self.fill(0, 255, 0)

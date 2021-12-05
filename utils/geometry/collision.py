@@ -26,6 +26,19 @@ class Hitbox:
             and self.__pos.y + self.__height * .5 > other.pos.y - other.height * .5
 
     @property
+    def rect_verts(self) -> list[tuple[float, float]]:
+        return [
+            # Top left
+            (self.__pos.x - self.__width * .5, self.__pos.y - self.__height * .5),
+            # Top right
+            (self.__pos.x + self.__width * .5, self.__pos.y - self.__height * .5),
+            # Bottom right
+            (self.__pos.x + self.__width * .5, self.__pos.y + self.__height * .5),
+            # Bottom left
+            (self.__pos.x - self.__width * .5, self.__pos.y + self.__height * .5),
+        ]
+
+    @property
     def width(self) -> float:
         return self.__width
 
