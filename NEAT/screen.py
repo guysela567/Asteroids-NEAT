@@ -2,7 +2,7 @@ from utils.constants import Constants
 from NEAT.population import Population
 from NEAT.genome import Genome
 from NEAT.node import Node
-from src.screen import GameScreen
+from src.game import GameScreen
 
 import numpy as np
 

@@ -186,9 +186,9 @@ class Screen(Context):
         
         self.__keys = {k[2:]: v for k, v in pg.constants.__dict__.items() if k.startswith('K_')}
 
-    @property
-    def title(self) -> str:
-        return self.__title
+    def quit(self) -> None:
+        pg.quit()
+        exit()
     
     def update_all(self) -> None:
         if hasattr(self, 'update'):
@@ -200,9 +200,6 @@ class Screen(Context):
         for event in pg.event.get():
             self.handle_event(event)
 
-    @property
-    def surface(self) -> pg.Surface:
-        return self.__canvas.display
     
     def handle_event(self, event: Event) -> None:
         ''' Handles all events registered by pygame. '''
@@ -222,6 +219,14 @@ class Screen(Context):
 
         elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouse_up'):
             self.on_mouse_up()
+
+    @property
+    def title(self) -> str:
+        return self.__title
+
+    @property
+    def surface(self) -> pg.Surface:
+        return self.__canvas.display
 
     @property
     def width(self) -> int:
