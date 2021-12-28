@@ -18,7 +18,6 @@ class GameScreen(Screen):
         super().__init__(Constants.WINDOW_WIDTH, 
                          Constants.WINDOW_HEIGHT, 
                          Constants.WINDOW_TITLE)
-
         
         self.__sprites = {
             'asteroid': [Image(f'assets/sprites/asteroid{i}.png') for i in range(1, 4)],
