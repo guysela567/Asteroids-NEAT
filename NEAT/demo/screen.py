@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from utils.drawing import Screen
+from utils.constants import Constants
 from NEAT.demo.controller import DemoController
 from NEAT.genome import Genome
 from NEAT.node import Node
@@ -10,7 +11,7 @@ import numpy as np
 
 class DemoScreen(Screen):
     def __init__(self) -> None:
-        super().__init__(800, 600, 'NEAT Demo')
+        super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, 'NEAT Demo')
         self.__controller = DemoController()
 
     def update(self) -> None:
@@ -60,7 +61,7 @@ class DemoScreen(Screen):
 
     def draw(self) -> None:
         self.background(180)
-        self.draw_network(self.__controller.network, 0, 0, 800, 600, 20)
+        self.draw_network(self.__controller.network, 0, 0, self.width, self.height, 20)
     
     def on_key_down(self, key: int) -> None:
         if key == self.keys['UP']:
