@@ -8,8 +8,9 @@ class MenuScreen(Screen):
 
 
         self.font_size(40)
+        self.load_font('assets/fonts/HyperspaceBold.ttf')
         self.__start_button = Button(self, 100, 100, 250, 100, (255, 255, 255), 'START')
-        self.__instructions_button = Button(self, 100, 350, 250, 100, (255, 255, 255), 'INSTRUCTIONS')
+        self.__demo_button = Button(self, 100, 350, 250, 100, (255, 255, 255), 'NEAT DEMO')
         self.__quit_button = Button(self, 100, 600, 250, 100, (255, 255, 255), 'QUIT')
         self.background(100)
 
@@ -21,7 +22,7 @@ class MenuScreen(Screen):
         self.image(self.__background_animation[self.__animation_step], 300, 50, 800, 800)
         
         self.__start_button.draw()
-        self.__instructions_button.draw()
+        self.__demo_button.draw()
         self.__quit_button.draw()
 
         self.__animation_step += 1
@@ -33,4 +34,7 @@ class MenuScreen(Screen):
             self.quit()
 
         elif self.__start_button.mouse_hover():
-            self.manager.set_screen(0)
+            self.manager.set_screen('game')
+
+        elif self.__demo_button.mouse_hover():
+            self.manager.set_screen('demo')

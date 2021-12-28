@@ -168,6 +168,9 @@ class Context:
         self.__font_family = name
         self.__font = pg.font.SysFont(self.__font_family, self.__font_size)
 
+    def load_font(self, path: str) -> None:
+        self.__font = pg.font.Font(path, self.__font_size)
+
 class Screen(Context):
     def __init__(self, width: float, height: float, title: str) -> None:
         '''
@@ -253,16 +256,16 @@ class ScreenController:
     def __init__(self, width: int, height: int, fps: int) -> None:
         self.__display = pg.display.set_mode((width, height))
         self.__clock = Clock()
-        self.__screens: list[Screen] = []
-        self.__screen: int = 0
+        self.__screens: dict[str, Screen] = dict()
+        self.__screen: str = 0
         self.__fps = fps
 
-    def init_screen(self, screen: Screen) -> None:
+    def init_screen(self, screen: Screen, name: str) -> None:
         screen.manager = self
-        self.__screens.append(screen)
+        self.__screens[name] = screen
 
-    def set_screen(self, index: int) -> None:
-        self.__screen = index
+    def set_screen(self, name: str) -> None:
+        self.__screen = name
         screen = self.__screens[self.__screen]
         pg.display.set_mode((screen.width, screen.height))
         pg.display.set_caption(screen.title)
