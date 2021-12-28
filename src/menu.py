@@ -31,3 +31,6 @@ class MenuScreen(Screen):
     def on_mouse_down(self) -> None:
         if self.__quit_button.mouse_hover():
             self.quit()
+
+        elif self.__start_button.mouse_hover():
+            self.manager.set_screen(0)

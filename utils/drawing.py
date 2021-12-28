@@ -185,6 +185,7 @@ class Screen(Context):
         super().__init__(self.__canvas)
         
         self.__keys = {k[2:]: v for k, v in pg.constants.__dict__.items() if k.startswith('K_')}
+        self.__manager: ScreenController = None
 
     def quit(self) -> None:
         pg.quit()
@@ -221,6 +222,10 @@ class Screen(Context):
             self.on_mouse_up()
 
     @property
+    def manager(self) -> ScreenController:
+        return self.__manager
+
+    @property
     def title(self) -> str:
         return self.__title
 
@@ -240,6 +245,10 @@ class Screen(Context):
     def keys(self) -> dict[str, str]:
         return self.__keys
 
+    @manager.setter
+    def manager(self, manager: ScreenController) -> None:
+        self.__manager = manager
+
 class ScreenController:
     def __init__(self, width: int, height: int, fps: int) -> None:
         self.__display = pg.display.set_mode((width, height))
@@ -249,6 +258,7 @@ class ScreenController:
         self.__fps = fps
 
     def init_screen(self, screen: Screen) -> None:
+        screen.manager = self
         self.__screens.append(screen)
 
     def set_screen(self, index: int) -> None:
@@ -284,8 +294,13 @@ class Button:
 
     def draw(self) -> None:
         self.__ctx.stroke(0)
-        self.__ctx.fill(self.__color)
-        self.__ctx.rect(self.__x, self.__y, self.__w, self.__h, round=10)
+
+        if self.mouse_hover():
+            self.__ctx.fill(150)
+        else: 
+            self.__ctx.fill(self.__color)
+
+        self.__ctx.rect(self.__x, self.__y, self.__w, self.__h, round=20)
         self.__ctx.fill(0)
         self.__ctx.text(self.__caption, self.__x + self.__w * .5, self.__y + self.__h * .5, center=True)
         self.__ctx.no_stroke()
