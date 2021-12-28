@@ -8,7 +8,7 @@ from NEAT.node import Node
 import numpy as np
 
 
-class DemoView(Screen):
+class DemoScreen(Screen):
     def __init__(self) -> None:
         super().__init__(800, 600, 'NEAT Demo')
         self.__controller = DemoController()

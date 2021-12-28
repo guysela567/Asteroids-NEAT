@@ -13,7 +13,7 @@ from src.controller import Controller
 from random import uniform
 
 
-class View(Screen):
+class GameScreen(Screen):
     def __init__(self, controller: Controller = None) -> None:
         super().__init__(Constants.WINDOW_WIDTH, 
                          Constants.WINDOW_HEIGHT, 

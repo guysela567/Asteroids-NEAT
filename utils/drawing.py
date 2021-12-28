@@ -248,6 +248,8 @@ class ScreenController:
 
     def set_screen(self, index: int) -> None:
         self.__screen = index
+        screen = self.__screens[self.__screen]
+        pg.display.set_mode((screen.width, screen.height))
 
     def start(self) -> None:
         if len(self.__screens) == 0:

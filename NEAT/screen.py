@@ -2,12 +2,12 @@ from utils.constants import Constants
 from NEAT.population import Population
 from NEAT.genome import Genome
 from NEAT.node import Node
-from src.view import View
+from src.screen import GameScreen
 
 import numpy as np
 
 
-class PopulationView(View):
+class PopulationScreen(GameScreen):
     def __init__(self, population_size: int = Constants.POPULATION_SIZE) -> None:
         super().__init__()
 
