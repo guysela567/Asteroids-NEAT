@@ -17,13 +17,13 @@ class Image:
         self.__surface = base_image.convert_alpha() # The surface used for viewing
 
     @staticmethod
-    @lru_cache
+    # @lru_cache
     def resize(image: Image, width: int, height: int) -> Image:
         new_surf = pg.transform.smoothscale(image.surface, (width, height)).convert_alpha()
         return Image(new_surf)
 
     @staticmethod
-    @lru_cache
+    # @lru_cache
     def rotate(image: Image, angle: int) -> Image:
         new_surf = pg.transform.rotate(image.surface, angle)
         return Image(new_surf)
@@ -48,18 +48,11 @@ class Image:
         self.__surface.set_alpha(alpha)
 
 class Canvas:
-    def __init__(self, width: int, height: int, title: str, fps: int) -> None:
-        self.__display = pg.display.set_mode((width, height))
-        pg.display.set_caption(title)
-        self.__clock = Clock()
-        self.__fps = fps
+    def __init__(self, width: int, height: int, title: str) -> None:
+        self.__display = pg.Surface((width, height)).convert()
         self.__width = width
         self.__height = height
         self.__title = title
-
-    def update(self) -> None:
-        pg.display.flip()
-        self.__clock.tick(self.__fps)
 
     @property
     def display(self) -> pg.Surface:
@@ -181,7 +174,7 @@ class Context:
         self.__font = pg.font.SysFont(self.__font_family, self.__font_size)
 
 class Screen(Context):
-    def __init__(self, width: float, height: float, title: str, fps: int) -> None:
+    def __init__(self, width: float, height: float, title: str) -> None:
         '''
         Screen consisting of canvas, drawing methods and event handlers.
 
@@ -192,25 +185,24 @@ class Screen(Context):
             fps (int): Frame rate in which the screen updates.
         '''
 
-        self.__canvas = Canvas(width, height, title, fps)
+        self.__canvas = Canvas(width, height, title)
         super().__init__(self.__canvas)
         
         self.__keys = {k[2:]: v for k, v in pg.constants.__dict__.items() if k.startswith('K_')}
     
-    def start(self) -> None:
-        ''' Starts the main loop. handles events in each frame. '''
+    def update_all(self) -> None:
+        if hasattr(self, 'update'):
+            self.update()
 
-        while True:
-            if hasattr(self, 'update'):
-                self.update()
+        if hasattr(self, 'draw'):
+            self.draw()
+    
+        for event in pg.event.get():
+            self.handle_event(event)
 
-            if hasattr(self, 'draw'):
-                self.draw()
-        
-            for event in pg.event.get():
-                self.handle_event(event)
-            
-            self.__canvas.update()
+    @property
+    def surface(self) -> pg.Surface:
+        return self.__canvas.display
     
     def handle_event(self, event: Event) -> None:
         ''' Handles all events registered by pygame. '''
@@ -242,6 +234,35 @@ class Screen(Context):
     @property
     def keys(self) -> dict[str, str]:
         return self.__keys
+
+class ScreenController:
+    def __init__(self, width: int, height: int, fps: int) -> None:
+        self.__display = pg.display.set_mode((width, height))
+        self.__clock = Clock()
+        self.__screens: list[Screen] = []
+        self.__screen: int = 0
+        self.__fps = fps
+
+    def init_screen(self, screen: Screen) -> None:
+        self.__screens.append(screen)
+
+    def set_screen(self, index: int) -> None:
+        self.__screen = index
+
+    def start(self) -> None:
+        if len(self.__screens) == 0:
+            raise Exception('A screen needs to be initialized before starting the view.')
+
+        while True:
+            self.update()
+
+    def update(self) -> None:
+        screen = self.__screens[self.__screen]
+        screen.update_all()
+        self.__display.blit(screen.surface, (0, 0))
+
+        pg.display.flip()
+        self.__clock.tick(self.__fps)
 
 class Button:
     def __init__(self, ctx: Context, x: float, y: float, w: float, h: float, color: tuple, caption: str) -> None:

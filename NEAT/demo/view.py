@@ -10,7 +10,7 @@ import numpy as np
 
 class DemoView(Screen):
     def __init__(self) -> None:
-        super().__init__(800, 600, 'NEAT Demo', 60)
+        super().__init__(800, 600, 'NEAT Demo')
         self.__controller = DemoController()
 
     def update(self) -> None:

@@ -17,8 +17,7 @@ class View(Screen):
     def __init__(self, controller: Controller = None) -> None:
         super().__init__(Constants.WINDOW_WIDTH, 
                          Constants.WINDOW_HEIGHT, 
-                         Constants.WINDOW_TITLE, 
-                         Constants.FPS)
+                         Constants.WINDOW_TITLE)
 
         
         self.__sprites = {
