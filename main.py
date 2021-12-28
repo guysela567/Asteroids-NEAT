@@ -3,13 +3,13 @@ from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
 
-from src.master_view import MasterView
+from src.view import View
 
 
 def main() -> None:
     ''' Main method '''
 
-    game = MasterView()
+    game = View()
     game.start()
 
 
