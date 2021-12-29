@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pygame as pg
+from pygame.constants import USEREVENT
 from pygame.event import Event
 from pygame.time import Clock
 
@@ -188,22 +189,10 @@ class Screen(Context):
         super().__init__(self.__canvas)
         
         self.__keys = {k[2:]: v for k, v in pg.constants.__dict__.items() if k.startswith('K_')}
-        self.__manager: ScreenController = None
 
     def quit(self) -> None:
         pg.quit()
         exit()
-    
-    def update_all(self) -> None:
-        if hasattr(self, 'update'):
-            self.update()
-
-        if hasattr(self, 'draw'):
-            self.draw()
-    
-        for event in pg.event.get():
-            self.handle_event(event)
-
     
     def handle_event(self, event: Event) -> None:
         ''' Handles all events registered by pygame. '''
@@ -224,9 +213,8 @@ class Screen(Context):
         elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouse_up'):
             self.on_mouse_up()
 
-    @property
-    def manager(self) -> ScreenController:
-        return self.__manager
+    def set_screen(self, name: str) -> None:
+        pg.event.post(Event(pg.USEREVENT, screen=name))
 
     @property
     def title(self) -> str:
@@ -248,11 +236,7 @@ class Screen(Context):
     def keys(self) -> dict[str, str]:
         return self.__keys
 
-    @manager.setter
-    def manager(self, manager: ScreenController) -> None:
-        self.__manager = manager
-
-class ScreenController:
+class ScreenManager:
     def __init__(self, width: int, height: int, fps: int) -> None:
         self.__display = pg.display.set_mode((width, height))
         self.__clock = Clock()
@@ -261,7 +245,6 @@ class ScreenController:
         self.__fps = fps
 
     def init_screen(self, screen: Screen, name: str) -> None:
-        screen.manager = self
         self.__screens[name] = screen
 
     def set_screen(self, name: str) -> None:
@@ -272,14 +255,29 @@ class ScreenController:
 
     def start(self) -> None:
         if len(self.__screens) == 0:
-            raise Exception('A screen needs to be initialized before starting the view.')
+            raise Exception('A screen needs to be initialized before starting the screen manager.')
 
         while True:
             self.update()
 
     def update(self) -> None:
         screen = self.__screens[self.__screen]
-        screen.update_all()
+        
+        # Update active screen
+        if hasattr(screen, 'update'):
+            screen.update()
+
+        if hasattr(screen, 'draw'):
+            screen.draw()
+    
+        for event in pg.event.get():
+            # Handle event for active screen
+            screen.handle_event(event)
+
+            # Handle set screen events
+            if event.type == pg.USEREVENT:
+                self.set_screen(event.screen)
+
         self.__display.blit(screen.surface, (0, 0))
 
         pg.display.flip()
