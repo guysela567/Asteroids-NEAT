@@ -7,19 +7,19 @@ from typing import Tuple
 import math
 
 
-class PositionalVector:
+class PositionVector:
     def __init__(self, x: float, y: float):
         self.__x = x
         self.__y = y
 
-    def __add__(self, other: PositionalVector | DirectionalVector) -> PositionalVector:
-        return PositionalVector(self.__x + other.x, self.__y + other.y)
+    def __add__(self, other: PositionVector | DirectionVector) -> PositionVector:
+        return PositionVector(self.__x + other.x, self.__y + other.y)
 
-    def __sub__(self, other: PositionalVector | DirectionalVector) -> PositionalVector:
-        return PositionalVector(self.__x - other.x, self.__y - other.y)
+    def __sub__(self, other: PositionVector | DirectionVector) -> PositionVector:
+        return PositionVector(self.__x - other.x, self.__y - other.y)
 
-    def __mul__(self, other: PositionalVector | DirectionalVector) -> PositionalVector:
-        return PositionalVector(self.__x * other.x, self.__y * other.y)
+    def __mul__(self, other: PositionVector | DirectionVector) -> PositionVector:
+        return PositionVector(self.__x * other.x, self.__y * other.y)
 
     def __iter__(self) -> iter:
         return iter((self.__x, self.__y))
@@ -44,6 +44,15 @@ class PositionalVector:
         elif self.__y - sprite.height * .5 > Constants.WINDOW_HEIGHT:
             self.__y = -sprite.height * .5
 
+    def distance(self, other: PositionVector) -> float:
+        if self is None or other is None:
+            return 0
+            
+        return math.sqrt(math.pow(other.x - self.x, 2) + math.pow(other.y - self.y, 2))
+
+    def angle_between(self, other: PositionVector) -> float:
+        return math.atan((other.y - self.y) / (other.x - self.x))
+
     @property
     def x(self) -> float:
         return self.__x
@@ -61,7 +70,7 @@ class PositionalVector:
         self.__y = y
 
 
-class DirectionalVector:
+class DirectionVector:
     def __init__(self, mag: float, angle: float) -> None:
         self.__mag = mag
         self.__angle = angle
@@ -101,14 +110,3 @@ class DirectionalVector:
     def angle(self, angle: float) -> None:
         self.__angle = angle
         self.__update_components()
-
-
-class Vector:
-    def distance(vect1: PositionalVector, vect2: PositionalVector) -> float:
-        if vect1 is None or vect2 is None:
-            return 0
-            
-        return math.sqrt(math.pow(vect2.x - vect1.x, 2) + math.pow(vect2.y - vect1.y, 2))
-
-    def angle_between(vect1: PositionalVector, vect2: PositionalVector) -> float:
-        return math.atan((vect2.y - vect1.y) / (vect2.x - vect1.x))

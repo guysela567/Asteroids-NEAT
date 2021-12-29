@@ -1,4 +1,4 @@
-from utils.vector import PositionalVector, DirectionalVector
+from utils.vector import PositionVector, DirectionVector
 from utils.constants import Constants
 from utils.geometry.collision import Hitbox
 
@@ -8,7 +8,7 @@ from random import randint, uniform
 
 class Asteroid:
     def __init__(self, x: float, y: float, angle: float = None, hits: int = 0) -> None:
-        self.__pos = PositionalVector(x, y)
+        self.__pos = PositionVector(x, y)
         self.__hits = hits
 
         self.__hitbox = Hitbox(self.__pos, 'asteroid', Constants.ASTEROID_SPRITE_SCALE[self.__hits])
@@ -17,7 +17,7 @@ class Asteroid:
         self.__angle = uniform(0, math.pi * 2) if angle is None else angle
 
         # Set velocity vector in that angle
-        self.__vel = DirectionalVector(
+        self.__vel = DirectionVector(
             Constants.ASTEROID_VELOCITY[self.__hits], self.__angle + math.pi)
 
         # TODO Add destruction vfx

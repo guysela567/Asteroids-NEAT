@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from utils.vector import PositionalVector
+from utils.vector import PositionVector
 
 import random
 
@@ -9,7 +9,7 @@ class SpriteDimensions:
     dimensions = {}
 
 class Hitbox:
-    def __init__(self, pos: PositionalVector, component: str, scale: float):
+    def __init__(self, pos: PositionVector, component: str, scale: float):
         self.__pos, self.__scale = pos, scale
 
         dimensions = SpriteDimensions.dimensions[component]
@@ -51,7 +51,7 @@ class Hitbox:
         return self.__index
 
     @property
-    def pos(self) -> PositionalVector:
+    def pos(self) -> PositionVector:
         return self.__pos
     
     @property
@@ -59,7 +59,7 @@ class Hitbox:
         return self.__scale
 
     @pos.setter
-    def pos(self, pos: PositionalVector) -> None:
+    def pos(self, pos: PositionVector) -> None:
         self.__pos = pos
 
     @scale.setter

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from utils.vector import PositionalVector, DirectionalVector
+from utils.vector import PositionVector, DirectionVector
 from utils.constants import Constants
 from utils.geometry.collision import Hitbox, SpriteDimensions
 from utils.geometry.raycasting import RaySet
@@ -12,7 +12,7 @@ import math
 
 class Player():
     def __init__(self, x, y) -> None:
-        self.__pos = PositionalVector(x, y)
+        self.__pos = PositionVector(x, y)
 
         self.__hitbox = Hitbox(self.__pos, 'player', Constants.PLAYER_SPRITE_SCALE)
 
@@ -23,7 +23,7 @@ class Player():
         self.__angle = math.pi * .5
         self.__turn_speed = Constants.PLAYER_TURN_SPEED
 
-        self.__vel = DirectionalVector(0, self.__angle)
+        self.__vel = DirectionVector(0, self.__angle)
 
         self.__projectiles = []
         self.__can_shoot = True

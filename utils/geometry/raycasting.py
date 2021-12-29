@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-from utils.vector import PositionalVector, DirectionalVector, Vector
+from utils.vector import PositionVector, DirectionVector
 from utils.geometry.collision import Hitbox
 
 import math
 
 
 class Ray:
-    def __init__(self, pos: PositionalVector, angle: float) -> None:
+    def __init__(self, pos: PositionVector, angle: float) -> None:
         self.__pos = pos
         self.__angle = angle
-        self.__dir = DirectionalVector(1, self.__angle)
+        self.__dir = DirectionVector(1, self.__angle)
         self.__intersection = None
 
     def __iter__(self) -> iter:
         return iter((*self.__pos, *self.end))
 
-    def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> PositionalVector:
+    def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> PositionVector:
         ''' Euclidian Line-Line intersection '''
 
         # Better notation
@@ -41,10 +41,10 @@ class Ray:
         u = numerator_u / denominator
 
         # Check for intersection with u and t
-        return PositionalVector(x1 + t * (x2 - x1), y1 + t * (y2 - y1)) \
+        return PositionVector(x1 + t * (x2 - x1), y1 + t * (y2 - y1)) \
             if u >= 0 and 0 <= t <= 1 else None
     
-    def intersects_polygon(self, verts: list[tuple[float, float]]) -> PositionalVector:
+    def intersects_polygon(self, verts: list[tuple[float, float]]) -> PositionVector:
         closest = None
         closest_dist = 0
 
@@ -55,14 +55,14 @@ class Ray:
 
             point = self.intersects_line(pos1, pos2)
             if point is not None:
-                dist = Vector.distance(self.__pos, point)
+                dist = self.__pos.distance(point)
                 if dist < closest_dist or closest is None:
                     closest = point
                     closest_dist = dist
 
         return closest
 
-    def intersect_sprite_list(self, sprite_list: list[Hitbox]) -> PositionalVector:
+    def intersect_sprite_list(self, sprite_list: list[Hitbox]) -> PositionVector:
         closest = None
         closest_dist = 0
 
@@ -70,7 +70,7 @@ class Ray:
         for sprite in sprite_list:
             point = self.intersects_polygon(sprite.rect_verts)
             if point is not None:
-                dist = Vector.distance(self.__pos, point)
+                dist = self.__pos.distance(point)
                 if dist < closest_dist or closest is None:
                     closest = point
                     closest_dist = dist
@@ -86,20 +86,20 @@ class Ray:
         return self.__angle
 
     @property
-    def pos(self) -> PositionalVector:
+    def pos(self) -> PositionVector:
         return self.__pos
 
     @property
-    def end(self) -> PositionalVector:
+    def end(self) -> PositionVector:
         return self.__pos + self.__dir if self.__intersection is None else self.__intersection
 
     @pos.setter
-    def pos(self, pos: PositionalVector) -> None:
+    def pos(self, pos: PositionVector) -> None:
         self.__pos = pos
         
 
 class RaySet:
-    def __init__(self, pos: PositionalVector, angle: float, amount: int) -> None:
+    def __init__(self, pos: PositionVector, angle: float, amount: int) -> None:
         self.__pos = pos
 
         angle_gap = math.pi * 2 / amount
@@ -115,18 +115,18 @@ class RaySet:
         return any(self.__rays.intersects_polygon(verts))
 
     def intersecting_sprite_dist(self, sprite_list: list[Hitbox]) -> list[float]:
-        return [Vector.distance(self.__pos, ray.intersect_sprite_list(sprite_list)) for ray in self.__rays]
+        return [self.__pos.distance(ray.intersect_sprite_list(sprite_list)) for ray in self.__rays]
 
     def rotate(self, angle: float) -> None:
         for ray in self.__rays:
             ray.rotate(angle)
 
     @property
-    def pos(self) -> PositionalVector:
+    def pos(self) -> PositionVector:
         return self.__pos
 
     @pos.setter
-    def pos(self, pos: PositionalVector) -> None:
+    def pos(self, pos: PositionVector) -> None:
         self.__pos = pos
         
         for ray in self.__rays:

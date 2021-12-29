@@ -1,4 +1,4 @@
-from utils.vector import PositionalVector, DirectionalVector
+from utils.vector import PositionVector, DirectionVector
 from utils.constants import Constants
 from utils.geometry.collision import Hitbox
 
@@ -8,12 +8,12 @@ import math
 
 class Projectile:
     def __init__(self, x: float, y: float, angle: float) -> None:
-        self.__pos = PositionalVector(x, y)
+        self.__pos = PositionVector(x, y)
         self.__angle = angle
 
         self.__hitbox = Hitbox(self.__pos, 'projectile', Constants.PROJECTILE_SPRITE_SCALE)
 
-        self.__vel = DirectionalVector(
+        self.__vel = DirectionVector(
             Constants.PROJECTILE_SPEED, self.__angle + math.pi)
 
         self.__distance_traveled = 0
