@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pygame as pg
+from pygame.constants import USEREVENT
 from pygame.event import Event
 from pygame.time import Clock
 
@@ -17,13 +18,13 @@ class Image:
         self.__surface = base_image.convert_alpha() # The surface used for viewing
 
     @staticmethod
-    @lru_cache
+    # @lru_cache
     def resize(image: Image, width: int, height: int) -> Image:
         new_surf = pg.transform.smoothscale(image.surface, (width, height)).convert_alpha()
         return Image(new_surf)
 
     @staticmethod
-    @lru_cache
+    # @lru_cache
     def rotate(image: Image, angle: int) -> Image:
         new_surf = pg.transform.rotate(image.surface, angle)
         return Image(new_surf)
@@ -48,18 +49,10 @@ class Image:
         self.__surface.set_alpha(alpha)
 
 class Canvas:
-    def __init__(self, width: int, height: int, title: str, fps: int) -> None:
-        self.__display = pg.display.set_mode((width, height))
-        pg.display.set_caption(title)
-        self.__clock = Clock()
-        self.__fps = fps
+    def __init__(self, width: int, height: int) -> None:
+        self.__display = pg.Surface((width, height)).convert()
         self.__width = width
         self.__height = height
-        self.__title = title
-
-    def update(self) -> None:
-        pg.display.flip()
-        self.__clock.tick(self.__fps)
 
     @property
     def display(self) -> pg.Surface:
@@ -72,10 +65,6 @@ class Canvas:
     @property
     def height(self) -> float:
         return self.__height
-    
-    @property
-    def title(self) -> float:
-        return self.__title
 
 class Context:
     def __init__(self, canvas: Canvas) -> None:
@@ -142,13 +131,13 @@ class Context:
             pg.draw.circle(self.__display, self.__stroke_color,
                            (x, y), r, self.__weight)
 
-    def rect(self, x: float, y: float, w: float, h: float) -> None:
+    def rect(self, x: float, y: float, w: float, h: float, round: int = 0) -> None:
         if self.__filling:
-            pg.draw.rect(self.__display, self.__fill_color, (x, y, w, h))
+            pg.draw.rect(self.__display, self.__fill_color, (x, y, w, h), border_radius=round)
 
         if self.__stroking:
             pg.draw.rect(self.__display, self.__stroke_color,
-                         (x, y, w, h), self.__weight)
+                         (x, y, w, h), self.__weight, border_radius=round)
 
     def image(self, image: Image, x: float, y: float, w: float, h: float, alpha: float = None) -> None:
         if alpha is None:
@@ -180,8 +169,11 @@ class Context:
         self.__font_family = name
         self.__font = pg.font.SysFont(self.__font_family, self.__font_size)
 
+    def load_font(self, path: str) -> None:
+        self.__font = pg.font.Font(path, self.__font_size)
+
 class Screen(Context):
-    def __init__(self, width: float, height: float, title: str, fps: int) -> None:
+    def __init__(self, width: float, height: float, title: str) -> None:
         '''
         Screen consisting of canvas, drawing methods and event handlers.
 
@@ -192,25 +184,15 @@ class Screen(Context):
             fps (int): Frame rate in which the screen updates.
         '''
 
-        self.__canvas = Canvas(width, height, title, fps)
+        self.__title = title
+        self.__canvas = Canvas(width, height)
         super().__init__(self.__canvas)
         
         self.__keys = {k[2:]: v for k, v in pg.constants.__dict__.items() if k.startswith('K_')}
-    
-    def start(self) -> None:
-        ''' Starts the main loop. handles events in each frame. '''
 
-        while True:
-            if hasattr(self, 'update'):
-                self.update()
-
-            if hasattr(self, 'draw'):
-                self.draw()
-        
-            for event in pg.event.get():
-                self.handle_event(event)
-            
-            self.__canvas.update()
+    def quit(self) -> None:
+        pg.quit()
+        exit()
     
     def handle_event(self, event: Event) -> None:
         ''' Handles all events registered by pygame. '''
@@ -231,6 +213,17 @@ class Screen(Context):
         elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouse_up'):
             self.on_mouse_up()
 
+    def set_screen(self, name: str) -> None:
+        pg.event.post(Event(pg.USEREVENT, screen=name))
+
+    @property
+    def title(self) -> str:
+        return self.__title
+
+    @property
+    def surface(self) -> pg.Surface:
+        return self.__canvas.display
+
     @property
     def width(self) -> int:
         return self.__canvas.width
@@ -242,6 +235,53 @@ class Screen(Context):
     @property
     def keys(self) -> dict[str, str]:
         return self.__keys
+
+class ScreenManager:
+    def __init__(self, width: int, height: int, fps: int) -> None:
+        self.__display = pg.display.set_mode((width, height))
+        self.__clock = Clock()
+        self.__screens: dict[str, Screen] = dict()
+        self.__screen: str = 0
+        self.__fps = fps
+
+    def init_screen(self, screen: Screen, name: str) -> None:
+        self.__screens[name] = screen
+
+    def set_screen(self, name: str) -> None:
+        self.__screen = name
+        screen = self.__screens[self.__screen]
+        pg.display.set_mode((screen.width, screen.height))
+        pg.display.set_caption(screen.title)
+
+    def start(self) -> None:
+        if len(self.__screens) == 0:
+            raise Exception('A screen needs to be initialized before starting the screen manager.')
+
+        while True:
+            self.update()
+
+    def update(self) -> None:
+        screen = self.__screens[self.__screen]
+        
+        # Update active screen
+        if hasattr(screen, 'update'):
+            screen.update()
+
+        if hasattr(screen, 'draw'):
+            screen.draw()
+    
+        for event in pg.event.get():
+            # Handle event for active screen
+            screen.handle_event(event)
+
+            # Handle set screen events
+            if event.type == pg.USEREVENT:
+                self.set_screen(event.screen)
+
+        self.__display.blit(screen.surface, (0, 0))
+
+        pg.display.flip()
+        self.__clock.tick(self.__fps)
 
 class Button:
     def __init__(self, ctx: Context, x: float, y: float, w: float, h: float, color: tuple, caption: str) -> None:
@@ -255,8 +295,13 @@ class Button:
 
     def draw(self) -> None:
         self.__ctx.stroke(0)
-        self.__ctx.fill(self.__color)
-        self.__ctx.rect(self.__x, self.__y, self.__w, self.__h)
+
+        if self.mouse_hover():
+            self.__ctx.fill(150)
+        else: 
+            self.__ctx.fill(self.__color)
+
+        self.__ctx.rect(self.__x, self.__y, self.__w, self.__h, round=20)
         self.__ctx.fill(0)
         self.__ctx.text(self.__caption, self.__x + self.__w * .5, self.__y + self.__h * .5, center=True)
         self.__ctx.no_stroke()
@@ -274,72 +319,3 @@ class Button:
     @caption.setter
     def caption(self, caption: str) -> None:
         self.__caption = caption
-
-
-    def __init__(self, width: float, height: float, title: str, fps: int) -> None:
-        '''
-        Screen consisting of canvas, drawing methods and event handlers.
-
-        Args:
-            width (float): Width of the screen.
-            height (float): Height of the screen.
-            title (str): Caption of the screen.
-            fps (int): Frame rate in which the screen updates.
-        '''
-
-        self.__canvas = Canvas(width, height, title, fps)
-        super().__init__(self.__canvas)
-        
-        self.__keys = {k[2:]: v for k, v in pg.constants.__dict__.items() if k.startswith('K_')}
-    
-    def start(self) -> None:
-        ''' Starts the main loop. '''
-
-        while True:
-            self.update()
-
-    def update(self) -> None:
-        ''' Gets called in each frame. handles events in the main loop. '''
-
-        if hasattr(self, 'draw'):
-            self.draw()
-        
-        for event in pg.event.get():
-            self.handle_event(event)
-        
-        self.__canvas.update()
-    
-    def handle_event(self, event: Event) -> None:
-        ''' Handles all events registered by pygame. '''
-
-        if event.type == pg.QUIT:
-            pg.quit()
-            exit()
-        
-        elif event.type == pg.KEYDOWN and hasattr(self, 'on_keydown'):
-            self.on_keydown(event.key)
-
-        elif event.type == pg.KEYUP and hasattr(self, 'on_keyup'):
-            self.on_keyup(event.key)
-        
-        elif event.type == pg.MOUSEBUTTONDOWN and hasattr(self, 'on_mousedown'):
-            self.on_mousedown()
-
-        elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouseup'):
-            self.on_mouseup()
-
-    @property
-    def ctx(self) -> Context:
-        return self.__ctx
-
-    @property
-    def width(self) -> int:
-        return self.__canvas.width
-    
-    @property
-    def height(self) -> int:
-        return self.__canvas.height
-
-    @property
-    def keys(self) -> dict[str, str]:
-        return self.__keys
