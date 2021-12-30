@@ -3,7 +3,7 @@ from utils.geometry.collision import Hitbox
 from utils.constants import Constants
 
 import math
-from random import randint, uniform
+import random
 
 
 class Asteroid:
@@ -14,7 +14,7 @@ class Asteroid:
         self.__hitbox = Hitbox(self.__pos, 'asteroid', Constants.ASTEROID_SPRITE_SCALE[self.__hits])
 
         # Get a random angle for direction
-        self.__angle = uniform(0, math.pi * 2) if angle is None else angle
+        self.__angle = random.uniform(0, math.pi * 2) if angle is None else angle
 
         # Set velocity vector in that angle
         self.__vel = DirectionVector(
