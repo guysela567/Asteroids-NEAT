@@ -34,7 +34,7 @@ class MenuScreen(Screen):
             self.quit()
 
         elif self.__start_button.mouse_hover():
-            self.set_screen('ai')
+            self.set_screen('game')
 
         elif self.__demo_button.mouse_hover():
             self.set_screen('demo')
