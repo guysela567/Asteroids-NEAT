@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from utils.vector import PositionVector, DirectionVector
+from utils.geometry.vector import PositionVector, DirectionVector
 from utils.geometry.collision import Hitbox
 
 import math

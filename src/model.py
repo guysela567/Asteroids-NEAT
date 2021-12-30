@@ -4,11 +4,11 @@ from components.player import Player
 from components.asteroid import Asteroid
 
 from utils.constants import Constants
-from utils.vector import PositionVector
+from utils.geometry.vector import PositionVector
 
 from NEAT.genome import Genome
 
-from random import uniform, choice
+import random
 import math
 
 
@@ -65,7 +65,7 @@ class Model:
                     if asteroid.hits < Constants.ASTEROID_HITS - 1:
                         # Split asteroids into two parts
 
-                        random_angle = uniform(-math.pi * .5, math.pi * .5)
+                        random_angle = random.uniform(-math.pi * .5, math.pi * .5)
                         self.__asteroids.append(Asteroid(
                             asteroid.x, asteroid.y,
                             random_angle,
@@ -132,18 +132,18 @@ class Model:
         spawn_gap = 50
 
         # Inside screen
-        x = uniform(-Constants.WINDOW_WIDTH * .5, Constants.WINDOW_WIDTH * 1.5)
+        x = random.uniform(-Constants.WINDOW_WIDTH * .5, Constants.WINDOW_WIDTH * 1.5)
         x_inside = x > spawn_gap and x < Constants.WINDOW_WIDTH - spawn_gap
 
-        y = choice([uniform(-spawn_gap * 2, -spawn_gap),  # Below screen
+        y = random.choice([random.uniform(-spawn_gap * 2, -spawn_gap),  # Below screen
                     # Above screen
-                   uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_HEIGHT]) if x_inside \
-            else uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)  # Inside sreen
+                   random.uniform(spawn_gap, spawn_gap * 2) + Constants.WINDOW_HEIGHT]) if x_inside \
+            else random.uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)  # Inside sreen
 
         # Pick a random point on screen
-        # random_point = PositionVector(uniform(
+        # random_point = PositionVector(random.uniform(
         #     spawn_gap, Constants.WINDOW_WIDTH - spawn_gap),
-        #     uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap))
+        #     random.uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap))
         random_point = PositionVector(Constants.WINDOW_WIDTH * .5, Constants.WINDOW_HEIGHT * .5)
 
         # Get the angle between asteroid's position and random point

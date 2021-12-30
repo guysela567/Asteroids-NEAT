@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pygame as pg
-from pygame.constants import USEREVENT
 from pygame.event import Event
 from pygame.time import Clock
 

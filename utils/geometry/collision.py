@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from utils.vector import PositionVector
+from utils.geometry.vector import PositionVector
 
 import random
 
