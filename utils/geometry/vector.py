@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from utils.constants import Constants
 
-from typing import Tuple
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from utils.geometry.collision import Hitbox
 
 import math
 
@@ -24,10 +27,10 @@ class PositionVector:
     def __iter__(self) -> iter:
         return iter((self.__x, self.__y))
 
-    def to_tuple(self) -> Tuple[float, float]:
+    def to_tuple(self) -> tuple[float, float]:
         return self.__x, self.__y
 
-    def handle_offscreen(self, sprite) -> None:
+    def handle_offscreen(self, sprite: Hitbox) -> None:
         # left to right
         if self.__x + sprite.width * .5 < 0:
             self.__x = Constants.WINDOW_WIDTH + sprite.width * .5

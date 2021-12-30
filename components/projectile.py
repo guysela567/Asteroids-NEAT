@@ -1,6 +1,6 @@
-from utils.vector import PositionVector, DirectionVector
-from utils.constants import Constants
+from utils.geometry.vector import PositionVector, DirectionVector
 from utils.geometry.collision import Hitbox
+from utils.constants import Constants
 
 import numpy as np
 import math

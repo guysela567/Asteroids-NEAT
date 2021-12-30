@@ -10,7 +10,7 @@ from components.asteroid import Asteroid
 
 from src.controller import Controller
 
-from random import uniform
+import random
 
 
 class GameScreen(Screen):
@@ -35,9 +35,9 @@ class GameScreen(Screen):
         self.no_stroke()
 
         # Generate stars for background
-        self.__stars = [(uniform(0, Constants.WINDOW_WIDTH),
-                         uniform(0, Constants.WINDOW_HEIGHT),
-                         uniform(1, 3)) for _ in range(50)]
+        self.__stars = [(random.uniform(0, Constants.WINDOW_WIDTH),
+                         random.uniform(0, Constants.WINDOW_HEIGHT),
+                         random.uniform(1, 3)) for _ in range(50)]
 
     def draw(self) -> None:
         # Update graphics
