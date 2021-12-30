@@ -6,9 +6,7 @@ class MenuScreen(Screen):
     def __init__(self) -> None:
         super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, 'Asteroids Menu')
 
-
-        self.font_size(40)
-        self.load_font('assets/fonts/HyperspaceBold.ttf')
+        self.set_font(self.load_font('assets/fonts/HyperspaceBold.ttf', 40))
         self.__start_button = Button(self, 100, 100, 250, 100, (255, 255, 255), 'START')
         self.__demo_button = Button(self, 100, 350, 250, 100, (255, 255, 255), 'NEAT DEMO')
         self.__quit_button = Button(self, 100, 600, 250, 100, (255, 255, 255), 'QUIT')

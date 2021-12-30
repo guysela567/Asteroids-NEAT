@@ -185,8 +185,11 @@ class Screen:
         self.__font_family = name
         self.__font = pg.font.SysFont(self.__font_family, self.__font_size)
 
-    def load_font(self, path: str) -> None:
-        self.__font = pg.font.Font(path, self.__font_size)
+    def load_font(self, path: str, size: int) -> pg.font.Font:
+        return pg.font.Font(path, size)
+
+    def set_font(self, font: pg.font.Font) -> None:
+        self.__font = font
 
     def quit(self) -> None:
         pg.quit()
@@ -206,10 +209,13 @@ class Screen:
             self.on_key_up(event.key)
         
         elif event.type == pg.MOUSEBUTTONDOWN and hasattr(self, 'on_mouse_down'):
-            self.on_mouse_down(*pg.mouse.get_pos())
+            self.on_mouse_down()
 
         elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouse_up'):
-            self.on_mouse_up(*pg.mouse.get_pos())
+            self.on_mouse_up()
+
+    def mouse_pos(self) -> tuple[int, int]:
+        pg.mouse.get_pos()
 
     def set_screen(self, name: str) -> None:
         pg.event.post(Event(pg.USEREVENT, screen=name))
