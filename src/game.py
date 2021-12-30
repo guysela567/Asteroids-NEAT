@@ -50,7 +50,7 @@ class GameScreen(Screen):
         if self.__controller.paused:
             self.draw_paused()
 
-        self.draw_rays(self.__controller.player.ray_set)
+        # self.draw_rays(self.__controller.player.ray_set)
 
         # for asteroid in self.__controller.asteroids:
         #     self.draw_poly(asteroid.sprite.rect_verts)
