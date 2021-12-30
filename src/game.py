@@ -14,7 +14,7 @@ import random
 
 
 class GameScreen(Screen):
-    def __init__(self, controller: Controller = None) -> None:
+    def __init__(self) -> None:
         super().__init__(Constants.WINDOW_WIDTH, 
                          Constants.WINDOW_HEIGHT, 
                          Constants.WINDOW_TITLE)
@@ -29,7 +29,7 @@ class GameScreen(Screen):
             dims = [image.size for image in images]
             SpriteDimensions.dimensions[sprite] = dims
 
-        self.__controller = Controller() if controller is None else controller
+        self.__controller = Controller()
 
         # Graphical setup
         self.no_stroke()

@@ -7,9 +7,10 @@ class MenuScreen(Screen):
         super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, 'Asteroids Menu')
 
         self.set_font(self.load_font('assets/fonts/HyperspaceBold.ttf', 40))
-        self.__start_button = Button(self, 100, 100, 250, 100, (255, 255, 255), 'START')
-        self.__demo_button = Button(self, 100, 350, 250, 100, (255, 255, 255), 'NEAT DEMO')
-        self.__quit_button = Button(self, 100, 600, 250, 100, (255, 255, 255), 'QUIT')
+        self.__play_button = Button(self, 50, 100, 250, 100, (255, 255, 255), 'PLAY')
+        self.__ai_button = Button(self, 50, 250, 250, 100, (255, 255, 255), 'PLAY AI')
+        self.__demo_button = Button(self, 50, 400, 250, 100, (255, 255, 255), 'NEAT DEMO')
+        self.__quit_button = Button(self, 50, 650, 250, 100, (255, 255, 255), 'QUIT')
         self.background(100)
 
         self.__animation_step = 0
@@ -19,7 +20,8 @@ class MenuScreen(Screen):
         self.background(0)
         self.image(self.__background_animation[self.__animation_step], 300, 50, 800, 800)
         
-        self.__start_button.draw()
+        self.__play_button.draw()
+        self.__ai_button.draw()
         self.__demo_button.draw()
         self.__quit_button.draw()
 
@@ -31,8 +33,11 @@ class MenuScreen(Screen):
         if self.__quit_button.mouse_hover():
             self.quit()
 
-        elif self.__start_button.mouse_hover():
+        elif self.__play_button.mouse_hover():
             self.set_screen('game')
+
+        elif self.__ai_button.mouse_hover():
+            self.set_screen('ai')
 
         elif self.__demo_button.mouse_hover():
             self.set_screen('demo')

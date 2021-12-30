@@ -16,6 +16,8 @@ class PopulationScreen(GameScreen):
         self.__population_size = population_size
         self.__index = 0
 
+        self.__gen_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 25)
+
     def update(self) -> None:
         if not self.__population.done():
             self.__population.update(iterations=1)
@@ -61,7 +63,6 @@ class PopulationScreen(GameScreen):
                 to_pos = node_poses[node_numbers.index(gene.to_node.number)]
                 self.line(*from_pos, *to_pos, weight)
 
-        self.font_size(20)
         for pos, num in zip(node_poses, node_numbers):
             self.fill(255, 255, 0)
             self.circle(*pos, r)
@@ -84,10 +85,10 @@ class PopulationScreen(GameScreen):
         #     self.draw_poly(asteroid.hitbox.rect_verts)
         
         self.fill(255)
-        self.text(f'Generation No. {self.__population.generation}', 
-                      Constants.WINDOW_WIDTH - 150, 50, center=True)
-        self.text(f'Player No. {self.__index + 1} of {self.__population_size}', 
-                      Constants.WINDOW_WIDTH - 150, 100, center=True)
+        self.set_font(self.__gen_font)
+        self.text(f'Generation No. {self.__population.generation}', Constants.WINDOW_WIDTH - 150, 50, center=True)
+        self.text(f'Player No. {self.__index + 1}', Constants.WINDOW_WIDTH - 150, 100, center=True)
+        self.text(f'of {self.__population_size}',  Constants.WINDOW_WIDTH - 150, 125, center=True)
         self.draw_network(self.controller.brain, 0, Constants.WINDOW_HEIGHT - 300, 400, 300, 5, show_labels=False)
 
     def next_index(self) -> None:
