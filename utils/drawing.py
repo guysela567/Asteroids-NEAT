@@ -17,13 +17,13 @@ class Image:
         self.__surface = base_image.convert_alpha() # The surface used for viewing
 
     @staticmethod
-    # @lru_cache
+    @lru_cache(maxsize=300)
     def resize(image: Image, width: int, height: int) -> Image:
         new_surf = pg.transform.smoothscale(image.surface, (width, height)).convert_alpha()
         return Image(new_surf)
 
     @staticmethod
-    # @lru_cache
+    @lru_cache(maxsize=300)
     def rotate(image: Image, angle: int) -> Image:
         new_surf = pg.transform.rotate(image.surface, angle)
         return Image(new_surf)
@@ -65,11 +65,28 @@ class Canvas:
     def height(self) -> float:
         return self.__height
 
-class Context:
-    def __init__(self, canvas: Canvas) -> None:
-        pg.init()
+class Screen:
+    def __init__(self, width: float, height: float, title: str) -> None:
+        '''
+        Screen consisting of canvas, drawing methods and event handlers.
 
-        self.__display = canvas.display
+        Args:
+            width (float): Width of the screen.
+            height (float): Height of the screen.
+            title (str): Caption of the screen.
+            fps (int): Frame rate in which the screen updates.
+        '''
+
+        # Canvas and keys
+
+        self.__title = title
+        self.__canvas = Canvas(width, height)
+        
+        self.__keys = {k[2:]: v for k, v in pg.constants.__dict__.items() if k.startswith('K_')}
+
+        # Drawing functions
+
+        self.__display = self.__canvas.display
 
         self.__fill_color = (255, 255, 255)
         self.__stroke_color = (0, 0, 0)
@@ -168,26 +185,11 @@ class Context:
         self.__font_family = name
         self.__font = pg.font.SysFont(self.__font_family, self.__font_size)
 
-    def load_font(self, path: str) -> None:
-        self.__font = pg.font.Font(path, self.__font_size)
+    def load_font(self, path: str, size: int) -> pg.font.Font:
+        return pg.font.Font(path, size)
 
-class Screen(Context):
-    def __init__(self, width: float, height: float, title: str) -> None:
-        '''
-        Screen consisting of canvas, drawing methods and event handlers.
-
-        Args:
-            width (float): Width of the screen.
-            height (float): Height of the screen.
-            title (str): Caption of the screen.
-            fps (int): Frame rate in which the screen updates.
-        '''
-
-        self.__title = title
-        self.__canvas = Canvas(width, height)
-        super().__init__(self.__canvas)
-        
-        self.__keys = {k[2:]: v for k, v in pg.constants.__dict__.items() if k.startswith('K_')}
+    def set_font(self, font: pg.font.Font) -> None:
+        self.__font = font
 
     def quit(self) -> None:
         pg.quit()
@@ -211,6 +213,9 @@ class Screen(Context):
 
         elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouse_up'):
             self.on_mouse_up()
+
+    def mouse_pos(self) -> tuple[int, int]:
+        pg.mouse.get_pos()
 
     def set_screen(self, name: str) -> None:
         pg.event.post(Event(pg.USEREVENT, screen=name))
@@ -237,6 +242,8 @@ class Screen(Context):
 
 class ScreenManager:
     def __init__(self, width: int, height: int, fps: int) -> None:
+        pg.init()
+
         self.__display = pg.display.set_mode((width, height))
         self.__clock = Clock()
         self.__screens: dict[str, Screen] = dict()
@@ -283,8 +290,8 @@ class ScreenManager:
         self.__clock.tick(self.__fps)
 
 class Button:
-    def __init__(self, ctx: Context, x: float, y: float, w: float, h: float, color: tuple, caption: str) -> None:
-        self.__ctx = ctx
+    def __init__(self, screen: Screen, x: float, y: float, w: float, h: float, color: tuple, caption: str) -> None:
+        self.__screen = screen
         self.__x = x
         self.__y = y
         self.__w = w
@@ -293,17 +300,17 @@ class Button:
         self.__caption = caption
 
     def draw(self) -> None:
-        self.__ctx.stroke(0)
+        self.__screen.stroke(0)
 
         if self.mouse_hover():
-            self.__ctx.fill(150)
+            self.__screen.fill(150)
         else: 
-            self.__ctx.fill(self.__color)
+            self.__screen.fill(self.__color)
 
-        self.__ctx.rect(self.__x, self.__y, self.__w, self.__h, round=20)
-        self.__ctx.fill(0)
-        self.__ctx.text(self.__caption, self.__x + self.__w * .5, self.__y + self.__h * .5, center=True)
-        self.__ctx.no_stroke()
+        self.__screen.rect(self.__x, self.__y, self.__w, self.__h, round=20)
+        self.__screen.fill(0)
+        self.__screen.text(self.__caption, self.__x + self.__w * .5, self.__y + self.__h * .5, center=True)
+        self.__screen.no_stroke()
 
     def mouse_hover(self) -> None:
         x, y = pg.mouse.get_pos()

@@ -39,6 +39,8 @@ class GameScreen(Screen):
                          random.uniform(0, Constants.WINDOW_HEIGHT),
                          random.uniform(1, 3)) for _ in range(50)]
 
+        self.__score_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 36)
+
     def draw(self) -> None:
         # Update graphics
         self.draw_background()
@@ -100,7 +102,7 @@ class GameScreen(Screen):
             self.draw_sprite('projectile', projectile.hitbox, projectile.angle)
 
     def draw_score(self, score: int, high_score: int) -> None:
-        self.font_size(36)
+        self.set_font(self.__score_font)
 
         # Draw score
         self.text(f'SCORE: {score}', 25, 100)
