@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 from utils.constants import Constants
-from utils.geometry.collision import Hitbox
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from utils.geometry.collision import Hitbox
 
 import math
 
