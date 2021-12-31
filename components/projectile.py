@@ -48,5 +48,8 @@ class Projectile:
 
     @property
     def angle(self) -> float:
-        deg = -(int(math.degrees(self.__angle)) - 90) % 360
-        return deg if deg > 0 else 360 - deg
+        return -(int(math.degrees(self.__angle)) - 90) % 360
+
+    @property
+    def alpha(self) -> int:
+        return int(255 * (1 - self.__distance_traveled / self.__max_distance))
