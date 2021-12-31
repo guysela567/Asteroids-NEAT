@@ -102,7 +102,7 @@ class GameScreen(Screen):
 
         # Draw projectiles
         for projectile in player.projectiles:
-            self.draw_sprite('projectile', projectile.hitbox, projectile.angle)
+            self.draw_sprite('projectile', projectile.hitbox, projectile.angle, projectile.alpha)
 
         # Draw thrust
         if player.boosting:
@@ -130,11 +130,14 @@ class GameScreen(Screen):
                   Constants.WINDOW_HEIGHT * .5,
                   center=True)
 
-    def draw_sprite(self, component: str, hitbox: Hitbox, angle: float) -> None:
+    def draw_sprite(self, component: str, hitbox: Hitbox, angle: float, alpha: int = 255) -> None:
         raw_image = self.__sprites[component][hitbox.index]
         image = Image.rotate(Image.resize(raw_image, hitbox.width, hitbox.height), angle)
 
+        temp = image.alpha
+        image.alpha = alpha
         self.image(image, *image.get_rect(tuple(hitbox.pos)))
+        image.alpha = temp # Revert to normal opacity to prevent affecting cached images
 
     def draw_rays(self, ray_set: RaySet) -> None:
         self.fill(0, 255, 0)

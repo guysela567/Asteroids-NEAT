@@ -17,8 +17,8 @@ class Constants:
 
     # Asteroid config
     ASTEROID_HITS = 3
-    ASTEROID_SPRITE_SCALE = (.4, .3, .2)
-    ASTEROID_VELOCITY = (4, 6, 10)
+    ASTEROID_SPRITE_SCALE = (1.4, 1, 0.8)
+    ASTEROID_VELOCITY = (4, 6, 8)
 
     # Projectile config
     PROJECTILE_SPRITE_SCALE = .25
