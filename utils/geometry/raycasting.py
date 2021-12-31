@@ -34,7 +34,7 @@ class Ray:
 
         # Calculate numerators
         numerator_t = (x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)
-        numerator_u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3))
+        numerator_u = (x1 - x3) * (y1 - y2) - (y1 - y3) * (x1 - x2)
 
         # Calculate t and u
         t = numerator_t / denominator
