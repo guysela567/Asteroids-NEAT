@@ -18,8 +18,12 @@ class Image:
 
     @staticmethod
     @lru_cache(maxsize=300)
-    def resize(image: Image, width: int, height: int) -> Image:
-        new_surf = pg.transform.smoothscale(image.surface, (width, height)).convert_alpha()
+    def resize(image: Image, width: int, height: int, smooth: bool = True) -> Image:
+        if smooth:
+            new_surf = pg.transform.smoothscale(image.surface, (width, height)).convert_alpha()
+        else:
+            new_surf = pg.transform.scale(image.surface, (width, height)).convert_alpha()
+
         return Image(new_surf)
 
     @staticmethod
@@ -27,6 +31,12 @@ class Image:
     def rotate(image: Image, angle: int) -> Image:
         new_surf = pg.transform.rotate(image.surface, angle)
         return Image(new_surf)
+
+    @staticmethod
+    def load_by_scale(image_path: str, scale: float) -> Image:
+        original = Image(image_path)
+        size = tuple(int(d * scale) for d in original.size)
+        return Image.resize(original, *size, smooth=False)
 
     def get_rect(self, point: tuple[float, float]) -> tuple[int, int, int, int]:
         return self.__surface.get_rect(center=point)

@@ -140,3 +140,11 @@ class Player():
     def angle(self) -> float:
         deg = -(int(math.degrees(self.__angle)) - 90) % 360
         return deg if deg > 0 else 360 - deg
+
+    @property
+    def angle_radians(self) -> float:
+        return self.__angle
+    
+    @property
+    def boosting(self) -> bool:
+        return self.__boosting
