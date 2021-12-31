@@ -11,6 +11,7 @@ from components.asteroid import Asteroid
 from src.controller import Controller
 
 import random
+import math
 
 
 class GameScreen(Screen):
@@ -24,6 +25,8 @@ class GameScreen(Screen):
             'player': [Image('assets/sprites/player.png')],
             'projectile': [Image('assets/sprites/projectile.png')]
         }
+
+        self.__thrust_image = Image.load_by_scale('assets/sprites/thrust.png', 3)
 
         for sprite, images in self.__sprites.items():
             dims = [image.size for image in images]
@@ -100,6 +103,15 @@ class GameScreen(Screen):
         # Draw projectiles
         for projectile in player.projectiles:
             self.draw_sprite('projectile', projectile.hitbox, projectile.angle)
+
+        # Draw thrust
+        if player.boosting:
+            r = player.hitbox.height * .5 + 7.5
+            x = player.hitbox.pos.x + r * math.cos(player.angle_radians)
+            y = player.hitbox.pos.y + r * math.sin(player.angle_radians)
+
+            thrust = Image.rotate(self.__thrust_image, player.angle)
+            self.image(thrust, *thrust.get_rect((x, y)))
 
     def draw_score(self, score: int, high_score: int) -> None:
         self.set_font(self.__score_font)
