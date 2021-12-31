@@ -109,7 +109,7 @@ class GameScreen(Screen):
             r = player.hitbox.height * .5 + 7.5
             x = player.hitbox.pos.x + r * math.cos(player.angle_radians)
             y = player.hitbox.pos.y + r * math.sin(player.angle_radians)
-            
+
             thrust = Image.rotate(self.__thrust_image, player.angle)
             self.image(thrust, *thrust.get_rect((x, y)))
 
