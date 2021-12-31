@@ -1,3 +1,7 @@
+'''
+My wrapper on PyGame to make it more like the processing.org environment
+'''
+
 from __future__ import annotations
 
 import pygame as pg
@@ -7,8 +11,6 @@ from pygame.time import Clock
 from functools import lru_cache
 
 
-# My wrapper on PyGame to make it more like the processing.org 
-# environment combined with HTML Canvas tools 
 
 
 class Image:
