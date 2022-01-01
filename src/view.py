@@ -1,4 +1,3 @@
-from NEAT.population import Population
 from utils.drawing import ScreenManager
 from src.menu import MenuScreen
 from src.game import GameScreen

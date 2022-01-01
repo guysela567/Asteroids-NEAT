@@ -104,6 +104,9 @@ class GameScreen(Screen):
         for projectile in player.projectiles:
             self.draw_sprite('projectile', projectile.hitbox, projectile.angle, projectile.alpha)
 
+        self.draw_rays(player.ray_set)
+        self.fill(255)
+
         # Draw thrust
         if player.boosting:
             r = player.hitbox.height * .5 + 7.5
@@ -140,9 +143,13 @@ class GameScreen(Screen):
         image.alpha = temp # Revert to normal opacity to prevent affecting cached images
 
     def draw_rays(self, ray_set: RaySet) -> None:
-        self.fill(0, 255, 0)
         for ray in ray_set:
+            self.fill(0, 255, 0)
             self.line(*ray, 5)
+            self.fill(0, 0, 255)
+            if ray.looped_pos:
+                self.line(*ray.looped, 2)
+
 
     def draw_poly(self, verts) -> None:
         self.fill(0, 255, 0)

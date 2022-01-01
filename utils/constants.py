@@ -8,6 +8,8 @@ class Constants:
     WINDOW_TITLE = 'Asteroids'
     FPS = 30
 
+    WINDOW_DIAGONAL = math.sqrt(math.pow(WINDOW_WIDTH, 2) + math.pow(WINDOW_HEIGHT, 2))
+
     # Player config
     PLAYER_SPRITE_SCALE = .5
     PLAYER_BOOST_SPEED = 15
@@ -29,5 +31,5 @@ class Constants:
     SCORE_SYSTEM = (20, 50, 100)
 
     # AI
-    RAY_AMOUNT = 8
+    RAY_AMOUNT = 3
     POPULATION_SIZE = 300

@@ -27,25 +27,25 @@ class PositionVector:
     def __iter__(self) -> iter:
         return iter((self.__x, self.__y))
 
-    def to_tuple(self) -> tuple[float, float]:
-        return self.__x, self.__y
+    def handle_offscreen(self, sprite: Hitbox = None) -> None:
+        width = sprite.width if sprite else 0
+        height = sprite.height if sprite else 0
 
-    def handle_offscreen(self, sprite: Hitbox) -> None:
         # left to right
-        if self.__x + sprite.width * .5 < 0:
-            self.__x = Constants.WINDOW_WIDTH + sprite.width * .5
+        if self.__x + width * .5 < 0:
+            self.__x = Constants.WINDOW_WIDTH + width * .5
 
         # right to left
-        elif self.__x - sprite.width * .5 > Constants.WINDOW_WIDTH:
-            self.__x = -sprite.width * .5
+        elif self.__x - width * .5 > Constants.WINDOW_WIDTH:
+            self.__x = -width * .5
 
         # bottom to top
-        elif self.__y + sprite.height * .5 < 0:
-            self.__y = Constants.WINDOW_HEIGHT + sprite.height * .5
+        elif self.__y + height * .5 < 0:
+            self.__y = Constants.WINDOW_HEIGHT + height * .5
 
         # top to bottom
-        elif self.__y - sprite.height * .5 > Constants.WINDOW_HEIGHT:
-            self.__y = -sprite.height * .5
+        elif self.__y - height * .5 > Constants.WINDOW_HEIGHT:
+            self.__y = -height * .5
 
     def distance(self, other: PositionVector) -> float:
         if self is None or other is None:
@@ -55,6 +55,9 @@ class PositionVector:
 
     def angle_between(self, other: PositionVector) -> float:
         return math.atan((other.y - self.y) / (other.x - self.x))
+
+    def copy(self) -> PositionVector:
+        return PositionVector(self.__x, self.__y)
 
     @property
     def x(self) -> float:
@@ -87,6 +90,9 @@ class DirectionVector:
         # Apply linear interpolation on magnitude
         self.__mag = (1 - step) * self.__mag + step * to
         self.__update_components()
+
+    def copy(self) -> DirectionVector:
+        return DirectionVector(self.__mag, self.__angle)
 
     @property
     def x(self) -> float:

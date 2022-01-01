@@ -10,9 +10,6 @@ from pygame.time import Clock
 
 from functools import lru_cache
 
-
-
-
 class Image:
     def __init__(self, image: str | pg.Surface) -> None:
         base_image = image if isinstance(image, pg.Surface) else pg.image.load(image) # Load image

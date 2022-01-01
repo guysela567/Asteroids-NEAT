@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from utils.geometry.vector import PositionVector, DirectionVector
 from utils.geometry.collision import Hitbox
+from utils.constants import Constants
 
 import math
 
@@ -10,11 +11,42 @@ class Ray:
     def __init__(self, pos: PositionVector, angle: float) -> None:
         self.__pos = pos
         self.__angle = angle
-        self.__dir = DirectionVector(1, self.__angle)
+        self.__dir = DirectionVector(Constants.WINDOW_DIAGONAL, self.__angle)
         self.__intersection = None
+
+        self.__looped_pos = self.__loop()
 
     def __iter__(self) -> iter:
         return iter((*self.__pos, *self.end))
+
+    def __loop(self) -> PositionVector:
+        # Not a function
+        if self.__dir.x == 0:
+            return None
+
+        m = self.__dir.y / self.__dir.x # (y2 - y1) / (x2 - x1)
+        b = self.__pos.y - m * self.__pos.x # b = y - mx
+
+        # Border Y = 0
+        x = -b / m
+        if 0 < x  < Constants.WINDOW_WIDTH:
+            return PositionVector(x, Constants.WINDOW_HEIGHT)
+        
+        # Border Y = height
+        x = (Constants.WINDOW_HEIGHT -b) / m
+        if 0 < x < Constants.WINDOW_WIDTH:
+            return PositionVector(x, 0)
+
+        # Border X = 0
+        y = b
+        if 0 < y < Constants.WINDOW_HEIGHT:
+            return PositionVector(Constants.WINDOW_WIDTH, y)
+
+        # Border X = width
+        y = m * Constants.WINDOW_WIDTH + b
+        if 0 < y < Constants.WINDOW_HEIGHT:
+            return PositionVector(0, y)
+
 
     def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> PositionVector:
         ''' Euclidian Line-Line intersection '''
@@ -80,6 +112,7 @@ class Ray:
 
     def rotate(self, angle: float) -> None:
         self.__dir.angle += angle
+        self.__looped_pos = self.__loop()
 
     @property
     def angle(self) -> float:
@@ -92,6 +125,14 @@ class Ray:
     @property
     def end(self) -> PositionVector:
         return self.__pos + self.__dir if self.__intersection is None else self.__intersection
+
+    @property
+    def looped(self) -> tuple[float, float, float, float]:
+        return (*self.__looped_pos, *(self.__looped_pos + self.__dir))
+
+    @property
+    def looped_pos(self) -> PositionVector:
+        return self.__looped_pos
 
     @pos.setter
     def pos(self, pos: PositionVector) -> None:
