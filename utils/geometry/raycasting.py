@@ -20,33 +20,68 @@ class Ray:
         return iter((*self.__pos, *self.end))
 
     def __loop(self) -> PositionVector:
-        # Not a function
-        if self.__dir.x == 0:
-            return None
-
         m = self.__dir.y / self.__dir.x # (y2 - y1) / (x2 - x1)
-        b = self.__pos.y - m * self.__pos.x # b = y - mx
+        b = self.__pos.y - m * self.__pos.x # y = mx + b => b = y - mx
 
-        # Border Y = 0
-        x = -b / m
-        if 0 < x  < Constants.WINDOW_WIDTH:
-            return PositionVector(x, Constants.WINDOW_HEIGHT)
-        
+        # Pointing right
+        if self.__dir.x > 0:
+            # Check right border
+            if point := Ray.check_right_intersection(m, b):
+                return point
+
+            # Facing up: check top border
+            if self.__dir.y < 0:
+                if point := Ray.check_top_intersection(m, b):
+                    return point
+
+            # Facing down: check bottom border
+            elif point := Ray.check_bottom_intersection(m, b):
+                return point
+
+        # Pointing left
+        else:
+            # Check left border
+            if point := Ray.check_left_intersection(m, b):
+                return point
+
+            # Facing up: check top border
+            if self.__dir.y < 0 and (point := Ray.check_top_intersection(m, b)):
+                return point
+            
+        # All that is left is the bottom intersection
+        return Ray.check_bottom_intersection(m, b)
+    
+    @staticmethod
+    def check_bottom_intersection(m: float, b: float) -> PositionVector:
         # Border Y = height
-        x = (Constants.WINDOW_HEIGHT -b) / m
+        x = (Constants.WINDOW_HEIGHT - b) / m
         if 0 < x < Constants.WINDOW_WIDTH:
             return PositionVector(x, 0)
+        return None
 
-        # Border X = 0
-        y = b
-        if 0 < y < Constants.WINDOW_HEIGHT:
-            return PositionVector(Constants.WINDOW_WIDTH, y)
-
+    @staticmethod
+    def check_top_intersection(m: float, b: float) -> PositionVector:
+        # Border Y = 0
+        x = -b / m
+        if 0 < x < Constants.WINDOW_WIDTH:
+            return PositionVector(x, Constants.WINDOW_HEIGHT)
+        return None
+    
+    @staticmethod
+    def check_right_intersection(m: float, b: float) -> PositionVector:
         # Border X = width
         y = m * Constants.WINDOW_WIDTH + b
         if 0 < y < Constants.WINDOW_HEIGHT:
             return PositionVector(0, y)
+        return None
 
+    @staticmethod
+    def check_left_intersection(m: float, b: float) -> PositionVector:
+        # Border X = 0
+        y = b
+        if 0 < y < Constants.WINDOW_HEIGHT:
+            return PositionVector(Constants.WINDOW_WIDTH, y)
+        return None
 
     def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> PositionVector:
         ''' Euclidian Line-Line intersection '''

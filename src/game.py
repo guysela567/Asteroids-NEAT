@@ -148,7 +148,7 @@ class GameScreen(Screen):
             self.line(*ray, 5)
             self.fill(0, 0, 255)
             if ray.looped_pos:
-                self.line(*ray.looped, 2)
+                self.line(*ray.looped, 5)
 
 
     def draw_poly(self, verts) -> None:

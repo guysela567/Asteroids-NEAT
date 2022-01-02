@@ -14,4 +14,5 @@ class View(ScreenManager):
         self.init_screen(PopulationScreen(), 'ai')
         self.init_screen(DemoScreen(), 'demo')
         self.init_screen(MenuScreen(), 'menu')
-        self.set_screen('menu')
+
+        self.set_screen('ai')
