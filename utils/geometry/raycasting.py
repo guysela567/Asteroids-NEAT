@@ -22,33 +22,20 @@ class Ray:
     def __loop(self) -> PositionVector:
         m = self.__dir.y / self.__dir.x # (y2 - y1) / (x2 - x1)
         b = self.__pos.y - m * self.__pos.x # y = mx + b => b = y - mx
-
-        # Pointing right
-        if self.__dir.x > 0:
-            # Check right border
+        
+        if self.__dir.x > 0: # Pointing right: check right border
             if point := Ray.check_right_intersection(m, b):
                 return point
 
-            # Facing up: check top border
-            if self.__dir.y < 0:
-                if point := Ray.check_top_intersection(m, b):
-                    return point
-
-            # Facing down: check bottom border
-            elif point := Ray.check_bottom_intersection(m, b):
-                return point
-
-        # Pointing left
-        else:
-            # Check left border
+        else: # Pointing left: Check left border
             if point := Ray.check_left_intersection(m, b):
                 return point
 
-            # Facing up: check top border
-            if self.__dir.y < 0 and (point := Ray.check_top_intersection(m, b)):
-                return point
+        # Facing up: check top border
+        if self.__dir.y < 0 and (point := Ray.check_top_intersection(m, b)):
+            return point
             
-        # All that is left is the bottom intersection
+        # Bottom intersection is confirmed
         return Ray.check_bottom_intersection(m, b)
     
     @staticmethod
