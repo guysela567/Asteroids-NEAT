@@ -14,6 +14,7 @@ class Ray:
         self.__dir = DirectionVector(Constants.WINDOW_DIAGONAL, self.__angle)
         self.__intersection = None
 
+        self.__looped = False
         self.__looped_pos = self.__loop()
 
     def __iter__(self) -> iter:
@@ -21,14 +22,14 @@ class Ray:
 
     def __loop(self) -> PositionVector:
         m = self.__dir.y / self.__dir.x # (y2 - y1) / (x2 - x1)
-        b = self.__pos.y - m * self.__pos.x # y = mx + b => b = y - mx
+        b = self.__pos.y - m * self.__pos.x # b = y - mx
         
         if self.__dir.x > 0: # Pointing right: check right border
             if point := Ray.check_right_intersection(m, b):
                 return point
 
         else: # Pointing left: Check left border
-            if point := Ray.check_left_intersection(m, b):
+            if point := Ray.check_left_intersection(b):
                 return point
 
         # Facing up: check top border
@@ -63,21 +64,23 @@ class Ray:
         return None
 
     @staticmethod
-    def check_left_intersection(m: float, b: float) -> PositionVector:
+    def check_left_intersection(b: float) -> PositionVector:
         # Border X = 0
         y = b
         if 0 < y < Constants.WINDOW_HEIGHT:
             return PositionVector(Constants.WINDOW_WIDTH, y)
         return None
 
-    def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> PositionVector:
+    def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float], looped: bool = False) -> PositionVector:
         ''' Euclidian Line-Line intersection '''
+
+        start_pos = self.__looped_pos if looped else self.__pos
 
         # Better notation
         x1, y1 = pos1
         x2, y2 = pos2
-        x3, y3 = self.__pos
-        x4, y4 = self.__pos + self.__dir
+        x3, y3 = start_pos
+        x4, y4 = start_pos + self.__dir
 
         # Calculate denominator
         denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
@@ -98,37 +101,41 @@ class Ray:
         return PositionVector(x1 + t * (x2 - x1), y1 + t * (y2 - y1)) \
             if u >= 0 and 0 <= t <= 1 else None
     
-    def intersects_polygon(self, verts: list[tuple[float, float]]) -> PositionVector:
+    def intersects_polygon(self, verts: list[tuple[float, float]], looped: bool = False) -> PositionVector:
         closest = None
         closest_dist = 0
+
+        start_pos = self.__looped_pos if looped else self.__pos
 
         # Iterate through each polygon segment
         for i in range(len(verts)):
             pos1 = verts[i]
             pos2 = verts[i + 1] if i < len(verts) - 1 else verts[0]
 
-            point = self.intersects_line(pos1, pos2)
+            point = self.intersects_line(pos1, pos2, looped=looped)
             if point is not None:
-                dist = self.__pos.distance(point)
+                dist = start_pos.distance(point)
                 if dist < closest_dist or closest is None:
                     closest = point
                     closest_dist = dist
 
         return closest
 
-    def intersect_sprite_list(self, sprite_list: list[Hitbox]) -> PositionVector:
+    def intersects_sprite_list(self, sprite_list: list[Hitbox], looped: bool = False) -> PositionVector:
         closest = None
         closest_dist = 0
 
+        start_pos = self.__looped_pos if looped else self.__pos
+
         # Get closest point
         for sprite in sprite_list:
-            point = self.intersects_polygon(sprite.rect_verts)
-            if point is not None:
-                dist = self.__pos.distance(point)
+            if point := self.intersects_polygon(sprite.rect_verts, looped=looped):
+                dist = start_pos.distance(point)
                 if dist < closest_dist or closest is None:
                     closest = point
                     closest_dist = dist
 
+        self.__looped = looped and closest
         self.__intersection = closest
         return closest
 
@@ -150,7 +157,15 @@ class Ray:
 
     @property
     def looped(self) -> tuple[float, float, float, float]:
-        return (*self.__looped_pos, *(self.__looped_pos + self.__dir))
+        return (*self.__looped_pos, *(self.__looped_pos + self.__dir if self.__intersection is None else self.__intersection))
+    
+    @property
+    def infinite(self) -> tuple[float, float, float, float]:
+        return (*self.__pos, *(self.__pos + self.__dir))
+
+    @property
+    def is_looped(self) -> PositionVector:
+        return self.__looped
 
     @property
     def looped_pos(self) -> PositionVector:
@@ -168,7 +183,7 @@ class RaySet:
         angle_gap = math.pi * 2 / amount
         self.__rays = [Ray(self.__pos, angle + angle_gap * i) for i in range(amount)]
 
-    def __iter__(self) -> iter:
+    def __iter__(self):
         return iter(self.__rays)
 
     def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> bool:
@@ -178,7 +193,16 @@ class RaySet:
         return any(self.__rays.intersects_polygon(verts))
 
     def intersecting_sprite_dist(self, sprite_list: list[Hitbox]) -> list[float]:
-        return [self.__pos.distance(ray.intersect_sprite_list(sprite_list)) for ray in self.__rays]
+        dists: list[float] = []
+
+        for ray in self.__rays:
+            if point := ray.intersects_sprite_list(sprite_list):
+                dists.append(ray.pos.distance(point))
+            elif point := ray.intersects_sprite_list(sprite_list, looped=True):
+                dists.append(ray.looped_pos.distance(point) + Constants.WINDOW_DIAGONAL)
+            else: dists.append(0)
+
+        return dists
 
     def rotate(self, angle: float) -> None:
         for ray in self.__rays:
