@@ -174,6 +174,7 @@ class Ray:
     @pos.setter
     def pos(self, pos: PositionVector) -> None:
         self.__pos = pos
+        self.__looped_pos = self.__loop()
         
 
 class RaySet:

@@ -103,6 +103,13 @@ class GameScreen(Screen):
             self.draw_sprite('projectile', projectile.hitbox, projectile.angle, projectile.alpha)
 
         # Draw thrust
+        self.draw_thurst(player)
+
+        # Draw rays
+        self.draw_rays(player.ray_set)
+        self.fill(255)
+
+    def draw_thurst(self, player: Player) -> None:
         if player.boosting:
             r = player.hitbox.height * .5 + 7.5
             x = player.hitbox.pos.x + r * math.cos(player.angle_radians)
@@ -139,11 +146,11 @@ class GameScreen(Screen):
 
     def draw_rays(self, ray_set: RaySet) -> None:
         for ray in ray_set:
-            if ray.is_looped:
+            # if ray.is_looped:
                 self.fill(200, 150, 0)
                 self.line(*ray.looped, 5)
                 self.line(*ray.infinite, 5)
-            else:
+            # else:
                 self.fill(0, 255, 0)
                 self.line(*ray, 5)
 
