@@ -157,7 +157,6 @@ class GameScreen(Screen):
 
 
     def draw_poly(self, verts) -> None:
-        self.fill(0, 255, 0)
         for i in range(len(verts)):
             pos1 = verts[i]
             pos2 = verts[i + 1] if i < len(verts) - 1 else verts[0]

@@ -81,8 +81,9 @@ class PopulationScreen(GameScreen):
 
         self.draw_rays(self.controller.player.ray_set)
 
-        # for asteroid in self.controller.asteroids:
-        #     self.draw_poly(asteroid.hitbox.rect_verts)
+        self.fill(255, 150, 150)
+        for asteroid in self.controller.asteroids:
+            self.draw_poly(asteroid.hitbox.rect_verts)
         
         self.fill(255)
         self.set_font(self.__gen_font)
