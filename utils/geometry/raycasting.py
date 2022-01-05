@@ -15,61 +15,72 @@ class Ray:
         self.__intersection = None
 
         self.__looped = False
-        self.__looped_pos = self.__loop()
+        self.__looped_pos: PositionVector = None
+        self.__projection_end: PositionVector = None
+        self.update()
 
     def __iter__(self) -> iter:
         return iter((*self.__pos, *self.end))
 
-    def __loop(self) -> PositionVector:
+    def update(self) -> None:
         m = self.__dir.y / self.__dir.x # (y2 - y1) / (x2 - x1)
         b = self.__pos.y - m * self.__pos.x # b = y - mx
         
-        if self.__dir.x > 0: # Pointing right: check right border
-            if point := Ray.check_right_intersection(m, b):
-                return point
+        # Pointing right: check right border
+        if self.__dir.x > 0:
+            if self.check_right_intersection(m, b):
+                return
 
-        else: # Pointing left: Check left border
-            if point := Ray.check_left_intersection(b):
-                return point
+        # Pointing left: Check left border
+        elif self.check_left_intersection(b):
+            return
 
         # Facing up: check top border
-        if self.__dir.y < 0 and (point := Ray.check_top_intersection(m, b)):
-            return point
+        if self.__dir.y < 0 and self.check_top_intersection(m, b):
+            return
             
-        # Bottom intersection is confirmed
-        return Ray.check_bottom_intersection(m, b)
+        # Lastly, check for bottom instersection
+        if self.check_bottom_intersection(m, b):
+            return
+
+        # No projection and looped points
+        self.__projection_end, self.__looped_pos = None, None
     
-    @staticmethod
-    def check_bottom_intersection(m: float, b: float) -> PositionVector:
+    def check_bottom_intersection(self, m: float, b: float) -> bool:
         # Border Y = height
         x = (Constants.WINDOW_HEIGHT - b) / m
         if 0 < x < Constants.WINDOW_WIDTH:
-            return PositionVector(x, 0)
-        return None
+            self.__projection_end = PositionVector(x, Constants.WINDOW_HEIGHT)
+            self.__looped_pos = PositionVector(x, 0)
+            return True
+        return False
 
-    @staticmethod
-    def check_top_intersection(m: float, b: float) -> PositionVector:
+    def check_top_intersection(self, m: float, b: float) -> bool:
         # Border Y = 0
         x = -b / m
         if 0 < x < Constants.WINDOW_WIDTH:
-            return PositionVector(x, Constants.WINDOW_HEIGHT)
-        return None
-    
-    @staticmethod
-    def check_right_intersection(m: float, b: float) -> PositionVector:
+            self.__projection_end = PositionVector(x, 0)
+            self.__looped_pos = PositionVector(x, Constants.WINDOW_HEIGHT)
+            return True
+        return False
+
+    def check_right_intersection(self, m: float, b: float) -> bool:
         # Border X = width
         y = m * Constants.WINDOW_WIDTH + b
         if 0 < y < Constants.WINDOW_HEIGHT:
-            return PositionVector(0, y)
-        return None
+            self.__projection_end = PositionVector(Constants.WINDOW_WIDTH, y)
+            self.__looped_pos = PositionVector(0, y)
+            return True
+        return False
 
-    @staticmethod
-    def check_left_intersection(b: float) -> PositionVector:
+    def check_left_intersection(self, b: float) -> bool:
         # Border X = 0
         y = b
         if 0 < y < Constants.WINDOW_HEIGHT:
-            return PositionVector(Constants.WINDOW_WIDTH, y)
-        return None
+            self.__projection_end = PositionVector(0, y)
+            self.__looped_pos = PositionVector(Constants.WINDOW_WIDTH, y)
+            return True
+        return False
 
     def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float], looped: bool = False) -> PositionVector:
         ''' Euclidian Line-Line intersection '''
@@ -141,7 +152,7 @@ class Ray:
 
     def rotate(self, angle: float) -> None:
         self.__dir.angle += angle
-        self.__looped_pos = self.__loop()
+        self.update()
 
     @property
     def angle(self) -> float:
@@ -153,11 +164,12 @@ class Ray:
 
     @property
     def end(self) -> PositionVector:
-        return self.__pos + self.__dir if self.__intersection is None else self.__intersection
+        infinite_end = self.__projection_end or self.__pos + self.__dir
+        return self.__intersection or infinite_end
 
     @property
     def looped(self) -> tuple[float, float, float, float]:
-        return (*self.__looped_pos, *(self.__looped_pos + self.__dir if self.__intersection is None else self.__intersection))
+        return (*self.__looped_pos, *(self.__intersection or self.__looped_pos + self.__dir))
     
     @property
     def infinite(self) -> tuple[float, float, float, float]:
@@ -171,10 +183,14 @@ class Ray:
     def looped_pos(self) -> PositionVector:
         return self.__looped_pos
 
+    @property
+    def length(self) -> float:
+        return self.__pos.distance(self.__projection_end)
+
     @pos.setter
     def pos(self, pos: PositionVector) -> None:
         self.__pos = pos
-        self.__looped_pos = self.__loop()
+        self.update()
         
 
 class RaySet:
@@ -201,7 +217,7 @@ class RaySet:
                 dists.append(ray.pos.distance(point))
             elif ray.looped_pos:
                 if point := ray.intersects_sprite_list(sprite_list, looped=True):
-                    dists.append(ray.looped_pos.distance(point) + Constants.WINDOW_DIAGONAL)
+                    dists.append(ray.looped_pos.distance(point) + ray.length)
                 else: dists.append(0)
             else: dists.append(0)
 

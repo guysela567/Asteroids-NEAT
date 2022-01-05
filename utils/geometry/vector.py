@@ -11,7 +11,7 @@ import math
 
 
 class PositionVector:
-    def __init__(self, x: float, y: float):
+    def __init__(self, x: float = 0, y: float = 0):
         self.__x = x
         self.__y = y
 
@@ -74,7 +74,6 @@ class PositionVector:
     @y.setter
     def y(self, y: float) -> None:
         self.__y = y
-
 
 class DirectionVector:
     def __init__(self, mag: float, angle: float) -> None:
