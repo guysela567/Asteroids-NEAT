@@ -149,6 +149,7 @@ class GameScreen(Screen):
             if ray.is_looped:
                 self.fill(200, 150, 0)
                 self.line(*ray.looped, 5)
+                self.fill(100, 255, 255)
                 self.line(*ray.infinite, 5)
             else:
                 self.fill(0, 255, 0)
