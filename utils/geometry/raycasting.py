@@ -165,7 +165,7 @@ class Ray:
 
     @property
     def is_looped(self) -> PositionVector:
-        return self.__looped
+        return self.__looped and self.__looped_pos
 
     @property
     def looped_pos(self) -> PositionVector:
@@ -199,8 +199,10 @@ class RaySet:
         for ray in self.__rays:
             if point := ray.intersects_sprite_list(sprite_list):
                 dists.append(ray.pos.distance(point))
-            elif point := ray.intersects_sprite_list(sprite_list, looped=True):
-                dists.append(ray.looped_pos.distance(point) + Constants.WINDOW_DIAGONAL)
+            elif ray.looped_pos:
+                if point := ray.intersects_sprite_list(sprite_list, looped=True):
+                    dists.append(ray.looped_pos.distance(point) + Constants.WINDOW_DIAGONAL)
+                else: dists.append(0)
             else: dists.append(0)
 
         return dists
