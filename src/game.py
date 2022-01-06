@@ -75,6 +75,9 @@ class GameScreen(Screen):
         elif key == self.keys['SPACE']:
             self.__controller.shoot()
 
+        elif key == self.keys['ESCAPE']:
+            self.redirect('instructions')
+
     def on_key_up(self, key: int) -> None:
         if key == self.keys['UP']:
             self.__controller.stop_boost()

@@ -34,10 +34,6 @@ class Projectile:
         if self.__distance_traveled >= self.__max_distance:
             self.__deleted = True
 
-        # Fade out as more distance is traveled
-        percentage = self.__distance_traveled / self.__max_distance
-        self.__hitbox.alpha = np.interp(percentage, [0, 1], [255, 0])
-
     @property
     def hitbox(self) -> Hitbox:
         return self.__hitbox
