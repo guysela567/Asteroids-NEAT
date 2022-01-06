@@ -1,4 +1,4 @@
-from utils.drawing import Screen
+from utils.drawing import Screen, Image
 from utils.constants import Constants
 
 
@@ -6,14 +6,75 @@ class InstructionsScreen(Screen):
     def __init__(self) -> None:
         super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, 'Instructions')
 
+        # Setup
         self.__title_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 150)
-        self.__regular_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 50)
+        self.__regular_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 40)
+        self.__key_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 23)
 
-    def draw(self) -> None:
+        self.__up_arrow = Image.load_by_scale('assets/sprites/controls/up_arrow.png', 3)
+        self.__side_arrows = Image.load_by_scale('assets/sprites/controls/side_arrows.png', 3)
+        self.__empty_key = Image.load_by_scale('assets/sprites/controls/empty_key.png', 4)
+
+        self.__key_off_x = self.__empty_key.size[0] * .5
+        self.__key_off_y = self.__empty_key.size[1] * .5
+
+        # Draw once
+        self.draw_text()
+
+    def draw_text(self) -> None:
+        drawing_y = self.height * .5 - 100
+        drawing_gap = 100
+        drawing_x = 100
+
         self.background(0)
+
+        # Title
+        self.fill(255)
         self.set_font(self.__title_font)
-        self.text('Asteroids', self.width * .5, 100, center=True)
+        self.text('asteroids', self.width * .5, 120, center=True)
+
+        self.fill(Constants.TEXT_COLOR)
+
+        # Enter key
+        self.image(self.__empty_key, drawing_x, drawing_y)
+        self.set_font(self.__key_font)
+        self.text('enter', drawing_x + self.__key_off_x, drawing_y + self.__key_off_y, center=True)
         self.set_font(self.__regular_font)
-        self.text('<UP ARROW> THRUST', 100, self.height * .5)
-        self.text('<SIDE ARROWS> Turn', 100, self.height * .5 + 100)
-        self.text('<SPACE> FIRE', 100, self.height * .5 + 200)
+        self.text('start', drawing_x + 125, drawing_y)
+
+        drawing_y += drawing_gap
+
+        # Up arrow key
+        self.image(self.__up_arrow, drawing_x, drawing_y)
+        self.text('thrust', drawing_x + 65, drawing_y)
+
+        drawing_y += drawing_gap
+        
+        # Side arrow keys
+        self.image(self.__side_arrows, drawing_x, drawing_y)
+        self.text('turn', drawing_x + 130, drawing_y)
+
+        drawing_y += drawing_gap
+
+        # Space key
+        self.image(self.__empty_key, drawing_x, drawing_y)
+        self.set_font(self.__key_font)
+        self.text('space', drawing_x + self.__key_off_x, drawing_y + self.__key_off_y, center=True)
+        self.set_font(self.__regular_font)
+        self.text('fire', drawing_x + 125, drawing_y)
+
+        drawing_y += drawing_gap
+        
+        # Escape key
+        self.image(self.__empty_key, drawing_x, drawing_y)
+        self.set_font(self.__key_font)
+        self.text('escape', drawing_x + self.__key_off_x, drawing_y + self.__key_off_y, center=True)
+        self.set_font(self.__regular_font)
+        self.text('return to menu', drawing_x + 125, drawing_y)
+
+    def on_key_down(self, key: int) -> None:
+        if key == self.keys['RETURN']:
+            self.set_screen('game')
+        
+        elif key == self.keys['ESCAPE']:
+            self.set_screen('menu')

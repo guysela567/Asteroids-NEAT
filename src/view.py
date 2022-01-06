@@ -19,4 +19,4 @@ class View(ScreenManager):
         self.init_screen(DemoScreen(), 'demo')
         self.init_screen(MenuScreen(), 'menu')
 
-        self.set_screen('instructions')
+        self.set_screen('menu')
