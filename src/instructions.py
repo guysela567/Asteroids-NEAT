@@ -22,7 +22,7 @@ class InstructionsScreen(Screen):
         self.draw_text()
 
     def draw_text(self) -> None:
-        drawing_y = self.height * .5 - 100
+        drawing_y = self.height * .5 - 125
         drawing_gap = 100
         drawing_x = 100
 
