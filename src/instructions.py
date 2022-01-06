@@ -74,7 +74,7 @@ class InstructionsScreen(Screen):
 
     def on_key_down(self, key: int) -> None:
         if key == self.keys['RETURN']:
-            self.set_screen('game')
+            self.redirect('game')
         
         elif key == self.keys['ESCAPE']:
-            self.set_screen('menu')
+            self.redirect('menu')

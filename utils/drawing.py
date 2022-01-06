@@ -228,7 +228,7 @@ class Screen:
     def mouse_pos(self) -> tuple[int, int]:
         pg.mouse.get_pos()
 
-    def set_screen(self, name: str) -> None:
+    def redirect(self, name: str) -> None:
         pg.event.post(Event(pg.USEREVENT, screen=name))
 
     @property
