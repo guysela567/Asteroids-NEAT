@@ -1,4 +1,3 @@
-from NEAT.population import Population
 from utils.drawing import ScreenManager
 from src.menu import MenuScreen
 from src.game import GameScreen
@@ -15,4 +14,5 @@ class View(ScreenManager):
         self.init_screen(PopulationScreen(), 'ai')
         self.init_screen(DemoScreen(), 'demo')
         self.init_screen(MenuScreen(), 'menu')
-        self.set_screen('menu')
+
+        self.set_screen('ai')

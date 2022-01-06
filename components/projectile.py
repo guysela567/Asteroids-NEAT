@@ -17,7 +17,7 @@ class Projectile:
             Constants.PROJECTILE_SPEED, self.__angle + math.pi)
 
         self.__distance_traveled = 0
-        self.__max_distance = 750
+        self.__max_distance = Constants.WINDOW_DIAGONAL
         self.__deleted = False
 
     def delete(self) -> None:

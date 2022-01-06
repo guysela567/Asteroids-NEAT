@@ -53,8 +53,6 @@ class GameScreen(Screen):
         if self.__controller.paused:
             self.draw_paused()
 
-        # self.draw_rays(self.__controller.player.ray_set)
-
         # for asteroid in self.__controller.asteroids:
         #     self.draw_poly(asteroid.sprite.rect_verts)
 
@@ -105,6 +103,13 @@ class GameScreen(Screen):
             self.draw_sprite('projectile', projectile.hitbox, projectile.angle, projectile.alpha)
 
         # Draw thrust
+        self.draw_thurst(player)
+
+        # # Draw rays
+        # self.draw_rays(player.ray_set)
+        # self.fill(255)
+
+    def draw_thurst(self, player: Player) -> None:
         if player.boosting:
             r = player.hitbox.height * .5 + 7.5
             x = player.hitbox.pos.x + r * math.cos(player.angle_radians)
@@ -140,12 +145,18 @@ class GameScreen(Screen):
         image.alpha = temp # Revert to normal opacity to prevent affecting cached images
 
     def draw_rays(self, ray_set: RaySet) -> None:
-        self.fill(0, 255, 0)
         for ray in ray_set:
-            self.line(*ray, 5)
+            if ray.is_looped:
+                self.fill(200, 150, 0)
+                self.line(*ray.looped, 5)
+                self.fill(100, 255, 255)
+                self.line(*ray.infinite, 5)
+            else:
+                self.fill(0, 255, 0)
+                self.line(*ray, 5)
+
 
     def draw_poly(self, verts) -> None:
-        self.fill(0, 255, 0)
         for i in range(len(verts)):
             pos1 = verts[i]
             pos2 = verts[i + 1] if i < len(verts) - 1 else verts[0]
