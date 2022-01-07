@@ -11,7 +11,6 @@ class MenuScreen(Screen):
         self.__ai_button = Button(self, 50, 250, 250, 100, (255, 255, 255), 'PLAY AI')
         self.__demo_button = Button(self, 50, 400, 250, 100, (255, 255, 255), 'NEAT DEMO')
         self.__quit_button = Button(self, 50, 650, 250, 100, (255, 255, 255), 'QUIT')
-        self.background(100)
 
         self.__animation_step = 0
         self.__background_animation = [Image(f'assets/sprites/menu/{i}.gif') for i in range(81)]
@@ -34,10 +33,10 @@ class MenuScreen(Screen):
             self.quit()
 
         elif self.__play_button.mouse_hover():
-            self.set_screen('game')
+            self.redirect('instructions')
 
         elif self.__ai_button.mouse_hover():
-            self.set_screen('ai')
+            self.redirect('ai')
 
         elif self.__demo_button.mouse_hover():
-            self.set_screen('demo')
+            self.redirect('demo')

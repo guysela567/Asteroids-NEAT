@@ -61,12 +61,17 @@ class DemoScreen(Screen):
 
     def draw(self) -> None:
         self.background(180)
-        self.draw_network(self.__controller.network, 0, 0, self.width, self.height, 20)
+        self.draw_network(self.__controller.network, 0, 0, self.width, self.height, 30)
     
     def on_key_down(self, key: int) -> None:
         if key == self.keys['UP']:
             self.__controller.add_connection()
+
         elif key == self.keys['DOWN']:
             self.__controller.add_node()
+
         elif key == self.keys['SPACE']:
             self.__controller.mutate_weights()
+
+        elif key == self.keys['ESCAPE']:
+            self.redirect('menu')

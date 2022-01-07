@@ -1,5 +1,5 @@
 '''
-My wrapper on PyGame to make it more like the processing.org environment
+My wrapper on PyGame which resembels the user-friendly processing.org IDE.
 '''
 
 from __future__ import annotations
@@ -164,13 +164,15 @@ class Screen:
             pg.draw.rect(self.__display, self.__stroke_color,
                          (x, y, w, h), self.__weight, border_radius=round)
 
-    def image(self, image: Image, x: float, y: float, w: float, h: float, alpha: float = None) -> None:
+    def image(self, image: Image, x: float, y: float, w: float = None, h: float = None, alpha: float = None, center: bool = False) -> None:
+        scale = (w, h) if w and h else image.size
+        
         if alpha is None:
-            self.__display.blit(pg.transform.scale(image.surface, (w, h)), (x, y))
+            self.__display.blit(pg.transform.scale(image.surface, scale), (x, y))
         else:
             temp = image.__surface.copy()
             temp.set_alpha(alpha)
-            self.__display.blit(pg.transform.scale(temp, (w, h)), (x, y))
+            self.__display.blit(pg.transform.scale(temp, scale), (x, y))
 
     def text(self, text: str, x: float, y: float, center: bool = False) -> None:
         text_surface = self.__font.render(text, True, self.__fill_color)
@@ -226,7 +228,7 @@ class Screen:
     def mouse_pos(self) -> tuple[int, int]:
         pg.mouse.get_pos()
 
-    def set_screen(self, name: str) -> None:
+    def redirect(self, name: str) -> None:
         pg.event.post(Event(pg.USEREVENT, screen=name))
 
     @property

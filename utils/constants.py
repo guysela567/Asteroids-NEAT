@@ -33,3 +33,6 @@ class Constants:
     # AI
     RAY_AMOUNT = 8
     POPULATION_SIZE = 300
+
+    # COLORS
+    TEXT_COLOR = (240, 240, 192)

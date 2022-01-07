@@ -29,11 +29,11 @@ class PopulationScreen(GameScreen):
             self.__index = 0
     
     def on_key_down(self, key: int) -> None:
-        return
-
-    def on_key_up(self, key: int) -> None:
         if key == self.keys['SPACE']:
             self.next_player()
+
+        elif key == self.keys['ESCAPE']:
+            self.redirect('menu')
 
     def draw_network(self, network: Genome, x: float, y: float, w: float, h: float, r: float, show_labels: bool = True) -> None:
         nodes_by_layers: list[list[Node]] = []
