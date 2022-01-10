@@ -73,6 +73,7 @@ class Population:
         print(f'new generation: {self.__generation}')
         print(f'number of mutations: {len(self.__innovation_history)}')
         print(f'number of species: {len(self.__species)}')
+        print(f'best fitness: {self.__species[0].best_fitness}')
         print('------------------------------------------------------')
 
         # Repopulate with new simulations

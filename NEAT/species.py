@@ -16,7 +16,6 @@ class Species:
         '''
 
         self.__players: list[Simulation] = []
-        self.__best_fitness = 0
         self.__avg_fitness = 0
         self.__staleness = 0 # Number of generations the species has gone without any improvements
 
@@ -26,9 +25,9 @@ class Species:
         self.__champion = sim.clone()
 
         # Compatability
-        self.__EXCESS_COEFFICIENT = 1
-        self.__WEIGHT_DIFFERENCE_COEFFICIENT = 0.5
-        self.__COMPATABILITY_THREASHOLD = 3
+        self.__EXCESS_COEFFICIENT = 1.5
+        self.__WEIGHT_DIFFERENCE_COEFFICIENT = 0.8
+        self.__COMPATABILITY_THREASHOLD = 1
 
     def __contains__(self, genome: Genome) -> bool:
         return self.same_species(genome)
@@ -40,9 +39,10 @@ class Species:
         avg_weight_diff = Species.avg_weight_difference(genome, self.__rep)
 
         # Normalizes the delta function for large genomes
-        normalizer = len(genome.genes) - 20
-        if normalizer < 1: # Must be bigger than or equal to 1
-            normalizer = 1
+        # normalizer = len(genome.genes) - 20
+        # if normalizer < 1: # Must be bigger than or equal to 1
+        #     normalizer = 1
+        normalizer = 1
 
         # The delta function itself
         compatability = (self.__EXCESS_COEFFICIENT * excess_and_disjoint) / normalizer \
@@ -51,19 +51,19 @@ class Species:
         return self.__COMPATABILITY_THREASHOLD > compatability
 
     def add(self, sim: Simulation) -> None:
-        ''' Ads the given simulation to the species. '''
+        ''' Adds the given simulation to the species. '''
 
         self.__players.append(sim)
 
     @staticmethod
     def get_excess_disjoint(brain1: Genome, brain2: Genome) -> int:
-        ''' Returns the number excess and disjoint genes (genes that do not match) between two given genomes. '''
+        ''' Returns the number excess and disjoint genes (genes that do not match) between the two given genomes. '''
         
         matching_count = 0
         for g1 in brain1.genes:
             for g2 in brain2.genes:
                 if g1.innovation_number == g2.innovation_number:
-                    matching_count += 2
+                    matching_count += 1 # 2
 
         gene_num = len(brain1.genes) + len(brain2.genes) # Exclude biases
         return gene_num - matching_count
@@ -94,7 +94,7 @@ class Species:
     def sort_species(self) -> None:
         ''' Sorts the species' simulations by fitness in descending order. '''
 
-        # No players
+        # No players    
         if len(self.__players) == 0:
             self.__staleness = 200
             return
@@ -120,11 +120,11 @@ class Species:
     def get_child(self, innovation_history: list[ConnectionHistory]) -> Simulation:
         ''' Gets a child from two players in this species. '''
 
-        baby = None
+        baby: Simulation = None
         # 25% chance to skip crossover
         if random.random() < 0.25:
             baby = self.select_player().clone()
-        else: # Do crossover of two random parents
+        else: # Do crossover of two selected parents from the mating pool
             parent1 = self.select_player()
             parent2 = self.select_player()
 
@@ -141,10 +141,10 @@ class Species:
         '''
         Gets a player based on its fitness.
         Better players will have a higher chance of getting picked,
-        while worse players will still have a small chance of being picked.
+        while worse players will still have a small chance of being chosen from the pool.
         '''
 
-        # Get a number between 0 and fitness sum of all players
+        # Get a number between 0 and the fitness sum of all players in the species
         fitness_sum = sum(sim.fitness for sim in self.__players)
         random_value = random.uniform(0, fitness_sum)
 
