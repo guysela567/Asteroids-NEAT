@@ -114,7 +114,9 @@ class Model:
         results = self.__brain.feed_forward(inputs)
         
         if results[0] > .5:
-            self.__player.boost()
+            self.__player.start_boost()
+        elif self.__player.boosting: 
+            self.__player.stop_boost()
 
         if results[1] > .5: 
             self.__player.rotate(1)

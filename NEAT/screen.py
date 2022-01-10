@@ -88,7 +88,6 @@ class PopulationScreen(GameScreen):
 
         if self.controller.paused:
             self.draw_paused()
-
         
         self.fill(255)
         self.set_font(self.__gen_font)
