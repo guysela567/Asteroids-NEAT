@@ -63,7 +63,7 @@ class Species:
         for g1 in brain1.genes:
             for g2 in brain2.genes:
                 if g1.innovation_number == g2.innovation_number:
-                    matching_count += 1 # 2
+                    matching_count += 2
 
         gene_num = len(brain1.genes) + len(brain2.genes) # Exclude biases
         return gene_num - matching_count
