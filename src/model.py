@@ -108,7 +108,7 @@ class Model:
         vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
 
         can_shoot = 1 if self.__player.can_shoot else 0
-        inputs = [1 / v if v != 0 else 0 for v in vision]
+        inputs = [v / (2 * Constants.WINDOW_DIAGONAL) for v in vision]
         inputs.append(can_shoot)
 
         results = self.__brain.feed_forward(inputs)

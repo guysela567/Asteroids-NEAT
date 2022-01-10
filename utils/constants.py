@@ -24,8 +24,8 @@ class Constants:
 
     # Projectile config
     PROJECTILE_SPRITE_SCALE = .25
-    PROJECTILE_SPEED = 30
-    SHOOT_COOLDOWN = .25  # Seconds
+    PROJECTILE_SPEED = 45
+    SHOOT_COOLDOWN = .4  # Seconds
 
     # Score
     SCORE_SYSTEM = (20, 50, 100)
@@ -33,6 +33,7 @@ class Constants:
     # AI
     RAY_AMOUNT = 8
     POPULATION_SIZE = 500
+    STARTING_CONNECTIONS = 40
 
     # COLORS
     TEXT_COLOR = (240, 240, 192)
