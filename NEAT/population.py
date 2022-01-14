@@ -70,6 +70,9 @@ class Population:
         self.cull_species() # Kill genomes that have not survived
         self.kill_stale_species(15) # Kill species which have not improved for a while
         self.kill_bad_species() # Kill species which cannot reproduce
+
+        # Save best genome to file
+        self.__species[0].champion.brain.save(f'data/gen{self.generation - 1}.json')
         
         print(f'new generation: {self.__generation}')
         print(f'number of mutations: {len(self.__innovation_history)}')
