@@ -31,8 +31,8 @@ class Constants:
     SCORE_SYSTEM = (20, 50, 100)
 
     # AI
-    RAY_AMOUNT = 8
-    POPULATION_SIZE = 1
+    RAY_AMOUNT = 16
+    POPULATION_SIZE = 500
     STARTING_CONNECTIONS = 40
 
     # COLORS

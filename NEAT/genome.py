@@ -297,7 +297,6 @@ class Genome:
             second_parent_gene = parent2.matching_gene_index(gene.innovation_number)
 
             if second_parent_gene != -1: # There is a match
-                print('matching gene')
                 # if at least one of the parents does not have the gene enabled
                 # then disable child's gene 75% of the time
                 if not gene.enabled or not parent2.genes[second_parent_gene].enabled:
