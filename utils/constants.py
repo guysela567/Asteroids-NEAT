@@ -32,7 +32,7 @@ class Constants:
 
     # AI
     RAY_AMOUNT = 16
-    POPULATION_SIZE = 1
+    POPULATION_SIZE = 300
     STARTING_CONNECTIONS = 40
 
     # COLORS
