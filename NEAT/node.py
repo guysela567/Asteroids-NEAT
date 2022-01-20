@@ -16,7 +16,7 @@ class Node:
         self.__layer = 0
 
     def engage(self) -> None:
-        ''' Sends its output to the inputs of the nodes its connected to. '''
+        ''' Sends its output to the inputs of the nodes it's connected to. '''
 
         if self.__layer != 0: # No activation for inputs and bias
             self.__output_value = Node.sigmoid(self.__input_sum)
@@ -56,16 +56,16 @@ class Node:
         return clone
 
     def to_json(self) -> dict:
-        connections: list[int] = []
-        for connection in self.__output_connections:
-            connections.append(connection.from_node.number)
-            connections.append(connection.to_node.number)
-
         return { 
             'number': self.__number,
             'layer': self.__layer,
-            'connections': connections,
         }
+
+    @classmethod
+    def load(cls, data: dict) -> Node:
+        node = cls(data['number'])
+        node.layer = data['layer']
+        return node
 
     @property
     def number(self) -> int:

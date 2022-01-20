@@ -1,4 +1,5 @@
 from __future__ import annotations
+from NEAT.genome import Genome
 
 from NEAT.simulation import Simulation
 from NEAT.connection_history import ConnectionHistory
@@ -32,10 +33,11 @@ class Population:
         # Populate with simulations
         self.__players = [Simulation() for _ in range(self.__size)]
         for sim in self.__players:
-            for _ in range(Constants.STARTING_CONNECTIONS):
-                sim.brain.add_connection(self.__innovation_history)
-            sim.brain.mutate(self.__innovation_history)
-            sim.brain.generate_phenotype()
+            # for _ in range(Constants.STARTING_CONNECTIONS):
+            #     sim.brain.add_connection(self.__innovation_history)
+            # sim.brain.mutate(self.__innovation_history)
+            # sim.brain.generate_phenotype()
+            sim.brain = Genome.load('data/gen79_spec4.json')
 
     def update(self, iterations: int = 1) -> None:
         ''' Updates the population. '''

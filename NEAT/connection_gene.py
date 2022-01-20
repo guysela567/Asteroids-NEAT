@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from NEAT.node import Node
+    from NEAT.genome import Genome
 
 import random
 
@@ -49,6 +50,14 @@ class ConnectionGene:
             'innovation_number': self.__innovation_number,
             'enabled': self.__enabled,
         }
+
+    @classmethod
+    def load(cls, genome: Genome, data: dict) -> ConnectionGene:
+        from_node = genome.get_node(data['from_node'])
+        to_node = genome.get_node(data['to_node'])
+        gene = cls(from_node, to_node, data['weight'], data['innovation_number'])
+        gene.enabled = data['enabled']
+        return gene
 
     @property
     def from_node(self) -> Node:
