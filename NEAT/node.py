@@ -3,6 +3,7 @@ from __future__ import annotations
 from NEAT.connection_gene import ConnectionGene
 
 import math
+from functools import lru_cache
 
 
 class Node:
@@ -27,6 +28,7 @@ class Node:
                 connection.to_node.input_sum += connection.weight * self.__output_value
 
     @staticmethod
+    @lru_cache(maxsize=300)
     def sigmoid(x: float) -> float:
         ''' Sigmoid activation function.  '''
         
