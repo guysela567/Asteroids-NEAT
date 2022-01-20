@@ -91,7 +91,7 @@ class Genome:
         # Reset all nodes' inputs
         for node in self.__nodes:
             node.input_sum = 0
-
+            
         return outputs
 
     def generate_phenotype(self) -> None:

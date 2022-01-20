@@ -32,7 +32,7 @@ class Node:
     def sigmoid(x: float) -> float:
         ''' Sigmoid activation function.  '''
         
-        return 1 / (1 + math.exp(-4.9 * x))
+        return 1 / (1 + math.exp(-x))
 
     def is_connected_to(self, node: Node) -> bool:
         ''' 
