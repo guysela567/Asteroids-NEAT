@@ -365,6 +365,23 @@ class Genome:
     def save(self, filename: str) -> None:
         with open(filename, 'w') as f:
             f.write(json.dumps(self.to_json(), indent=2))
+
+    @classmethod
+    def load(cls, filename: str) -> Genome:
+        with open(filename, 'r') as f:
+            data = json.load(f)
+
+            genome = cls(data['inputs'], data['outputs'])
+            genome.nodes = [Node.load(node) for node in data['nodes']]
+            genome.genes = [ConnectionGene.load(genome, gene) for gene in data['genes']]
+
+            genome.layers = data['layers']
+            genome.next_node = data['next_node']
+            genome.bias_node = data['bias_node']
+
+            genome.generate_phenotype()
+            return genome
+
     
     @property
     def genes(self) -> list[ConnectionGene]:
@@ -397,3 +414,11 @@ class Genome:
     @bias_node.setter
     def bias_node(self, bias_node: int) -> None:
         self.__bias_node = bias_node
+
+    @genes.setter
+    def genes(self, genes: list[ConnectionGene]) -> None:
+        self.__genes = genes
+
+    @nodes.setter
+    def nodes(self, nodes: list[Node]) -> None:
+        self.__nodes = nodes
