@@ -55,6 +55,18 @@ class Node:
         clone.layer = self.__layer
         return clone
 
+    def to_json(self) -> dict:
+        connections: list[int] = []
+        for connection in self.__output_connections:
+            connections.append(connection.from_node.number)
+            connections.append(connection.to_node.number)
+
+        return { 
+            'number': self.__number,
+            'layer': self.__layer,
+            'connections': connections,
+        }
+
     @property
     def number(self) -> int:
         return self.__number

@@ -6,6 +6,7 @@ from NEAT.node import Node
 from NEAT.innovation import Innovation
 
 import random
+import json
 
 
 class Genome:
@@ -262,7 +263,7 @@ class Genome:
 
     def matching_gene_index(self, innovation_number: int) -> int:
         '''
-        Returns index of gene if the given innovation number.
+        Returns the index of the gene matching the given innovation number.
         Returns -1 if no gene was found.
         '''
 
@@ -277,7 +278,7 @@ class Genome:
         when this genome is the fittest. This will combine the two genomes to one
         genome inheriting from both of them, using the connections' innovation numbers.
         Genes that don't match are called disjoint and access genes,
-        These genes are inherited to the child from the fittest parent ie. this genome.
+        These genes are inherited to the child from this genome.
         '''
 
         # Copy attributes to child
@@ -296,8 +297,7 @@ class Genome:
             second_parent_gene = parent2.matching_gene_index(gene.innovation_number)
 
             if second_parent_gene != -1: # There is a match
-
-                # if at least one of the parents doesnt have the gene enabled
+                # if at least one of the parents does not have the gene enabled
                 # then disable child's gene 75% of the time
                 if not gene.enabled or not parent2.genes[second_parent_gene].enabled:
                     if random.random() < 0.75:
@@ -351,24 +351,39 @@ class Genome:
         clone.connect_nodes()
         return clone
     
+    def to_json(self) -> dict:
+        return {
+            'inputs': self.__inputs,
+            'outputs': self.__outputs,
+            'genes': [gene.to_json() for gene in self.__genes],
+            'nodes': [node.to_json() for node in self.__nodes],
+            'layers': self.__layers,
+            'next_node': self.__next_node,
+            'bias_node': self.__bias_node,
+        }
+
+    def save(self, filename: str) -> None:
+        with open(filename, 'w') as f:
+            f.write(json.dumps(self.to_json(), indent=2))
+    
     @property
     def genes(self) -> list[ConnectionGene]:
         return self.__genes
 
     @property
-    def nodes(self) -> list[ConnectionGene]:
+    def nodes(self) -> list[Node]:
         return self.__nodes
         
     @property
-    def layers(self) -> list[ConnectionGene]:
+    def layers(self) -> int:
         return self.__layers
 
     @property
-    def next_node(self) -> list[ConnectionGene]:
+    def next_node(self) -> int:
         return self.__next_node
 
     @property
-    def bias_node(self) -> list[ConnectionGene]:
+    def bias_node(self) -> int:
         return self.__bias_node
 
     @layers.setter

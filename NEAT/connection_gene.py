@@ -41,6 +41,15 @@ class ConnectionGene:
         clone.enabled = self.__enabled
         return clone
 
+    def to_json(self) -> dict:
+        return {
+            'from_node': self.__from_node.number,
+            'to_node': self.__to_node.number,
+            'weight': self.__weight,
+            'innovation_number': self.__innovation_number,
+            'enabled': self.__enabled,
+        }
+
     @property
     def from_node(self) -> Node:
         return self.__from_node

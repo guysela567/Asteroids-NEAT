@@ -71,19 +71,23 @@ class PopulationScreen(GameScreen):
                 self.text(str(num), *pos, center=True)
 
     def draw(self) -> None:
-        # Update graphics
+        ''' Update graphics. '''
+
         self.draw_background()
-        self.draw_sprites(self.controller.player, self.controller.asteroids)
-        self.draw_score(self.controller.score, self.controller.high_score)
 
-        if self.controller.paused:
-            self.draw_paused()
-
+        # AI Guidelines
         self.draw_rays(self.controller.player.ray_set)
 
         self.fill(255, 150, 150)
         for asteroid in self.controller.asteroids:
             self.draw_poly(asteroid.hitbox.rect_verts)
+
+        self.fill(255)
+        self.draw_sprites(self.controller.player, self.controller.asteroids)
+        self.draw_score(self.controller.score, self.controller.high_score)
+
+        if self.controller.paused:
+            self.draw_paused()
         
         self.fill(255)
         self.set_font(self.__gen_font)

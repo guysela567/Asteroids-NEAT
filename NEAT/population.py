@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from src.controller import Controller
-
 from NEAT.simulation import Simulation
 from NEAT.connection_history import ConnectionHistory
 from NEAT.species import Species
+from utils.constants import Constants
 
 import math
 
@@ -33,6 +32,8 @@ class Population:
         # Populate with simulations
         self.__players = [Simulation() for _ in range(self.__size)]
         for sim in self.__players:
+            for _ in range(Constants.STARTING_CONNECTIONS):
+                sim.brain.add_connection(self.__innovation_history)
             sim.brain.mutate(self.__innovation_history)
             sim.brain.generate_phenotype()
 
@@ -69,10 +70,14 @@ class Population:
         self.cull_species() # Kill genomes that have not survived
         self.kill_stale_species(15) # Kill species which have not improved for a while
         self.kill_bad_species() # Kill species which cannot reproduce
+
+        # Save best genome to file
+        self.__species[0].champion.brain.save(f'data/gen{self.generation - 1}.json')
         
         print(f'new generation: {self.__generation}')
         print(f'number of mutations: {len(self.__innovation_history)}')
         print(f'number of species: {len(self.__species)}')
+        print(f'best fitness: {self.__species[0].best_fitness}')
         print('------------------------------------------------------')
 
         # Repopulate with new simulations
@@ -82,21 +87,14 @@ class Population:
             # Clone the champion without mutations
             children.append(s.champion.clone())
             # -1 since champion was already added
-            children_number = math.floor((s.avg_fitness / avg_sum) * len(self.__players)) - 1
+            children_number = math.floor((s.avg_fitness / avg_sum) * self.__size) - 1
             for _ in range(children_number): # Add children
                 children.append(s.get_child(self.__innovation_history))
         
         # Sometimes resulted children amount will not be enough
-        # due to flooring the number of children for each specie
-        if len(children) < len(self.__players):
-            children.append(self.__players[0].clone()) # Clone first player of last generation
-            # Due to species list being sorted from best to worst,
-            # for each generation excluding the first one, the first 
-            # player in the list will always be from the previous best species
-
-        # If number of children is still not enough
-        # then add a child of best specie untill the number of children gets big enough
-        while len(children) < len(self.__players):
+        # due to flooring the number of children for each species
+        while len(children) < self.__size:
+            # Get more children from the best species untill the number of children gets big enough
             children.append(self.__species[0].get_child(self.__innovation_history))
 
         # Copy children to new players
@@ -138,9 +136,8 @@ class Population:
 
     def sort_species(self) -> None:
         '''
-        Sorts the players within each species 
-        and sorts the species based their fitness,
-        from the highest to the lowest
+        Sorts the species and the players within each species
+        based on their fitness, in descending order.
         '''
 
         # Sort players in each species
@@ -170,7 +167,7 @@ class Population:
         # Skip best species
         for i in range(len(self.__species) - 1, 0, -1): # Iterate backwards
             # Compare this species with the rest of the species
-            if (self.__species[i].avg_fitness / avg_sum) * len(self.__players) < 1:
+            if (self.__species[i].avg_fitness / avg_sum) * self.__size < 1:
                 # Kill it if it far worse than the rest
                 self.__species.pop(i)
 
