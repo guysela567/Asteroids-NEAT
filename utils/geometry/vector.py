@@ -81,6 +81,9 @@ class DirectionVector:
         self.__angle = angle
         self.__update_components()
 
+    def __iter__(self) -> iter:
+        return iter((self.__x, self.__y))
+
     def __update_components(self) -> None:
         self.__x = math.cos(self.__angle) * self.__mag
         self.__y = math.sin(self.__angle) * self.__mag
@@ -89,6 +92,9 @@ class DirectionVector:
         # Apply linear interpolation on magnitude
         self.__mag = (1 - step) * self.__mag + step * to
         self.__update_components()
+
+    def normalized(self) -> None:
+        return DirectionVector(self.__x / self.__mag, self.__y / self.__mag)
 
     def copy(self) -> DirectionVector:
         return DirectionVector(self.__mag, self.__angle)

@@ -38,7 +38,7 @@ class Model:
         self.__dead = False
 
         if self.__ai: # Generate neural network only if ai is true
-            self.__brain = Genome(Constants.RAY_AMOUNT + 1, 4)
+            self.__brain = Genome(Constants.RAY_AMOUNT * 2 + 1, 4)
 
     def update(self, delta_time: float) -> None:
         # Update player
@@ -104,8 +104,7 @@ class Model:
         if not self.__ai:
             return
 
-        asteroid_sprite_list = [a.hitbox for a in self.__asteroids]
-        vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
+        vision = self.__player.ray_set.cast(self.__asteroids)
 
         can_shoot = 1 if self.__player.can_shoot else 0
         inputs = [v / (2 * Constants.WINDOW_DIAGONAL) for v in vision]
@@ -114,9 +113,7 @@ class Model:
         results = self.__brain.feed_forward(inputs)
         
         if results[0] > .5:
-            self.__player.start_boost()
-        elif self.__player.boosting: 
-            self.__player.stop_boost()
+            self.__player.boost()
 
         if results[1] > .5: 
             self.__player.rotate(1)
