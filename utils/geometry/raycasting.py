@@ -240,8 +240,8 @@ class RaySet:
                     hit = True
 
             if hit:
-                redshift = np.dot(list(ray.dir.normalized()), list(ray.hit.velocity))
-                dists.extend((dist, redshift))
+                redshift = ray.dir.normalized().dot(ray.hit.velocity.normalized())
+                dists.extend((1 / dist, redshift))
             else: dists.extend((0, 0))
 
         return dists

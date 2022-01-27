@@ -32,8 +32,8 @@ class Constants:
 
     # AI
     TRAINING = True
-    RAY_AMOUNT = 8
-    POPULATION_SIZE = 300 if TRAINING else 1
+    RAY_AMOUNT = 16
+    POPULATION_SIZE = 500 if TRAINING else 1
     STARTING_CONNECTIONS = 0
 
     # COLORS

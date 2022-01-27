@@ -105,12 +105,8 @@ class Model:
             return
 
         vision = self.__player.ray_set.cast(self.__asteroids)
-
-        can_shoot = 1 if self.__player.can_shoot else 0
-        inputs = [v / (2 * Constants.WINDOW_DIAGONAL) for v in vision]
-        inputs.append(can_shoot)
-
-        results = self.__brain.feed_forward(inputs)
+        vision.append(1 if self.__player.can_shoot else 0)
+        results = self.__brain.feed_forward(vision)
         
         if results[0] > .5:
             self.__player.boost()

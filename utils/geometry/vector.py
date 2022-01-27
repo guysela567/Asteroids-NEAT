@@ -1,4 +1,5 @@
 from __future__ import annotations
+from ctypes import Union
 
 from utils.constants import Constants
 
@@ -93,7 +94,10 @@ class DirectionVector:
         self.__mag = (1 - step) * self.__mag + step * to
         self.__update_components()
 
-    def normalized(self) -> None:
+    def dot(self, other: PositionVector | DirectionVector) -> float:
+        return self.__x * other.x + self.__y * other.y
+
+    def normalized(self) -> DirectionVector:
         return DirectionVector(self.__x / self.__mag, self.__y / self.__mag)
 
     def copy(self) -> DirectionVector:
