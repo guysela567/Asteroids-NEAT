@@ -33,11 +33,13 @@ class Population:
         # Populate with simulations
         self.__players = [Simulation() for _ in range(self.__size)]
         for sim in self.__players:
-            # for _ in range(Constants.STARTING_CONNECTIONS):
-            #     sim.brain.add_connection(self.__innovation_history)
-            # sim.brain.mutate(self.__innovation_history)
-            # sim.brain.generate_phenotype()
-            sim.brain = Genome.load('data/gen74_spec1.json')
+            if Constants.TRAINING:
+                for _ in range(Constants.STARTING_CONNECTIONS):
+                    sim.brain.add_connection(self.__innovation_history)
+                sim.brain.mutate(self.__innovation_history)
+                sim.brain.generate_phenotype()
+            else:
+                sim.brain = Genome.load('data/gen74_spec1.json')
 
     def update(self, iterations: int = 1) -> None:
         ''' Updates the population. '''
@@ -73,8 +75,9 @@ class Population:
         self.kill_stale_species(15) # Kill species which have not improved for a while
         self.kill_bad_species() # Kill species which cannot reproduce
 
-        # for s in range(4): # Save best genome of 4 best species to file
-        #     self.__species[0].champion.brain.save(f'data/gen{self.__generation - 1}_spec{s + 1}.json')
+        if Constants.TRAINING:
+            for s in range(4): # Save best genome of 4 best species to file
+                self.__species[0].champion.brain.save(f'data/gen{self.__generation - 1}_spec{s + 1}.json')
         
         print(f'new generation: {self.__generation}')
         print(f'number of mutations: {len(self.__innovation_history)}')
