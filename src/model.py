@@ -105,7 +105,7 @@ class Model:
             return
 
         vision = self.__player.ray_set.cast(self.__asteroids)
-        vision.append(1 if self.__player.can_shoot else 0)
+        vision.append(int(self.__player.can_shoot))
         results = self.__brain.feed_forward(vision)
         
         if results[0] > .5:
