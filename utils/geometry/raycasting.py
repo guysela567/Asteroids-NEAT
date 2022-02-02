@@ -144,7 +144,8 @@ class Ray:
 
         # Get closest point
         for asteroid in asteroids:
-            if point := self.intersects_polygon(asteroid.hitbox, looped=looped):
+            point = self.intersects_polygon(asteroid.hitbox, looped=looped)
+            if point:
                 dist = start_pos.distance(point)
                 if dist < closest_dist or closest is None:
                     closest = point
@@ -230,12 +231,14 @@ class RaySet:
             hit = False
             dist = 0
 
-            if point := ray.intersects_asteroids(asteroids):
+            point = ray.intersects_asteroids(asteroids)
+            if point:
                 dist = ray.pos.distance(point)
                 hit = True
 
             elif ray.looped_pos:
-                if point := ray.intersects_asteroids(asteroids, looped=True):
+                point = ray.intersects_asteroids(asteroids, looped=True)
+                if point:
                     dist = ray.looped_pos.distance(point) + ray.length
                     hit = True
 
