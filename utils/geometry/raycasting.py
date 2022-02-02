@@ -243,7 +243,7 @@ class RaySet:
                     hit = True
 
             if hit:
-                redshift = ray.dir.normalized().dot(ray.hit.velocity.normalized())
+                redshift = ray.dir.normalized().dot(ray.hit.velocity)
                 dists.extend((1 / dist, redshift))
             else: dists.extend((0, 0))
 
