@@ -39,7 +39,7 @@ class Population:
                 sim.brain.mutate(self.__innovation_history)
                 sim.brain.generate_phenotype()
             else:
-                sim.brain = Genome.load('data/gen74_spec1.json')
+                sim.brain = Genome.load(f'data/gen{Constants.GEN_TAKEN}_spec{Constants.SPEC_TAKEN}.json')
 
     def update(self, iterations: int = 1) -> None:
         ''' Updates the population. '''
