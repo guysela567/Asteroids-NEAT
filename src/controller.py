@@ -82,7 +82,15 @@ class Controller:
     def brain(self) -> Genome:
         return self.__model.brain
 
+    @property
+    def seed(self) -> int:
+        return self.__model.seed
+
     @brain.setter
     def brain(self, brain: Genome) -> None:
         self.__model.brain = brain
+
+    @seed.setter
+    def seed(self, seed: int) -> None:
+        self.__model.seed = seed
         

@@ -106,6 +106,8 @@ class Population:
         self.__players = children.copy()
         for sim in self.__players:
             sim.brain.generate_phenotype() # Generate neural network for each child
+            sim.seed = self.__generation - 1
+            sim.reset()
         
     def speciate(self) -> None:
         '''
