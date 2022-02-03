@@ -173,6 +173,12 @@ class Population:
 
         # Skip best species
         for i in range(len(self.__species) - 1, 0, -1): # Iterate backwards
+            # Kill empty species
+            # this is caused by emptying each species
+            # in the speciate function
+            if len(self.__species[i].players) == 0:
+                self.__species.pop(i)
+
             # Compare this species with the rest of the species
             if (self.__species[i].avg_fitness / avg_sum) * self.__size < 1:
                 # Kill it if it far worse than the rest

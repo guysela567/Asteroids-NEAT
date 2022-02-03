@@ -155,7 +155,8 @@ class GameScreen(Screen):
                 self.fill(100, 255, 255)
                 self.line(*ray.infinite, 5)
             else:
-                self.fill(0, 255, 0)
+                if ray.hit: self.fill(255, 0, 255)
+                else: self.fill(0, 255, 0)
                 self.line(*ray, 5)
 
 
