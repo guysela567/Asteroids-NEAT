@@ -31,9 +31,12 @@ class Constants:
     SCORE_SYSTEM = (20, 50, 100)
 
     # AI
-    RAY_AMOUNT = 16
-    POPULATION_SIZE = 50
-    STARTING_CONNECTIONS = 1
+    TRAINING = True
+    RAY_AMOUNT = 8
+    POPULATION_SIZE = 50 if TRAINING else 1
+    STARTING_CONNECTIONS = 0
+    GEN_TAKEN = 5
+    SPEC_TAKEN = 1
 
     # COLORS
     TEXT_COLOR = (240, 240, 192)

@@ -3,6 +3,8 @@ from __future__ import annotations
 from utils.geometry.vector import PositionVector, DirectionVector
 from utils.geometry.collision import Hitbox
 from utils.constants import Constants
+from components.asteroid import Asteroid
+import numpy as np
 
 import math
 
@@ -17,6 +19,7 @@ class Ray:
         self.__looped = False
         self.__looped_pos: PositionVector = None
         self.__projection_end: PositionVector = None
+        self.__hit: Asteroid = None
         self.update()
 
     def __iter__(self) -> iter:
@@ -112,13 +115,14 @@ class Ray:
         return PositionVector(x1 + t * (x2 - x1), y1 + t * (y2 - y1)) \
             if u >= 0 and 0 <= t <= 1 else None
     
-    def intersects_polygon(self, verts: list[tuple[float, float]], looped: bool = False) -> PositionVector:
+    def intersects_polygon(self, hitbox: Hitbox, looped: bool = False) -> PositionVector:
         closest = None
         closest_dist = 0
 
         start_pos = self.__looped_pos if looped else self.__pos
 
         # Iterate through each polygon segment
+        verts = hitbox.rect_verts
         for i in range(len(verts)):
             pos1 = verts[i]
             pos2 = verts[i + 1] if i < len(verts) - 1 else verts[0]
@@ -129,18 +133,19 @@ class Ray:
                 if dist < closest_dist or closest is None:
                     closest = point
                     closest_dist = dist
-
+        
         return closest
 
-    def intersects_sprite_list(self, sprite_list: list[Hitbox], looped: bool = False) -> PositionVector:
+    def intersects_asteroids(self, asteroids: list[Asteroid], looped: bool = False) -> PositionVector:
         closest = None
         closest_dist = 0
 
         start_pos = self.__looped_pos if looped else self.__pos
 
         # Get closest point
-        for sprite in sprite_list:
-            if point := self.intersects_polygon(sprite.rect_verts, looped=looped):
+        for asteroid in asteroids:
+            point = self.intersects_polygon(asteroid.hitbox, looped=looped)
+            if point:
                 dist = start_pos.distance(point)
                 if dist < closest_dist or closest is None:
                     closest = point
@@ -148,6 +153,8 @@ class Ray:
 
         self.__looped = looped and closest
         self.__intersection = closest
+
+        self.__hit = asteroid if closest else None
         return closest
 
     def rotate(self, angle: float) -> None:
@@ -186,6 +193,14 @@ class Ray:
     @property
     def length(self) -> float:
         return self.__pos.distance(self.__projection_end)
+    
+    @property
+    def hit(self) -> Asteroid:
+        return self.__hit
+    
+    @property
+    def dir(self) -> DirectionVector:
+        return self.__dir
 
     @pos.setter
     def pos(self, pos: PositionVector) -> None:
@@ -209,17 +224,28 @@ class RaySet:
     def intersects_polygon(self, verts: list[tuple[float, float]]) -> bool:
         return any(self.__rays.intersects_polygon(verts))
 
-    def intersecting_sprite_dist(self, sprite_list: list[Hitbox]) -> list[float]:
+    def cast(self, asteroids: list[Asteroid]) -> list[float]:
         dists: list[float] = []
 
         for ray in self.__rays:
-            if point := ray.intersects_sprite_list(sprite_list):
-                dists.append(ray.pos.distance(point))
+            hit = False
+            dist = 0
+
+            point = ray.intersects_asteroids(asteroids)
+            if point:
+                dist = ray.pos.distance(point)
+                hit = True
+
             elif ray.looped_pos:
-                if point := ray.intersects_sprite_list(sprite_list, looped=True):
-                    dists.append(ray.looped_pos.distance(point) + ray.length)
-                else: dists.append(0)
-            else: dists.append(0)
+                point = ray.intersects_asteroids(asteroids, looped=True)
+                if point:
+                    dist = ray.looped_pos.distance(point) + ray.length
+                    hit = True
+
+            if hit:
+                redshift = ray.dir.normalized().dot(ray.hit.velocity)
+                dists.extend((1 / dist, redshift))
+            else: dists.extend((0, 0))
 
         return dists
 

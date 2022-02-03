@@ -1,4 +1,5 @@
 from __future__ import annotations
+from functools import lru_cache
 
 from components.player import Player
 from components.asteroid import Asteroid
@@ -10,10 +11,13 @@ from NEAT.genome import Genome
 
 import random
 import math
-
+import copy
 
 class Model:
     def __init__(self, ai: bool = False) -> None:    
+        self.__ai = ai
+        self.__seed = 0 if self.__ai else -1
+
         # Initialize player
         self.__player = Player(Constants.WINDOW_WIDTH * 0.5, 
                                Constants.WINDOW_HEIGHT * 0.5)
@@ -31,14 +35,13 @@ class Model:
         self.__paused = False
 
         # AI and stats
-        self.__ai = ai
         self.__shots_fired = 4
         self.__shots_hit = 1
         self.__lifespan = 0
         self.__dead = False
 
         if self.__ai: # Generate neural network only if ai is true
-            self.__brain = Genome(Constants.RAY_AMOUNT + 1, 4)
+            self.__brain = Genome(Constants.RAY_AMOUNT * 2 + 1, 4)
 
     def update(self, delta_time: float) -> None:
         # Update player
@@ -97,26 +100,21 @@ class Model:
         # Asteroid with player collision
         if any(asteroid.hitbox.collides(self.__player.hitbox) for asteroid in self.__asteroids):
             self.__dead = True
-            self.__spawn_asteroids()
             self.__score = 0
+
+            if not self.__ai:
+                self.__spawn_asteroids()
 
     def think(self) -> int:
         if not self.__ai:
             return
 
-        asteroid_sprite_list = [a.hitbox for a in self.__asteroids]
-        vision = self.__player.ray_set.intersecting_sprite_dist(asteroid_sprite_list)
-
-        can_shoot = 1 if self.__player.can_shoot else 0
-        inputs = [v / (2 * Constants.WINDOW_DIAGONAL) for v in vision]
-        inputs.append(can_shoot)
-
-        results = self.__brain.feed_forward(inputs)
+        vision = self.__player.ray_set.cast(self.__asteroids)
+        vision.append(int(self.__player.can_shoot))
+        results = self.__brain.feed_forward(vision)
         
         if results[0] > .5:
-            self.__player.start_boost()
-        elif self.__player.boosting: 
-            self.__player.stop_boost()
+            self.__player.boost()
 
         if results[1] > .5: 
             self.__player.rotate(1)
@@ -154,8 +152,17 @@ class Model:
         return Asteroid(x, y, angle=angle)
 
     def __spawn_asteroids(self) -> None:
-        self.__asteroids = [Model.generate_asteroid()
-                            for _ in range(self.__asteroid_amount)]
+        if self.__ai:
+            self.__asteroids = copy.deepcopy(Model.generate_wave_by_seed(self.__seed, self.__asteroid_amount))
+        else: 
+            self.__asteroids = [Model.generate_asteroid()
+                                for _ in range(self.__asteroid_amount)]
+
+    @staticmethod
+    @lru_cache(maxsize=100)
+    def generate_wave_by_seed(seed: int, length: int) -> None:
+        return [Model.generate_asteroid()
+                for _ in range(length)]
 
     def toggle_pause(self) -> None:
         self.__paused = not self.__paused
@@ -177,8 +184,8 @@ class Model:
         self.__paused = False
 
         # Reset genetic information
-        self.__shots_fired = 0
-        self.__shots_hit = 0
+        self.__shots_fired = 4
+        self.__shots_hit = 1
         self.__lifespan = 0
         self.__dead = False
 
@@ -222,6 +229,14 @@ class Model:
     def brain(self) -> Genome:
         return self.__brain
 
+    @property
+    def seed(self) -> int:
+        return self.__seed
+
     @brain.setter
     def brain(self, brain: Genome) -> None:
         self.__brain = brain
+
+    @seed.setter
+    def seed(self, seed: int) -> None:
+        self.__seed = seed

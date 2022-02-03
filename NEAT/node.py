@@ -28,7 +28,7 @@ class Node:
                 connection.to_node.input_sum += connection.weight * self.__output_value
 
     @staticmethod
-    @lru_cache(maxsize=300)
+    @lru_cache(maxsize=10)
     def sigmoid(x: float) -> float:
         ''' Sigmoid activation function.  '''
         

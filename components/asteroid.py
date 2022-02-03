@@ -52,3 +52,7 @@ class Asteroid:
     @property
     def angle(self) -> float:
         return -(int(math.degrees(self.__angle)) - 90) % 360
+
+    @property
+    def velocity(self) -> float:
+        return self.__vel
