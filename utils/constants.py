@@ -33,8 +33,10 @@ class Constants:
     # AI
     TRAINING = True
     RAY_AMOUNT = 16
-    POPULATION_SIZE = 300 if TRAINING else 1
+    POPULATION_SIZE = 500 if TRAINING else 1
+    BATCH_SIZE = 50
     STARTING_CONNECTIONS = 0
+    ITERATIONS = 1
     GEN_TAKEN = 5
     SPEC_TAKEN = 1
 

@@ -18,6 +18,8 @@ class Population:
 
         self.__size = size
         self.__generation = 1
+        
+        self.__batch_amount = math.ceil(self.__size / Constants.BATCH_SIZE)
 
         # TODO: ADD the following features:
         # self.__best_player: Simulation = None
@@ -41,15 +43,27 @@ class Population:
             else:
                 sim.brain = Genome.load(f'data/gen{Constants.GEN_TAKEN}_spec{Constants.SPEC_TAKEN}.json')
 
+        self.__batch_index = 0
+        self.__batch = self.get_current_batch()
+
     def update(self, iterations: int = 1) -> None:
         ''' Updates the population. '''
 
-        self.update_alive(iterations=iterations)
+        if self.current_batch_done():
+            self.next_batch()
+        self.update_current_batch(iterations=iterations)
 
     def update_alive(self, iterations: int = 1) -> None:
         ''' Updates all alive simulations. '''
-
+        
         for sim in self.__players:
+            if not sim.dead:
+                sim.update(iterations=iterations)
+
+    def update_current_batch(self, iterations: int = 1) -> None:
+        ''' Update all alive simulations in batch. '''
+
+        for sim in self.__batch:
             if not sim.dead:
                 sim.update(iterations=iterations)
 
@@ -60,6 +74,23 @@ class Population:
             if not sim.dead:
                 return False
         return True
+
+    def current_batch_done(self) -> bool:
+        for sim in self.__batch:
+            if not sim.dead:
+                return False
+        return True
+    
+    def get_current_batch(self) -> list[Simulation]:
+        start = Constants.BATCH_SIZE * self.__batch_index
+        end = start + Constants.BATCH_SIZE
+        if end > len(self.__players):
+            end = len(self.__players)
+        return self.__players[start:end]
+
+    def next_batch(self) -> None:
+        self.__batch_index += 1
+        self.__batch = self.get_current_batch()
 
     def natural_selection(self) -> None:
         '''
@@ -213,3 +244,15 @@ class Population:
     @property
     def generation(self) -> int:
         return self.__generation
+
+    @property
+    def batch_index(self) -> int:
+        return self.__batch_index
+
+    @property
+    def batch(self) -> list[Simulation]:
+        return self.__batch
+
+    @property
+    def batch_amount(self) -> int:
+        return self.__batch_amount

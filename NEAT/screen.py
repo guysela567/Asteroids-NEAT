@@ -12,7 +12,7 @@ class PopulationScreen(GameScreen):
         super().__init__()
 
         self.__population = Population(population_size)
-        self.controller = self.__population.players[0]
+        self.controller = self.__population.batch[0]
         self.__population_size = population_size
         self.__index = 0
 
@@ -20,12 +20,14 @@ class PopulationScreen(GameScreen):
 
     def update(self) -> None:
         if not self.__population.done():
-            self.__population.update(iterations=1)
+            self.__population.update(iterations=Constants.ITERATIONS)
+
             if self.controller.dead:
                 self.next_player()
         else:
+            print('dead- next gen`')
             self.__population.natural_selection()
-            self.controller = self.__population.players[0]
+            self.controller = self.__population.batch[0]
             self.__index = 0
     
     def on_key_down(self, key: int) -> None:
@@ -92,21 +94,24 @@ class PopulationScreen(GameScreen):
         self.fill(255)
         self.set_font(self.__gen_font)
         self.text(f'Generation No. {self.__population.generation}', Constants.WINDOW_WIDTH - 150, 50, center=True)
-        self.text(f'Player No. {self.__index + 1}', Constants.WINDOW_WIDTH - 150, 100, center=True)
-        self.text(f'of {self.__population_size}',  Constants.WINDOW_WIDTH - 150, 125, center=True)
+        self.text(f'Batch No. {self.__population.batch_index + 1}', Constants.WINDOW_WIDTH - 150, 100, center=True)
+        self.text(f'of {self.__population.batch_amount}', Constants.WINDOW_WIDTH - 150, 125, center=True)
+        self.text(f'Player No. {self.__index + 1}', Constants.WINDOW_WIDTH - 150, 175, center=True)
+        self.text(f'of {Constants.BATCH_SIZE}',  Constants.WINDOW_WIDTH - 150, 200, center=True)
         self.draw_network(self.controller.brain, 0, Constants.WINDOW_HEIGHT - 300, 400, 300, 5, show_labels=False)
 
     def next_index(self) -> None:
         self.__index += 1
-        if self.__index == self.__population_size:
+
+        if self.__index >= Constants.BATCH_SIZE:
             self.__index = 0
 
-        self.controller = self.__population.players[self.__index]
+        self.controller = self.__population.batch[self.__index]
 
     def next_player(self) -> None:
         ''' Assume that at least one player is alive. '''
 
-        if self.__population.done():
+        if self.__population.current_batch_done():
             return
 
         self.next_index()
