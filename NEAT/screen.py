@@ -13,7 +13,6 @@ class PopulationScreen(GameScreen):
 
         self.__population = Population(population_size)
         self.controller = self.__population.batch[0]
-        self.__population_size = population_size
         self.__index = 0
 
         self.__gen_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 25)
@@ -25,7 +24,6 @@ class PopulationScreen(GameScreen):
             if self.controller.dead:
                 self.next_player()
         else:
-            print('dead- next gen`')
             self.__population.natural_selection()
             self.controller = self.__population.batch[0]
             self.__index = 0

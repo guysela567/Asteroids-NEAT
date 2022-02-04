@@ -45,6 +45,7 @@ class Population:
 
         self.__batch_index = 0
         self.__batch = self.get_current_batch()
+        print(len(self.__batch))
 
     def update(self, iterations: int = 1) -> None:
         ''' Updates the population. '''
@@ -139,6 +140,10 @@ class Population:
             sim.brain.generate_phenotype() # Generate neural network for each child
             sim.seed = self.__generation - 1
             sim.reset()
+
+        # Set current batch
+        self.__batch_index = 0
+        self.__batch = self.get_current_batch()
         
     def speciate(self) -> None:
         '''

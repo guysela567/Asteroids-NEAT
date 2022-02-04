@@ -6,7 +6,7 @@ class Constants:
     WINDOW_WIDTH = 1000
     WINDOW_HEIGHT = 800
     WINDOW_TITLE = 'Asteroids'
-    FPS = 30
+    FPS = 1000
 
     WINDOW_DIAGONAL = math.sqrt(math.pow(WINDOW_WIDTH, 2) + math.pow(WINDOW_HEIGHT, 2))
 
@@ -32,11 +32,13 @@ class Constants:
 
     # AI
     TRAINING = True
+    ITERATIONS = 1
+
     RAY_AMOUNT = 16
     POPULATION_SIZE = 500 if TRAINING else 1
-    BATCH_SIZE = 50
     STARTING_CONNECTIONS = 0
-    ITERATIONS = 1
+
+    BATCH_SIZE = 50
     GEN_TAKEN = 5
     SPEC_TAKEN = 1
 
