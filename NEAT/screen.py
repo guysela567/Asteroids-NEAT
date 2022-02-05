@@ -109,7 +109,8 @@ class PopulationScreen(GameScreen):
     def next_player(self) -> None:
         ''' Assume that at least one player is alive. '''
 
-        if self.__population.current_batch_done():
+        if self.__population.current_batch_done() \
+            or len(self.__population.players) < 2:
             return
 
         self.next_index()

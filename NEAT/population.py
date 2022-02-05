@@ -7,6 +7,7 @@ from NEAT.species import Species
 from utils.constants import Constants
 
 import math
+import os
 
 
 class Population:
@@ -32,6 +33,12 @@ class Population:
         # Record of all mutations in this population
         self.__innovation_history: list[ConnectionHistory] = []
 
+        # Create file saving Directory if it does not exist
+        if not os.path.exists('data'):
+            os.mkdir('data')
+        if not os.path.exists('data/model'):
+            os.mkdir('data/model')
+
         # Populate with simulations
         self.__players = [Simulation() for _ in range(self.__size)]
         for sim in self.__players:
@@ -41,11 +48,10 @@ class Population:
                 sim.brain.mutate(self.__innovation_history)
                 sim.brain.generate_phenotype()
             else:
-                sim.brain = Genome.load(f'data/gen{Constants.GEN_TAKEN}_spec{Constants.SPEC_TAKEN}.json')
+                sim.brain = Genome.load(f'data/model/gen{Constants.GEN_TAKEN}_spec{Constants.SPEC_TAKEN}.json')
 
         self.__batch_index = 0
         self.__batch = self.get_current_batch()
-        print(len(self.__batch))
 
     def update(self, iterations: int = 1) -> None:
         ''' Updates the population. '''
@@ -109,13 +115,14 @@ class Population:
 
         if Constants.TRAINING:
             for s in range(4): # Save best genome of 4 best species to file
-                self.__species[0].champion.brain.save(f'data/gen{self.__generation - 1}_spec{s + 1}.json')
+                self.__species[0].champion.brain.save(f'data/model/gen{self.__generation - 1}_spec{s + 1}.json')
         
-        print(f'new generation: {self.__generation}')
-        print(f'number of mutations: {len(self.__innovation_history)}')
-        print(f'number of species: {len(self.__species)}')
-        print(f'best fitness: {self.__species[0].best_fitness}')
-        print('------------------------------------------------------')
+        with open('data/log.txt', 'w') as f:
+            print(f'new generation: {self.__generation}', file=f)
+            print(f'number of mutations: {len(self.__innovation_history)}', file=f)
+            print(f'number of species: {len(self.__species)}', file=f)
+            print(f'best fitness: {self.__species[0].best_fitness}', file=f)
+            print('------------------------------------------------------', file=f)
 
         # Repopulate with new simulations
         avg_sum = self.get_avg_fitness_sum()
