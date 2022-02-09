@@ -7,6 +7,7 @@ from NEAT.species import Species
 from utils.constants import Constants
 
 import math
+import os
 
 
 class Population:
@@ -18,6 +19,8 @@ class Population:
 
         self.__size = size
         self.__generation = 1
+        
+        self.__batch_amount = math.ceil(self.__size / Constants.BATCH_SIZE)
 
         # TODO: ADD the following features:
         # self.__best_player: Simulation = None
@@ -30,6 +33,12 @@ class Population:
         # Record of all mutations in this population
         self.__innovation_history: list[ConnectionHistory] = []
 
+        # Create file saving Directory if it does not exist
+        if not os.path.exists('data'):
+            os.mkdir('data')
+        if not os.path.exists('data/model'):
+            os.mkdir('data/model')
+
         # Populate with simulations
         self.__players = [Simulation() for _ in range(self.__size)]
         for sim in self.__players:
@@ -39,17 +48,29 @@ class Population:
                 sim.brain.mutate(self.__innovation_history)
                 sim.brain.generate_phenotype()
             else:
-                sim.brain = Genome.load(f'data/gen{Constants.GEN_TAKEN}_spec{Constants.SPEC_TAKEN}.json')
+                sim.brain = Genome.load(f'data/model/gen{Constants.GEN_TAKEN}_spec{Constants.SPEC_TAKEN}.json')
+
+        self.__batch_index = 0
+        self.__batch = self.get_current_batch()
 
     def update(self, iterations: int = 1) -> None:
         ''' Updates the population. '''
 
-        self.update_alive(iterations=iterations)
+        if self.current_batch_done():
+            self.next_batch()
+        self.update_current_batch(iterations=iterations)
 
     def update_alive(self, iterations: int = 1) -> None:
         ''' Updates all alive simulations. '''
-
+        
         for sim in self.__players:
+            if not sim.dead:
+                sim.update(iterations=iterations)
+
+    def update_current_batch(self, iterations: int = 1) -> None:
+        ''' Update all alive simulations in batch. '''
+
+        for sim in self.__batch:
             if not sim.dead:
                 sim.update(iterations=iterations)
 
@@ -60,6 +81,23 @@ class Population:
             if not sim.dead:
                 return False
         return True
+
+    def current_batch_done(self) -> bool:
+        for sim in self.__batch:
+            if not sim.dead:
+                return False
+        return True
+    
+    def get_current_batch(self) -> list[Simulation]:
+        start = Constants.BATCH_SIZE * self.__batch_index
+        end = start + Constants.BATCH_SIZE
+        if end > len(self.__players):
+            end = len(self.__players)
+        return self.__players[start:end]
+
+    def next_batch(self) -> None:
+        self.__batch_index += 1
+        self.__batch = self.get_current_batch()
 
     def natural_selection(self) -> None:
         '''
@@ -77,13 +115,14 @@ class Population:
 
         if Constants.TRAINING:
             for s in range(4): # Save best genome of 4 best species to file
-                self.__species[0].champion.brain.save(f'data/gen{self.__generation - 1}_spec{s + 1}.json')
+                self.__species[0].champion.brain.save(f'data/model/gen{self.__generation - 1}_spec{s + 1}.json')
         
-        print(f'new generation: {self.__generation}')
-        print(f'number of mutations: {len(self.__innovation_history)}')
-        print(f'number of species: {len(self.__species)}')
-        print(f'best fitness: {self.__species[0].best_fitness}')
-        print('------------------------------------------------------')
+        with open('data/log.txt', 'w') as f:
+            print(f'new generation: {self.__generation}', file=f)
+            print(f'number of mutations: {len(self.__innovation_history)}', file=f)
+            print(f'number of species: {len(self.__species)}', file=f)
+            print(f'best fitness: {self.__species[0].best_fitness}', file=f)
+            print('------------------------------------------------------', file=f)
 
         # Repopulate with new simulations
         avg_sum = self.get_avg_fitness_sum()
@@ -108,6 +147,10 @@ class Population:
             sim.brain.generate_phenotype() # Generate neural network for each child
             sim.seed = self.__generation - 1
             sim.reset()
+
+        # Set current batch
+        self.__batch_index = 0
+        self.__batch = self.get_current_batch()
         
     def speciate(self) -> None:
         '''
@@ -213,3 +256,15 @@ class Population:
     @property
     def generation(self) -> int:
         return self.__generation
+
+    @property
+    def batch_index(self) -> int:
+        return self.__batch_index
+
+    @property
+    def batch(self) -> list[Simulation]:
+        return self.__batch
+
+    @property
+    def batch_amount(self) -> int:
+        return self.__batch_amount
