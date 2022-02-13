@@ -26,6 +26,14 @@ class GameScreen(Screen):
             'projectile': [Image('assets/sprites/projectile.png')]
         }
 
+        self.__title_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 100)
+        self.__pause_image = Image('assets/sprites/pause.png')
+
+        self.__pause_pos = (self.width - 100, 50)
+        self.__pause_dims = (50, 50)
+        self.__blur_amount = 0
+        self.__title_anim = -200
+
         self.__thrust_image = Image.load_by_scale('assets/sprites/thrust.png', 3)
 
         for sprite, images in self.__sprites.items():
@@ -49,6 +57,7 @@ class GameScreen(Screen):
         self.draw_background()
         self.draw_sprites(self.__controller.player, self.__controller.asteroids)
         self.draw_score(self.__controller.score, self.__controller.high_score)
+        self.draw_pause_button()
 
         if self.__controller.paused:
             self.draw_paused()
@@ -56,12 +65,17 @@ class GameScreen(Screen):
         # for asteroid in self.__controller.asteroids:
         #     self.draw_poly(asteroid.sprite.rect_verts)
 
+    def draw_pause_button(self) -> None:
+        self.image(self.__pause_image, *self.__pause_pos, *self.__pause_dims)
+
     def update(self) -> None:
         self.__controller.update()
 
     def on_key_down(self, key: int) -> None:
         if key == self.keys['p']:
             self.__controller.toggle_pause()
+            self.__blur_amount = 0
+            self.__title_anim = -200
 
         elif key == self.keys['UP']:
             self.__controller.start_boost()
@@ -85,6 +99,13 @@ class GameScreen(Screen):
         elif key == self.keys['RIGHT'] and self.__controller.player.rotate_dir == 1 \
                 or key == self.keys['LEFT'] and self.__controller.player.rotate_dir == -1:
             self.__controller.stop_rotate()
+
+    def on_mouse_down(self) -> None:
+        if self.__pause_pos[0] < self.mouse_pos[0] < self.__pause_pos[0] + self.__pause_dims[0] \
+            and self.__pause_pos[1] < self.mouse_pos[1] < self.__pause_pos[1] + self.__pause_dims[1]:
+            self.__controller.toggle_pause()
+            self.__blur_amount = 0
+            self.__title_anim = -200
 
     def draw_background(self) -> None:
         self.background(0)  # Clear screen to background color
@@ -131,12 +152,15 @@ class GameScreen(Screen):
         self.text(f'HIGH SCORE: {high_score}', 25, 25)
 
     def draw_paused(self) -> None:
-        self.fill(255, 0, 0)
-        self.font_size(100)
-        self.text('GAME PAUSED',
-                  Constants.WINDOW_WIDTH * .5,
-                  Constants.WINDOW_HEIGHT * .5,
-                  center=True)
+        if self.__blur_amount < 200: 
+            self.__blur_amount += 50
+        if self.__title_anim <= 200:
+            self.__title_anim += 50
+
+        self.blur(self.__blur_amount)
+        self.fill(255)
+        self.set_font(self.__title_font)
+        self.text('GAME PAUSED', self.width * .5, self.__title_anim, center=True)
 
     def draw_sprite(self, component: str, hitbox: Hitbox, angle: float, alpha: int = 255) -> None:
         raw_image = self.__sprites[component][hitbox.index]

@@ -108,6 +108,12 @@ class Screen:
         self.__font_size = 100
         self.__font = pg.font.SysFont(self.__font_family, self.__font_size)
 
+    def blur(self, alpha: int = 100) -> None:
+        surf = pg.Surface((self.width, self.height))
+        surf.fill((0, 0, 0))
+        surf.set_alpha(alpha)
+        self.__display.blit(surf, (0, 0))
+
     def background(self, r: int, g: int = None, b: int = None) -> None:
         # R, G, B are all the same
         g = r if g is None else g
@@ -225,11 +231,12 @@ class Screen:
         elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouse_up'):
             self.on_mouse_up()
 
-    def mouse_pos(self) -> tuple[int, int]:
-        pg.mouse.get_pos()
-
     def redirect(self, name: str) -> None:
         pg.event.post(Event(pg.USEREVENT, screen=name))
+
+    @property
+    def mouse_pos(self) -> tuple[int, int]:
+        return pg.mouse.get_pos()
 
     @property
     def title(self) -> str:

@@ -15,7 +15,7 @@ class View(ScreenManager):
 
         self.init_screen(GameScreen(), 'game')
         self.init_screen(InstructionsScreen(), 'instructions')
-        self.init_screen(PopulationScreen(), 'ai')
+        # self.init_screen(PopulationScreen(), 'ai')
         self.init_screen(DemoScreen(), 'demo')
         self.init_screen(MenuScreen(), 'menu')
 
