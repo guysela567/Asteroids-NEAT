@@ -29,6 +29,7 @@ class GameScreen(Screen):
         self.__title_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 100)
         self.__button_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 50)
         self.__pause_image = Image('assets/sprites/pause.png')
+        self.__resume_image = Image('assets/sprites/resume.png')
 
         self.__pause_pos = (self.width - 100, 50)
         self.__pause_dims = (50, 50)
@@ -66,13 +67,14 @@ class GameScreen(Screen):
         if self.__controller.paused:
             self.draw_paused()
 
-        self.draw_pause_button()
+        self.draw_pause_resume()
 
         # for asteroid in self.__controller.asteroids:
         #     self.draw_poly(asteroid.sprite.rect_verts)
 
-    def draw_pause_button(self) -> None:
-        self.image(self.__pause_image, *self.__pause_pos, *self.__pause_dims)
+    def draw_pause_resume(self) -> None:
+        image = self.__resume_image if self.__controller.paused else self.__pause_image
+        self.image(image, *self.__pause_pos, *self.__pause_dims)
 
     def update(self) -> None:
         self.__controller.update()
