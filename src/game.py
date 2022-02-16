@@ -3,7 +3,7 @@ from __future__ import annotations
 from utils.constants import Constants
 from utils.geometry.raycasting import RaySet
 from utils.geometry.collision import SpriteDimensions, Hitbox
-from utils.drawing import Screen, Image
+from utils.drawing import Button, Screen, Image
 
 from components.player import Player
 from components.asteroid import Asteroid
@@ -27,12 +27,17 @@ class GameScreen(Screen):
         }
 
         self.__title_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 100)
+        self.__button_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 50)
         self.__pause_image = Image('assets/sprites/pause.png')
 
         self.__pause_pos = (self.width - 100, 50)
         self.__pause_dims = (50, 50)
-        self.__blur_amount = 0
-        self.__title_anim = -200
+
+        self.__animations: dict[str, int] = {}
+        self.reset_animations()
+
+        self.__resume_button = Button(self, self.__animations['pause_buttons'], 450, 300, 100, (255, 255, 255), 'Resume')
+        self.__quit_button = Button(self, self.__animations['pause_buttons'], 600, 300, 100, (255, 255, 255), 'Quit')
 
         self.__thrust_image = Image.load_by_scale('assets/sprites/thrust.png', 3)
 
@@ -57,10 +62,11 @@ class GameScreen(Screen):
         self.draw_background()
         self.draw_sprites(self.__controller.player, self.__controller.asteroids)
         self.draw_score(self.__controller.score, self.__controller.high_score)
-        self.draw_pause_button()
 
         if self.__controller.paused:
             self.draw_paused()
+
+        self.draw_pause_button()
 
         # for asteroid in self.__controller.asteroids:
         #     self.draw_poly(asteroid.sprite.rect_verts)
@@ -74,8 +80,7 @@ class GameScreen(Screen):
     def on_key_down(self, key: int) -> None:
         if key == self.keys['p']:
             self.__controller.toggle_pause()
-            self.__blur_amount = 0
-            self.__title_anim = -200
+            self.reset_animations()
 
         elif key == self.keys['UP']:
             self.__controller.start_boost()
@@ -90,7 +95,8 @@ class GameScreen(Screen):
             self.__controller.shoot()
 
         elif key == self.keys['ESCAPE']:
-            self.redirect('instructions')
+            self.__controller.reset()
+            self.redirect('menu')
 
     def on_key_up(self, key: int) -> None:
         if key == self.keys['UP']:
@@ -104,8 +110,15 @@ class GameScreen(Screen):
         if self.__pause_pos[0] < self.mouse_pos[0] < self.__pause_pos[0] + self.__pause_dims[0] \
             and self.__pause_pos[1] < self.mouse_pos[1] < self.__pause_pos[1] + self.__pause_dims[1]:
             self.__controller.toggle_pause()
-            self.__blur_amount = 0
-            self.__title_anim = -200
+            self.reset_animations()
+
+        if self.__resume_button.mouse_hover():
+            self.__controller.toggle_pause()
+            self.reset_animations()
+
+        if self.__quit_button.mouse_hover():
+            self.__controller.reset()
+            self.redirect('menu')
 
     def draw_background(self) -> None:
         self.background(0)  # Clear screen to background color
@@ -150,17 +163,35 @@ class GameScreen(Screen):
 
         # Draw high score
         self.text(f'HIGH SCORE: {high_score}', 25, 25)
+    
+    def reset_animations(self) -> None:
+        self.__animations = {
+            'blur': 0,
+            'pause_title': -200,
+            'pause_buttons': -800,
+        }
+
+    def apply_pause_animation(self) -> None:
+        if self.__animations['blur'] < 200: 
+            self.__animations['blur'] += 50
+        if self.__animations['pause_title'] < 200:
+            self.__animations['pause_title'] += 50
+        if self.__animations['pause_buttons'] < self.width * .5 - 150:
+            self.__animations['pause_buttons'] += 50
 
     def draw_paused(self) -> None:
-        if self.__blur_amount < 200: 
-            self.__blur_amount += 50
-        if self.__title_anim <= 200:
-            self.__title_anim += 50
-
-        self.blur(self.__blur_amount)
+        self.apply_pause_animation()
+        self.blur(self.__animations['blur'])
         self.fill(255)
+
         self.set_font(self.__title_font)
-        self.text('GAME PAUSED', self.width * .5, self.__title_anim, center=True)
+        self.text('GAME PAUSED', self.width * .5, self.__animations['pause_title'], center=True)
+
+        self.set_font(self.__button_font)
+        self.__resume_button.x = self.__animations['pause_buttons']
+        self.__quit_button.x = self.__animations['pause_buttons']
+        self.__resume_button.draw()
+        self.__quit_button.draw()
 
     def draw_sprite(self, component: str, hitbox: Hitbox, angle: float, alpha: int = 255) -> None:
         raw_image = self.__sprites[component][hitbox.index]

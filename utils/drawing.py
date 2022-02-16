@@ -340,6 +340,30 @@ class Button:
     def caption(self) -> str:
         return self.__caption
 
+    @property
+    def x(self) -> float:
+        return self.__x
+
+    @property
+    def y(self) -> float:
+        return self.__y
+
+    @property
+    def color(self) -> tuple:
+        return self.__color
+
     @caption.setter
     def caption(self, caption: str) -> None:
         self.__caption = caption
+
+    @x.setter
+    def x(self, x: float) -> None:
+        self.__x = x
+
+    @y.setter
+    def y(self, y: float) -> None:
+        self.__y = y
+
+    @color.setter
+    def color(self, color: tuple) -> None:
+        self.__color = color
