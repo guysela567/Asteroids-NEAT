@@ -36,7 +36,7 @@ class MenuScreen(Screen):
             self.redirect('instructions')
 
         elif self.__ai_button.mouse_hover():
-            self.redirect('ai')
+            self.redirect('population-demo')
 
         elif self.__demo_button.mouse_hover():
             self.redirect('demo-select')
