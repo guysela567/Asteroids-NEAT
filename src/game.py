@@ -3,7 +3,7 @@ from __future__ import annotations
 from utils.constants import Constants
 from utils.geometry.raycasting import RaySet
 from utils.geometry.collision import SpriteDimensions, Hitbox
-from utils.drawing import Screen, Image
+from utils.drawing import Button, Screen, Image
 
 from components.player import Player
 from components.asteroid import Asteroid
@@ -16,15 +16,27 @@ import math
 
 class GameScreen(Screen):
     def __init__(self) -> None:
-        super().__init__(Constants.WINDOW_WIDTH, 
-                         Constants.WINDOW_HEIGHT, 
-                         Constants.WINDOW_TITLE)
+        super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, Constants.WINDOW_TITLE)
         
         self.__sprites = {
             'asteroid': [Image(f'assets/sprites/asteroid{i}.png') for i in range(1, 4)],
             'player': [Image('assets/sprites/player.png')],
             'projectile': [Image('assets/sprites/projectile.png')]
         }
+
+        self.__title_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 100)
+        self.__button_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 50)
+        self.__pause_image = Image('assets/sprites/pause.png')
+        self.__resume_image = Image('assets/sprites/resume.png')
+
+        self.__pause_pos = (self.width - 100, 50)
+        self.__pause_dims = (50, 50)
+
+        self.__resume_button = Button(self, 0, 450, 300, 100, (255, 255, 255), 'Resume')
+        self.__quit_button = Button(self, 0, 600, 300, 100, (255, 255, 255), 'Quit')
+
+        self.__animations: dict[str, int] = {}
+        self.reset_animations()
 
         self.__thrust_image = Image.load_by_scale('assets/sprites/thrust.png', 3)
 
@@ -38,8 +50,8 @@ class GameScreen(Screen):
         self.no_stroke()
 
         # Generate stars for background
-        self.__stars = [(random.uniform(0, Constants.WINDOW_WIDTH),
-                         random.uniform(0, Constants.WINDOW_HEIGHT),
+        self.__stars = [(random.uniform(0, self.width),
+                         random.uniform(0, self.height),
                          random.uniform(1, 3)) for _ in range(50)]
 
         self.__score_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 36)
@@ -53,8 +65,14 @@ class GameScreen(Screen):
         if self.__controller.paused:
             self.draw_paused()
 
+        self.draw_pause_resume()
+
         # for asteroid in self.__controller.asteroids:
         #     self.draw_poly(asteroid.sprite.rect_verts)
+
+    def draw_pause_resume(self) -> None:
+        image = self.__resume_image if self.__controller.paused else self.__pause_image
+        self.image(image, *self.__pause_pos, *self.__pause_dims)
 
     def update(self) -> None:
         self.__controller.update()
@@ -62,6 +80,7 @@ class GameScreen(Screen):
     def on_key_down(self, key: int) -> None:
         if key == self.keys['p']:
             self.__controller.toggle_pause()
+            self.reset_animations()
 
         elif key == self.keys['UP']:
             self.__controller.start_boost()
@@ -76,7 +95,7 @@ class GameScreen(Screen):
             self.__controller.shoot()
 
         elif key == self.keys['ESCAPE']:
-            self.redirect('instructions')
+            self.redirect('menu')
 
     def on_key_up(self, key: int) -> None:
         if key == self.keys['UP']:
@@ -85,6 +104,20 @@ class GameScreen(Screen):
         elif key == self.keys['RIGHT'] and self.__controller.player.rotate_dir == 1 \
                 or key == self.keys['LEFT'] and self.__controller.player.rotate_dir == -1:
             self.__controller.stop_rotate()
+
+    def on_mouse_down(self) -> None:
+        if self.__pause_pos[0] < self.mouse_pos[0] < self.__pause_pos[0] + self.__pause_dims[0] \
+            and self.__pause_pos[1] < self.mouse_pos[1] < self.__pause_pos[1] + self.__pause_dims[1]:
+            self.__controller.toggle_pause()
+            self.reset_animations()
+
+        if self.__controller.paused:
+            if self.__resume_button.mouse_hover():
+                self.__controller.toggle_pause()
+                self.reset_animations()
+
+            if self.__quit_button.mouse_hover():
+                self.redirect('menu')
 
     def draw_background(self) -> None:
         self.background(0)  # Clear screen to background color
@@ -129,14 +162,35 @@ class GameScreen(Screen):
 
         # Draw high score
         self.text(f'HIGH SCORE: {high_score}', 25, 25)
+    
+    def reset_animations(self) -> None:
+        self.__animations = {
+            'blur': 0,
+            'pause_title': -200,
+            'pause_buttons': -800,
+        }
+
+    def apply_pause_animation(self) -> None:
+        if self.__animations['blur'] < 200: 
+            self.__animations['blur'] += 50
+        if self.__animations['pause_title'] < 200:
+            self.__animations['pause_title'] += 50
+        if self.__animations['pause_buttons'] < self.width * .5 - 150:
+            self.__animations['pause_buttons'] += 50
 
     def draw_paused(self) -> None:
-        self.fill(255, 0, 0)
-        self.font_size(100)
-        self.text('GAME PAUSED',
-                  Constants.WINDOW_WIDTH * .5,
-                  Constants.WINDOW_HEIGHT * .5,
-                  center=True)
+        self.apply_pause_animation()
+        self.blur(self.__animations['blur'])
+        self.fill(255)
+
+        self.set_font(self.__title_font)
+        self.text('GAME PAUSED', self.width * .5, self.__animations['pause_title'], center=True)
+
+        self.set_font(self.__button_font)
+        self.__resume_button.x = self.__animations['pause_buttons']
+        self.__quit_button.x = self.__animations['pause_buttons']
+        self.__resume_button.draw()
+        self.__quit_button.draw()
 
     def draw_sprite(self, component: str, hitbox: Hitbox, angle: float, alpha: int = 255) -> None:
         raw_image = self.__sprites[component][hitbox.index]
@@ -165,6 +219,9 @@ class GameScreen(Screen):
             pos1 = verts[i]
             pos2 = verts[i + 1] if i < len(verts) - 1 else verts[0]
             self.line(*pos1, *pos2, 5)
+
+    def switch_reset(self) -> None:
+        self.__controller.reset()
 
     @property
     def controller(self) -> Controller:

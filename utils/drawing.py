@@ -7,8 +7,8 @@ from __future__ import annotations
 import pygame as pg
 from pygame.event import Event
 from pygame.time import Clock
-
 from functools import lru_cache
+
 
 class Image:
     def __init__(self, image: str | pg.Surface) -> None:
@@ -107,6 +107,12 @@ class Screen:
         self.__font_family = 'sans serif'
         self.__font_size = 100
         self.__font = pg.font.SysFont(self.__font_family, self.__font_size)
+
+    def blur(self, alpha: int = 100) -> None:
+        surf = pg.Surface((self.width, self.height))
+        surf.fill((0, 0, 0))
+        surf.set_alpha(alpha)
+        self.__display.blit(surf, (0, 0))
 
     def background(self, r: int, g: int = None, b: int = None) -> None:
         # R, G, B are all the same
@@ -225,11 +231,12 @@ class Screen:
         elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouse_up'):
             self.on_mouse_up()
 
-    def mouse_pos(self) -> tuple[int, int]:
-        pg.mouse.get_pos()
-
     def redirect(self, name: str) -> None:
         pg.event.post(Event(pg.USEREVENT, screen=name))
+
+    @property
+    def mouse_pos(self) -> tuple[int, int]:
+        return pg.mouse.get_pos()
 
     @property
     def title(self) -> str:
@@ -267,6 +274,7 @@ class ScreenManager:
     def set_screen(self, name: str) -> None:
         self.__screen = name
         screen = self.__screens[self.__screen]
+        if hasattr(screen, 'switch_reset'): screen.switch_reset()
         pg.display.set_mode((screen.width, screen.height))
         pg.display.set_caption(screen.title)
 
@@ -333,6 +341,30 @@ class Button:
     def caption(self) -> str:
         return self.__caption
 
+    @property
+    def x(self) -> float:
+        return self.__x
+
+    @property
+    def y(self) -> float:
+        return self.__y
+
+    @property
+    def color(self) -> tuple:
+        return self.__color
+
     @caption.setter
     def caption(self, caption: str) -> None:
         self.__caption = caption
+
+    @x.setter
+    def x(self, x: float) -> None:
+        self.__x = x
+
+    @y.setter
+    def y(self, y: float) -> None:
+        self.__y = y
+
+    @color.setter
+    def color(self, color: tuple) -> None:
+        self.__color = color

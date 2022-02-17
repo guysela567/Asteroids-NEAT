@@ -39,7 +39,7 @@ class Constants:
     # Neural Network and Population
     RAY_AMOUNT = 16
     POPULATION_SIZE = 500 if TRAINING else 1
-    STARTING_CONNECTIONS = 33
+    STARTING_CONNECTIONS = 0
     
     # File system
     GEN_TAKEN = 5

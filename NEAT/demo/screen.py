@@ -74,4 +74,4 @@ class DemoScreen(Screen):
             self.__controller.mutate_weights()
 
         elif key == self.keys['ESCAPE']:
-            self.redirect('menu')
+            self.redirect('demo-select')

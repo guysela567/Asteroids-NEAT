@@ -91,12 +91,12 @@ class PopulationScreen(GameScreen):
         
         self.fill(255)
         self.set_font(self.__gen_font)
-        self.text(f'Generation No. {self.__population.generation}', Constants.WINDOW_WIDTH - 150, 50, center=True)
-        self.text(f'Batch No. {self.__population.batch_index + 1}', Constants.WINDOW_WIDTH - 150, 100, center=True)
-        self.text(f'of {self.__population.batch_amount}', Constants.WINDOW_WIDTH - 150, 125, center=True)
-        self.text(f'Player No. {self.__index + 1}', Constants.WINDOW_WIDTH - 150, 175, center=True)
-        self.text(f'of {Constants.BATCH_SIZE}',  Constants.WINDOW_WIDTH - 150, 200, center=True)
-        self.draw_network(self.controller.brain, 0, Constants.WINDOW_HEIGHT - 300, 400, 300, 5, show_labels=False)
+        self.text(f'Generation No. {self.__population.generation}', self.width - 150, 50, center=True)
+        self.text(f'Batch No. {self.__population.batch_index + 1}', self.width - 150, 100, center=True)
+        self.text(f'of {self.__population.batch_amount}', self.width - 150, 125, center=True)
+        self.text(f'Player No. {self.__index + 1}', self.width - 150, 175, center=True)
+        self.text(f'of {Constants.BATCH_SIZE}',  self.width - 150, 200, center=True)
+        self.draw_network(self.controller.brain, 0, self.height - 300, 400, 300, 5, show_labels=False)
 
     def next_index(self) -> None:
         self.__index += 1
