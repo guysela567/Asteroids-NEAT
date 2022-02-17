@@ -111,12 +111,13 @@ class GameScreen(Screen):
             self.__controller.toggle_pause()
             self.reset_animations()
 
-        if self.__resume_button.mouse_hover():
-            self.__controller.toggle_pause()
-            self.reset_animations()
+        if self.__controller.paused:
+            if self.__resume_button.mouse_hover():
+                self.__controller.toggle_pause()
+                self.reset_animations()
 
-        if self.__quit_button.mouse_hover():
-            self.redirect('menu')
+            if self.__quit_button.mouse_hover():
+                self.redirect('menu')
 
     def draw_background(self) -> None:
         self.background(0)  # Clear screen to background color
