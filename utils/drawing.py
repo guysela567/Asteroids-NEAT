@@ -7,8 +7,8 @@ from __future__ import annotations
 import pygame as pg
 from pygame.event import Event
 from pygame.time import Clock
-
 from functools import lru_cache
+
 
 class Image:
     def __init__(self, image: str | pg.Surface) -> None:
@@ -274,6 +274,7 @@ class ScreenManager:
     def set_screen(self, name: str) -> None:
         self.__screen = name
         screen = self.__screens[self.__screen]
+        if hasattr(screen, 'switch_reset'): screen.switch_reset()
         pg.display.set_mode((screen.width, screen.height))
         pg.display.set_caption(screen.title)
 

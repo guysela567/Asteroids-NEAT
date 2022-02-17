@@ -34,11 +34,11 @@ class GameScreen(Screen):
         self.__pause_pos = (self.width - 100, 50)
         self.__pause_dims = (50, 50)
 
+        self.__resume_button = Button(self, 0, 450, 300, 100, (255, 255, 255), 'Resume')
+        self.__quit_button = Button(self, 0, 600, 300, 100, (255, 255, 255), 'Quit')
+
         self.__animations: dict[str, int] = {}
         self.reset_animations()
-
-        self.__resume_button = Button(self, self.__animations['pause_buttons'], 450, 300, 100, (255, 255, 255), 'Resume')
-        self.__quit_button = Button(self, self.__animations['pause_buttons'], 600, 300, 100, (255, 255, 255), 'Quit')
 
         self.__thrust_image = Image.load_by_scale('assets/sprites/thrust.png', 3)
 
@@ -97,7 +97,6 @@ class GameScreen(Screen):
             self.__controller.shoot()
 
         elif key == self.keys['ESCAPE']:
-            self.__controller.reset()
             self.redirect('menu')
 
     def on_key_up(self, key: int) -> None:
@@ -119,7 +118,6 @@ class GameScreen(Screen):
             self.reset_animations()
 
         if self.__quit_button.mouse_hover():
-            self.__controller.reset()
             self.redirect('menu')
 
     def draw_background(self) -> None:
@@ -222,6 +220,9 @@ class GameScreen(Screen):
             pos1 = verts[i]
             pos2 = verts[i + 1] if i < len(verts) - 1 else verts[0]
             self.line(*pos1, *pos2, 5)
+
+    def switch_reset(self) -> None:
+        self.__controller.reset()
 
     @property
     def controller(self) -> Controller:

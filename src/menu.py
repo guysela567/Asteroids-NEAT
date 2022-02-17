@@ -9,7 +9,7 @@ class MenuScreen(Screen):
         self.set_font(self.load_font('assets/fonts/HyperspaceBold.ttf', 40))
         self.__play_button = Button(self, 50, 100, 250, 100, (255, 255, 255), 'PLAY')
         self.__ai_button = Button(self, 50, 250, 250, 100, (255, 255, 255), 'PLAY AI')
-        self.__demo_button = Button(self, 50, 400, 250, 100, (255, 255, 255), 'NEAT DEMO')
+        self.__demo_button = Button(self, 50, 400, 250, 100, (255, 255, 255), 'AI DEMO')
         self.__quit_button = Button(self, 50, 650, 250, 100, (255, 255, 255), 'QUIT')
 
         self.__animation_step = 0
@@ -39,4 +39,7 @@ class MenuScreen(Screen):
             self.redirect('ai')
 
         elif self.__demo_button.mouse_hover():
-            self.redirect('demo')
+            self.redirect('demo-select')
+
+    def switch_reset(self) -> None:
+        self.__animation_step = 0
