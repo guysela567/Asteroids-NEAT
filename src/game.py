@@ -16,9 +16,7 @@ import math
 
 class GameScreen(Screen):
     def __init__(self) -> None:
-        super().__init__(Constants.WINDOW_WIDTH, 
-                         Constants.WINDOW_HEIGHT, 
-                         Constants.WINDOW_TITLE)
+        super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, Constants.WINDOW_TITLE)
         
         self.__sprites = {
             'asteroid': [Image(f'assets/sprites/asteroid{i}.png') for i in range(1, 4)],
@@ -52,8 +50,8 @@ class GameScreen(Screen):
         self.no_stroke()
 
         # Generate stars for background
-        self.__stars = [(random.uniform(0, Constants.WINDOW_WIDTH),
-                         random.uniform(0, Constants.WINDOW_HEIGHT),
+        self.__stars = [(random.uniform(0, self.width),
+                         random.uniform(0, self.height),
                          random.uniform(1, 3)) for _ in range(50)]
 
         self.__score_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 36)
