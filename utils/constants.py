@@ -45,5 +45,6 @@ class Constants:
     GEN_TAKEN = 5
     SPEC_TAKEN = 1
 
-    # COLORS
+    # GRAPHICS
     TEXT_COLOR = (240, 240, 192)
+    BACK_RECT = (10, 10, 60, 60)
