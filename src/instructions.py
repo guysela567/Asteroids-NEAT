@@ -18,6 +18,8 @@ class InstructionsScreen(Screen):
         self.__key_off_x = self.__empty_key.size[0] * .5
         self.__key_off_y = self.__empty_key.size[1] * .5
 
+        self.__back_image = Image('assets/sprites/back.png')
+
         # Draw once
         self.draw_text()
 
@@ -72,9 +74,17 @@ class InstructionsScreen(Screen):
         self.set_font(self.__regular_font)
         self.text('return to menu', drawing_x + 125, drawing_y)
 
+        # Back image
+        self.image(self.__back_image, *Constants.BACK_RECT)
+
     def on_key_down(self, key: int) -> None:
         if key == self.keys['RETURN']:
             self.redirect('game')
         
         elif key == self.keys['ESCAPE']:
+            self.redirect('menu')
+
+    def on_mouse_down(self) -> None:
+        x, y, w, h = Constants.BACK_RECT
+        if x < self.mouse_pos[0] < x + w and y < self.mouse_pos[1] < y + h:
             self.redirect('menu')

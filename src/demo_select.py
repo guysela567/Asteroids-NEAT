@@ -1,4 +1,4 @@
-from utils.drawing import Button, Screen
+from utils.drawing import Button, Screen, Image
 from utils.constants import Constants
 
 
@@ -11,6 +11,8 @@ class DemoSelectScreen(Screen):
 
         self.__topology_button = Button(self, 0, 400, 400, 100, (255, 255, 255), 'Topology Demo')
         self.__population_button = Button(self, 0, 600, 400, 100, (255, 255, 255), 'Training Demo')
+
+        self.__back_image = Image('assets/sprites/back.png')
 
         self.__animations: dict[str, int] = {}
         self.reset_animations()
@@ -40,6 +42,7 @@ class DemoSelectScreen(Screen):
         self.__population_button.x = self.__animations['buttons']
         self.__topology_button.draw()
         self.__population_button.draw()
+        self.image(self.__back_image, *Constants.BACK_RECT)
 
     def on_mouse_down(self) -> None:
         if self.__topology_button.mouse_hover():
@@ -47,6 +50,10 @@ class DemoSelectScreen(Screen):
 
         if self.__population_button.mouse_hover():
             self.redirect('population-demo')
+
+        x, y, w, h = Constants.BACK_RECT
+        if x < self.mouse_pos[0] < x + w and y < self.mouse_pos[1] < y + h:
+            self.redirect('menu')
 
     def on_key_down(self, key: int) -> None:
         if key == self.keys['ESCAPE']:

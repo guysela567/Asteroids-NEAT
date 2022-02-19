@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from utils.drawing import Screen
+from utils.drawing import Screen, Image
 from utils.constants import Constants
 from NEAT.demo.controller import DemoController
 from NEAT.genome import Genome
@@ -13,6 +13,7 @@ class DemoScreen(Screen):
     def __init__(self) -> None:
         super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, 'NEAT Demo')
         self.__controller = DemoController()
+        self.__back_image = Image('assets/sprites/back.png')
 
     def update(self) -> None:
         self.__controller.update()
@@ -62,6 +63,7 @@ class DemoScreen(Screen):
     def draw(self) -> None:
         self.background(180)
         self.draw_network(self.__controller.network, 0, 0, self.width, self.height, 30)
+        self.image(self.__back_image, 10, 10, 65, 65)
     
     def on_key_down(self, key: int) -> None:
         if key == self.keys['UP']:
@@ -74,4 +76,9 @@ class DemoScreen(Screen):
             self.__controller.mutate_weights()
 
         elif key == self.keys['ESCAPE']:
+            self.redirect('demo-select')
+
+    def on_mouse_down(self) -> None:
+        x, y, w, h = Constants.BACK_RECT
+        if x < self.mouse_pos[0] < x + w and y < self.mouse_pos[1] < y + h:
             self.redirect('demo-select')
