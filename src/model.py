@@ -9,9 +9,8 @@ from utils.geometry.vector import PositionVector
 
 from NEAT.genome import Genome
 
-import random
-import math
-import copy
+import random, math, copy
+
 
 class Model:
     def __init__(self, ai: bool = False) -> None:    
@@ -24,7 +23,7 @@ class Model:
 
         # Initialize astroids
         self.__asteroid_amount = 4
-        self.__asteroids = []
+        self.__asteroids: list[Asteroid] = []
         self.__spawn_asteroids()
 
         # Score system
