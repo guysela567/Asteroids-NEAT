@@ -57,15 +57,16 @@ class DemoScreen(Screen):
         for pos, num in zip(node_poses, node_numbers):
            
             self.fill(255)
+            self.stroke_weight(3)
             if num == self.__controller.network.bias_node:
                 self.stroke(0, 255, 0)
-                self.stroke_weight(5)
-            else: self.no_stroke()
+            else: self.stroke(0)
             self.circle(*pos, r)
 
             self.fill(0)
+            self.no_stroke()
             self.font_size(50)
-            self.text(str(num), *pos, center=True)     
+            self.text(str(num + 1), *pos, center=True)     
     
     def on_key_down(self, key: int, unicode: str) -> None:
         if key == self.keys['UP']:

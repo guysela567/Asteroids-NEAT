@@ -397,7 +397,7 @@ class TextBox:
                 self.__text = self.__text[:-1]
 
             else:
-                if unicode.isdigit():
+                if unicode.isdigit() and int(self.__text + unicode) < 10:
                     self.__text += unicode
 
             self.__txt_surface = pg.font.SysFont('monospace', self.__defult_width).render(self.__text, True, self.__color)
