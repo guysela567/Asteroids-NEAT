@@ -1,3 +1,4 @@
+from NEAT.demo.demo_config import DemoConfigScreen
 from utils.drawing import ScreenManager
 
 from src.menu import MenuScreen
@@ -20,5 +21,6 @@ class View(ScreenManager):
         self.init_screen(DemoScreen(), 'topology-demo')
         self.init_screen(MenuScreen(), 'menu')
         self.init_screen(DemoSelectScreen(), 'demo-select')
+        self.init_screen(DemoConfigScreen(), 'demo-config')
 
-        self.set_screen('menu')
+        self.set_screen('demo-config')

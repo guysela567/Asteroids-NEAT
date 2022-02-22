@@ -77,7 +77,7 @@ class InstructionsScreen(Screen):
         # Back image
         self.image(self.__back_image, *Constants.BACK_RECT)
 
-    def on_key_down(self, key: int) -> None:
+    def on_key_down(self, key: int, unicode: str) -> None:
         if key == self.keys['RETURN']:
             self.redirect('game')
         

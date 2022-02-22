@@ -4,8 +4,8 @@ from NEAT.node import Node
 
 
 class DemoModel:
-    def __init__(self, inputs: int, outputs: int) -> None:
-        self.__network = Genome(inputs, outputs)
+    def __init__(self) -> None:
+        self.__network: Genome = None
         self.__innovation_history = []
     
     def nodes_in_layer(self, layer: int) -> int:
@@ -28,3 +28,7 @@ class DemoModel:
     @property
     def network(self) -> Genome:
         return self.__network
+
+    @network.setter
+    def network(self, network: Genome) -> None:
+        self.__network = network

@@ -5,7 +5,7 @@ from NEAT.node import Node
 
 class DemoController:
     def __init__(self) -> None:
-        self.__model = DemoModel(2, 2)
+        self.__model = DemoModel()
     
     def update(self) -> None:
         pass
@@ -28,3 +28,7 @@ class DemoController:
     @property
     def network(self) -> Genome:
         return self.__model.network
+
+    @network.setter
+    def network(self, network: Genome) -> None:
+        self.__model.network = network

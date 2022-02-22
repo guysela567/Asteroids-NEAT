@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from utils.drawing import Screen, Image
+from utils.drawing import Screen, Image, TextBox
 from utils.constants import Constants
 from NEAT.demo.controller import DemoController
 from NEAT.genome import Genome
@@ -16,7 +16,12 @@ class DemoScreen(Screen):
         self.__back_image = Image('assets/sprites/back.png')
 
     def update(self) -> None:
-        self.__controller.update()
+        self.__controller.update()  
+
+    def draw(self) -> None:
+        self.background(180)
+        self.draw_network(self.__controller.network, 0, 0, self.width, self.height, 30)
+        self.image(self.__back_image, 10, 10, 65, 65)
 
     def draw_network(self, network: Genome, x: float, y: float, w: float, h: float, r: float) -> None:
         nodes_by_layers: list[list[Node]] = []
@@ -44,28 +49,25 @@ class DemoScreen(Screen):
 
                 from_pos = node_poses[node_numbers.index(gene.from_node.number)]
                 to_pos = node_poses[node_numbers.index(gene.to_node.number)]
-                # if to_pos[0] == 780:
-                #     print('yes', gene.to_node.layer, network.layers, gene.to_node.number)
                 self.line(*from_pos, *to_pos, weight)
 
         self.stroke(0)
         self.stroke_weight(1)
         self.font_size(20)
         for pos, num in zip(node_poses, node_numbers):
-            # if pos.x == 780:
-            #     print('yes')
+           
             self.fill(255)
+            if num == self.__controller.network.bias_node:
+                self.stroke(0, 255, 0)
+                self.stroke_weight(5)
+            else: self.no_stroke()
             self.circle(*pos, r)
-            self.fill(0)
-            self.text(str(num), *pos, center=True)
-            
 
-    def draw(self) -> None:
-        self.background(180)
-        self.draw_network(self.__controller.network, 0, 0, self.width, self.height, 30)
-        self.image(self.__back_image, 10, 10, 65, 65)
+            self.fill(0)
+            self.font_size(50)
+            self.text(str(num), *pos, center=True)     
     
-    def on_key_down(self, key: int) -> None:
+    def on_key_down(self, key: int, unicode: str) -> None:
         if key == self.keys['UP']:
             self.__controller.add_connection()
 
@@ -76,9 +78,12 @@ class DemoScreen(Screen):
             self.__controller.mutate_weights()
 
         elif key == self.keys['ESCAPE']:
-            self.redirect('demo-select')
+            self.redirect('demo-config')
 
     def on_mouse_down(self) -> None:
         x, y, w, h = Constants.BACK_RECT
         if x < self.mouse_pos[0] < x + w and y < self.mouse_pos[1] < y + h:
-            self.redirect('demo-select')
+            self.redirect('menu')
+
+    def recieve_data(self, data: dict) -> None:
+        self.__controller.network = Genome(data['inputs'], data['outputs'])

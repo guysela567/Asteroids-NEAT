@@ -28,7 +28,7 @@ class PopulationScreen(GameScreen):
             self.controller = self.__population.batch[0]
             self.__index = 0
     
-    def on_key_down(self, key: int) -> None:
+    def on_key_down(self, key: int, unicode: str) -> None:
         if key == self.keys['SPACE']:
             self.next_player()
 

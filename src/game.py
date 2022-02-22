@@ -77,7 +77,7 @@ class GameScreen(Screen):
     def update(self) -> None:
         self.__controller.update()
 
-    def on_key_down(self, key: int) -> None:
+    def on_key_down(self, key: int, unicode: str) -> None:
         if key == self.keys['p']:
             self.__controller.toggle_pause()
             self.reset_animations()
