@@ -23,4 +23,4 @@ class View(ScreenManager):
         self.init_screen(DemoSelectScreen(), 'demo-select')
         self.init_screen(DemoConfigScreen(), 'demo-config')
 
-        self.set_screen('menu')
+        self.set_screen('topology-demo', { 'inputs': 5, 'outputs': 5 })

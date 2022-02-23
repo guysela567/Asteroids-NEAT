@@ -55,6 +55,10 @@ class Genome:
 
         return None
 
+    def fully_connect(self, innovation_history: list[ConnectionHistory]) -> None:
+        for _ in range((self.__inputs + 1) * self.__outputs):
+            self.add_connection(innovation_history)
+
     def connect_nodes(self) -> None:
         '''
         Adds the output connections to nodes according to the genes list.
