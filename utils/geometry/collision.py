@@ -6,9 +6,15 @@ import random
 
 
 class SpriteDimensions:
+    '''This class is used to store the dimensions of each sprite in the game'''
     dimensions = {}
 
 class Hitbox:
+    '''The hitbox class is responsible for collision detection of the different sprites
+    :param pos: position of the sprite
+    :param component: name of the sprite
+    :param scale: the scale of the sprite in respect to the original image size'''
+
     def __init__(self, pos: PositionVector, component: str, scale: float):
         self.__pos, self.__scale = pos, scale
 
@@ -19,6 +25,10 @@ class Hitbox:
         self.__width, self.__height = int(w * scale), int(h * scale)
 
     def collides(self, other: Hitbox) -> bool:
+        '''Returns wether this hitbox collides with the given hitbox
+        via rectangular collision check
+        :param other: the other hitbox to check collision with'''
+        
         # Rectangular collision check
         return self.__pos.x - self.__width * .5 < other.pos.x + other.width * .5 \
             and self.__pos.x + self.__width * .5 > other.pos.x - other.width * .5 \

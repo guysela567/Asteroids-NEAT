@@ -10,6 +10,11 @@ import math
 
 
 class Ray:
+    '''A geometrical Ray with a given positon and angle
+    :pos: position of the ray
+    :angle: angle of the ray
+    '''
+
     def __init__(self, pos: PositionVector, angle: float) -> None:
         self.__pos = pos
         self.__angle = angle
@@ -26,6 +31,7 @@ class Ray:
         return iter((*self.__pos, *self.end))
 
     def update(self) -> None:
+        '''Updates the ray's looped pos and projection end'''
         m = self.__dir.y / self.__dir.x # (y2 - y1) / (x2 - x1)
         b = self.__pos.y - m * self.__pos.x # b = y - mx
         
@@ -50,6 +56,12 @@ class Ray:
         self.__projection_end, self.__looped_pos = None, None
     
     def check_bottom_intersection(self, m: float, b: float) -> bool:
+        '''Checks for intersection with the bottom of the screen,
+        sets the looped pos and projection end
+        :param m: slope of the ray
+        :param b: intersection with Y axis of the ray
+        :returns: whether the Ray intersects with the bottom of the screen'''
+        
         # Border Y = height
         x = (Constants.WINDOW_HEIGHT - b) / m
         if 0 < x < Constants.WINDOW_WIDTH:
@@ -59,6 +71,12 @@ class Ray:
         return False
 
     def check_top_intersection(self, m: float, b: float) -> bool:
+        '''Checks for intersection with the top of the screen,
+        sets the looped pos and projection end
+        :param m: slope of the ray
+        :param b: intersection with Y axis of the ray
+        :returns: whether the Ray intersects with the top of the screen'''
+
         # Border Y = 0
         x = -b / m
         if 0 < x < Constants.WINDOW_WIDTH:
@@ -68,6 +86,12 @@ class Ray:
         return False
 
     def check_right_intersection(self, m: float, b: float) -> bool:
+        '''Checks for intersection with the right edge of the screen,
+        sets the looped pos and projection end
+        :param m: slope of the ray
+        :param b: intersection with Y axis of the ray
+        :returns: whether the Ray intersects with the right edge of the screen'''
+
         # Border X = width
         y = m * Constants.WINDOW_WIDTH + b
         if 0 < y < Constants.WINDOW_HEIGHT:
@@ -77,6 +101,12 @@ class Ray:
         return False
 
     def check_left_intersection(self, b: float) -> bool:
+        '''Checks for intersection with the left edge of the screen,
+        sets the looped pos and projection end
+        :param m: slope of the ray
+        :param b: intersection with Y axis of the ray
+        :returns: whether the Ray intersects with the left edge of the screen'''
+
         # Border X = 0
         y = b
         if 0 < y < Constants.WINDOW_HEIGHT:
@@ -86,7 +116,11 @@ class Ray:
         return False
 
     def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float], looped: bool = False) -> PositionVector:
-        ''' Euclidian Line-Line intersection '''
+        '''Applies Euclidian Line-Line intersection with a given line segment
+        :param pos1: beginning position of the line segment
+        :param pos2: end position of the line segment
+        :returns: intersection point with the line segment,
+        returns None if there is no intersection'''
 
         start_pos = self.__looped_pos if looped else self.__pos
 
@@ -116,6 +150,12 @@ class Ray:
             if u >= 0 and 0 <= t <= 1 else None
     
     def intersects_polygon(self, hitbox: Hitbox, looped: bool = False) -> PositionVector:
+        '''Returns the intersection point of the ray with the given polygon,
+        returns None if there is no intersection
+        :param hitbox: the hitbox of the polygon
+        :looped: whether or not to use the looped version of the ray
+        '''
+
         closest = None
         closest_dist = 0
 
@@ -137,6 +177,12 @@ class Ray:
         return closest
 
     def intersects_asteroids(self, asteroids: list[Asteroid], looped: bool = False) -> PositionVector:
+        '''Returns the intersection point of the ray with closest asteroid in the list,
+        returns None if there is no intersection
+        :param asteroids: list of the asteroids
+        :looped: whether or not to use the looped version of the ray
+        '''
+        
         closest = None
         closest_dist = 0
 
@@ -158,6 +204,9 @@ class Ray:
         return closest
 
     def rotate(self, angle: float) -> None:
+        '''Rotates the ray by a given angle
+        :param angle: angle to rotate by, measured in radians'''
+
         self.__dir.angle += angle
         self.update()
 
@@ -209,6 +258,11 @@ class Ray:
         
 
 class RaySet:
+    '''A set of multiple rays, whom origins start at the origin of the set
+    :param pos: origin position of the ray set
+    :angle: offset angle of the ray set
+    :amount: the amount of rays in the ray set'''
+
     def __init__(self, pos: PositionVector, angle: float, amount: int) -> None:
         self.__pos = pos
 
@@ -218,13 +272,19 @@ class RaySet:
     def __iter__(self):
         return iter(self.__rays)
 
-    def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> bool:
-        return any(self.__rays.intersects_line(pos1, pos2))
+    # def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> bool:
+    #     return any(self.__rays.intersects_line(pos1, pos2))
     
-    def intersects_polygon(self, verts: list[tuple[float, float]]) -> bool:
-        return any(self.__rays.intersects_polygon(verts))
+    # def intersects_polygon(self, verts: list[tuple[float, float]]) -> bool:
+    #     return any(self.__rays.intersects_polygon(verts))
 
     def cast(self, asteroids: list[Asteroid]) -> list[float]:
+        '''Casts each ray in ray set on the environment,
+        Results processed into the inputs of the neural network
+        :param asteroids: list of asteroids on the screen
+        :returns: list of distances and redshift values from
+        asteroids in respect to the ray set position '''
+
         dists: list[float] = []
 
         for ray in self.__rays:
@@ -250,6 +310,10 @@ class RaySet:
         return dists
 
     def rotate(self, angle: float) -> None:
+        '''Rotates every ray in the ray set by a given angle
+        :param angle: angle to rotate by, measured in radians
+        '''
+        
         for ray in self.__rays:
             ray.rotate(angle)
 

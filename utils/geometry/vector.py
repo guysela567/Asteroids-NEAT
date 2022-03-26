@@ -12,6 +12,11 @@ import math
 
 
 class PositionVector:
+    '''Algebraic vector used for positions
+    :param x: The X component of the position vector
+    :param y: The Y component of the position vector
+    '''
+
     def __init__(self, x: float = 0, y: float = 0):
         self.__x = x
         self.__y = y
@@ -29,6 +34,10 @@ class PositionVector:
         return iter((self.__x, self.__y))
 
     def handle_offscreen(self, sprite: Hitbox = None) -> None:
+        '''Loops the vector through the edges of the screen if it is offscreen
+        :param sprite: The hitbox for the looped sprite
+        '''
+
         width = sprite.width if sprite else 0
         height = sprite.height if sprite else 0
 
@@ -49,15 +58,24 @@ class PositionVector:
             self.__y = -height * .5
 
     def distance(self, other: PositionVector) -> float:
+        '''Returns the distance between this postion and a given position
+        :param other: given position to calculate distance from
+        '''
+
         if self is None or other is None:
             return 0
             
         return math.sqrt(math.pow(other.x - self.x, 2) + math.pow(other.y - self.y, 2))
 
     def angle_between(self, other: PositionVector) -> float:
+        '''Returns the angle between this postion and a given position
+        :param other: given position to calculate angle with
+        '''
+
         return math.atan((other.y - self.y) / (other.x - self.x))
 
     def copy(self) -> PositionVector:
+        '''Returns a copy of this vector'''
         return PositionVector(self.__x, self.__y)
 
     @property
@@ -77,6 +95,11 @@ class PositionVector:
         self.__y = y
 
 class DirectionVector:
+    '''Geometric vector used for directions
+    :param mag: magnitude of the vector
+    :param angle: angle of the vector, measured in radians
+    '''
+
     def __init__(self, mag: float, angle: float) -> None:
         self.__mag = mag
         self.__angle = angle
@@ -86,21 +109,32 @@ class DirectionVector:
         return iter((self.__x, self.__y))
 
     def __update_components(self) -> None:
+        '''Updates the X and Y algebraic components of the vector'''
         self.__x = math.cos(self.__angle) * self.__mag
         self.__y = math.sin(self.__angle) * self.__mag
 
     def lerp_mag(self, to: float, step: float) -> None:
-        # Apply linear interpolation on magnitude
+        '''Applies linear interpolation on the magnitude
+        :param to: target magnitude
+        :param step: step of the interpolation
+        '''
+
         self.__mag = (1 - step) * self.__mag + step * to
         self.__update_components()
 
     def dot(self, other: PositionVector | DirectionVector) -> float:
+        '''Returns the dot product of this vector with a given vector
+        :param other: second vector.
+        '''
+
         return self.__x * other.x + self.__y * other.y
 
     def normalized(self) -> DirectionVector:
+        '''Returns the vector after normalization, does not apply to original vector'''
         return DirectionVector(self.__x / self.__mag, self.__y / self.__mag)
 
     def copy(self) -> DirectionVector:
+        '''Returns a copy of this vector'''
         return DirectionVector(self.__mag, self.__angle)
 
     @property

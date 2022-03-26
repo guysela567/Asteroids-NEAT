@@ -2,6 +2,8 @@ import math
 
 
 class Constants:
+    '''The constants class holds constant data and configuration for the game'''
+    
     # Window config
     WINDOW_WIDTH = 1000
     WINDOW_HEIGHT = 800
