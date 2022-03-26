@@ -1,7 +1,7 @@
 from __future__ import annotations
 import pygame as pg
 
-from utils.drawing.screen import Screen
+from utils.drawing import Screen
 
 
 class Button:

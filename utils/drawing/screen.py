@@ -3,8 +3,7 @@ from __future__ import annotations
 import pygame as pg
 from pygame.event import Event
 
-from utils.drawing.canvas import Canvas
-from utils.drawing.image import Image
+from utils.drawing import Canvas, Image
 
 
 class Screen:

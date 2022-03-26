@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 import pygame as pg
 from pygame.time import Clock
 
-from utils.drawing.screen import Screen
+from utils.drawing import Screen
 
 
 class ScreenManager:

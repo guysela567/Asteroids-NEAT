@@ -1,4 +1,3 @@
-from __future__ import annotations
 from os import environ
 
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1' # Get rid of pygame support message
