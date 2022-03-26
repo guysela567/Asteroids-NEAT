@@ -46,7 +46,7 @@ class DemoSelectScreen(Screen):
 
     def on_mouse_down(self) -> None:
         if self.__topology_button.mouse_hover():
-            self.redirect('topology-demo')
+            self.redirect('demo-config')
 
         if self.__population_button.mouse_hover():
             self.redirect('population-demo')
@@ -55,7 +55,7 @@ class DemoSelectScreen(Screen):
         if x < self.mouse_pos[0] < x + w and y < self.mouse_pos[1] < y + h:
             self.redirect('menu')
 
-    def on_key_down(self, key: int) -> None:
+    def on_key_down(self, key: int, unicode: str) -> None:
         if key == self.keys['ESCAPE']:
             self.redirect('menu')
 

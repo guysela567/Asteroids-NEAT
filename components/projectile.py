@@ -2,7 +2,6 @@ from utils.geometry.vector import PositionVector, DirectionVector
 from utils.geometry.collision import Hitbox
 from utils.constants import Constants
 
-import numpy as np
 import math
 
 
@@ -13,8 +12,7 @@ class Projectile:
 
         self.__hitbox = Hitbox(self.__pos, 'projectile', Constants.PROJECTILE_SPRITE_SCALE)
 
-        self.__vel = DirectionVector(
-            Constants.PROJECTILE_SPEED, self.__angle + math.pi)
+        self.__vel = DirectionVector(Constants.PROJECTILE_SPEED, self.__angle + math.pi)
 
         self.__distance_traveled = 0
         self.__max_distance = Constants.WINDOW_DIAGONAL * .5

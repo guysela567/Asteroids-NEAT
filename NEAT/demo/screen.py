@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from utils.drawing import Screen, Image
+from utils.drawing import Button, Screen, Image
 from utils.constants import Constants
 from NEAT.demo.controller import DemoController
 from NEAT.genome import Genome
@@ -15,8 +15,43 @@ class DemoScreen(Screen):
         self.__controller = DemoController()
         self.__back_image = Image('assets/sprites/back.png')
 
+        self.__title_font = self.load_font('assets/fonts/HyperSpaceBold.ttf', 60)
+        self.__button_font = self.load_font('assets/fonts/HyperSpaceBold.ttf', 20)
+
+        self.__node_button = Button(self, 30, 350, 200, 80, (255, 255, 255), 'Add Node')
+        self.__connection_button = Button(self, 30, self.height - 125, 200, 80, (255, 255, 255), 'Add Connection')
+        self.__mutate_button = Button(self, self.width - 230, 350, 200, 80, (255, 255, 255), 'Mutate Weights')
+        self.__reset_network_button = Button(self, self.width - 230, self.height - 125, 200, 80, (255, 255, 255), 'Reset Network')
+
+        self.__toggle_button = Button(self, 30, 200, 200, 80, (255, 255, 255), 'Toggle Genomes')
+        self.__crossover_button = Button(self, self.width - 230, 200, 200, 80, (255, 255, 255), 'Apply Crossover')
+        self.__reset_button = Button(self, self.width * .5 - 50, 200, 150, 80, (255, 255, 255), 'Reset')
+
     def update(self) -> None:
-        self.__controller.update()
+        self.__controller.update()  
+
+    def draw(self) -> None:
+        self.background(200)
+        
+        self.set_font(self.__title_font)
+        self.text('Configure Topology', self.width * .5, 50, center=True)
+        self.text('For Child' if self.__controller.crossed else f'For Genome No. {self.__controller.index + 1}', self.width * .5, 110, center=True)
+
+        self.fill(0)
+        self.line(0, 300, self.width, 300, 5)
+        self.fill(150)
+        self.rect(0, 300, self.width, self.height)
+        self.draw_network(self.__controller.network, 200, 300, self.width - 400, self.height - 300, 30)
+        
+        self.set_font(self.__button_font)
+        self.__node_button.draw()
+        self.__connection_button.draw()
+        self.__mutate_button.draw()
+        self.__reset_network_button.draw()
+        self.__toggle_button.draw()
+        self.__crossover_button.draw()
+        self.__reset_button.draw()
+        self.image(self.__back_image, 10, 10, 65, 65)
 
     def draw_network(self, network: Genome, x: float, y: float, w: float, h: float, r: float) -> None:
         nodes_by_layers: list[list[Node]] = []
@@ -44,41 +79,54 @@ class DemoScreen(Screen):
 
                 from_pos = node_poses[node_numbers.index(gene.from_node.number)]
                 to_pos = node_poses[node_numbers.index(gene.to_node.number)]
-                # if to_pos[0] == 780:
-                #     print('yes', gene.to_node.layer, network.layers, gene.to_node.number)
                 self.line(*from_pos, *to_pos, weight)
 
         self.stroke(0)
         self.stroke_weight(1)
         self.font_size(20)
         for pos, num in zip(node_poses, node_numbers):
-            # if pos.x == 780:
-            #     print('yes')
+           
             self.fill(255)
+            self.stroke_weight(3)
+            if num == self.__controller.network.bias_node:
+                self.stroke(0, 255, 0)
+            else: self.stroke(0)
             self.circle(*pos, r)
+
             self.fill(0)
-            self.text(str(num), *pos, center=True)
-            
-
-    def draw(self) -> None:
-        self.background(180)
-        self.draw_network(self.__controller.network, 0, 0, self.width, self.height, 30)
-        self.image(self.__back_image, 10, 10, 65, 65)
+            self.no_stroke()
+            self.font_size(50)
+            self.text(str(num + 1), *pos, center=True)     
     
-    def on_key_down(self, key: int) -> None:
-        if key == self.keys['UP']:
-            self.__controller.add_connection()
-
-        elif key == self.keys['DOWN']:
-            self.__controller.add_node()
-
-        elif key == self.keys['SPACE']:
-            self.__controller.mutate_weights()
-
-        elif key == self.keys['ESCAPE']:
-            self.redirect('demo-select')
+    def on_key_down(self, key: int, unicode: str) -> None:
+        if key == self.keys['ESCAPE']:
+            self.redirect('demo-config')
 
     def on_mouse_down(self) -> None:
         x, y, w, h = Constants.BACK_RECT
         if x < self.mouse_pos[0] < x + w and y < self.mouse_pos[1] < y + h:
-            self.redirect('demo-select')
+            self.redirect('menu')
+
+        elif self.__node_button.mouse_hover() and self.__controller.network.layers < 5:
+            self.__controller.add_node()
+
+        elif self.__connection_button.mouse_hover():
+            self.__controller.add_connection()
+
+        elif self.__mutate_button.mouse_hover():
+            self.__controller.mutate_weights()
+
+        elif self.__reset_network_button.mouse_hover():
+            self.__controller.reset_network()
+
+        elif self.__toggle_button.mouse_hover():
+            self.__controller.toggle_index()
+
+        elif self.__crossover_button.mouse_hover():
+            self.__controller.crossover()
+
+        elif self.__reset_button.mouse_hover():
+            self.__controller.reset()
+
+    def recieve_data(self, data: dict) -> None:
+        self.__controller.set_network(data['inputs'], data['outputs'])

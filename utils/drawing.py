@@ -220,7 +220,7 @@ class Screen:
             exit()
         
         elif event.type == pg.KEYDOWN and hasattr(self, 'on_key_down'):
-            self.on_key_down(event.key)
+            self.on_key_down(event.key, event.unicode)
 
         elif event.type == pg.KEYUP and hasattr(self, 'on_key_up'):
             self.on_key_up(event.key)
@@ -231,8 +231,8 @@ class Screen:
         elif event.type == pg.MOUSEBUTTONUP and hasattr(self, 'on_mouse_up'):
             self.on_mouse_up()
 
-    def redirect(self, name: str) -> None:
-        pg.event.post(Event(pg.USEREVENT, screen=name))
+    def redirect(self, name: str, data: dict = {}) -> None:
+        pg.event.post(Event(pg.USEREVENT, screen=name, data=data))
 
     @property
     def mouse_pos(self) -> tuple[int, int]:
@@ -271,12 +271,16 @@ class ScreenManager:
     def init_screen(self, screen: Screen, name: str) -> None:
         self.__screens[name] = screen
 
-    def set_screen(self, name: str) -> None:
+    def set_screen(self, name: str, data: dict = {}) -> None:
         self.__screen = name
         screen = self.__screens[self.__screen]
+
         if hasattr(screen, 'switch_reset'): screen.switch_reset()
+        if hasattr(screen, 'recieve_data'): screen.recieve_data(data)
+
         pg.display.set_mode((screen.width, screen.height))
         pg.display.set_caption(screen.title)
+
 
     def start(self) -> None:
         if len(self.__screens) == 0:
@@ -299,9 +303,9 @@ class ScreenManager:
             # Handle event for active screen
             screen.handle_event(event)
 
-            # Handle set screen events
+            # Handle custom redirect events
             if event.type == pg.USEREVENT:
-                self.set_screen(event.screen)
+                self.set_screen(event.screen, event.data)
 
         self.__display.blit(screen.surface, (0, 0))
 
@@ -368,3 +372,48 @@ class Button:
     @color.setter
     def color(self, color: tuple) -> None:
         self.__color = color
+
+class TextBox:
+    def __init__(self, screen: Screen, x: float, y: float, w: float, h: float, text: str = '') -> None:
+        self.__defult_width = w
+        self.__screen = screen
+        self.__rect = pg.Rect(x, y, w, h)
+        self.__color = (0, 0, 0)
+        self.__text = text
+        self.__txt_surface = pg.font.SysFont('monospace', self.__defult_width).render(self.__text, True, self.__color)
+        self.__active = False
+        self.__padding = 10
+
+    def handle_mousedown(self, mouse_pos: tuple[int, int]) -> None:
+        if self.__rect.collidepoint(mouse_pos):
+            self.__active = not self.__active
+        else:
+            self.__active = False
+        self.__color = (150, 150, 150) if self.__active else (0, 0, 0)
+
+    def handle_keydown(self, key: int, unicode: str) -> None:
+        if self.__active:
+            if key == pg.K_BACKSPACE:
+                self.__text = self.__text[:-1]
+
+            else:
+                if unicode.isdigit() and int(self.__text + unicode) < 10:
+                    self.__text += unicode
+
+            self.__txt_surface = pg.font.SysFont('monospace', self.__defult_width).render(self.__text, True, self.__color)
+            self.__rect.w = max(self.__defult_width, self.__txt_surface.get_width() + self.__padding * 2)
+
+    def draw(self):
+        pg.draw.rect(self.__screen.surface, (255, 255, 255), self.__rect, border_radius=10)
+        self.__screen.surface.blit(self.__txt_surface, (self.__rect.x + self.__padding, self.__rect.y))
+        pg.draw.rect(self.__screen.surface, self.__color, self.__rect, 5, border_radius=10)
+
+    def clear(self) -> None:
+        self.__active = False
+        self.__text = ''
+        self.__txt_surface = pg.font.SysFont('monospace', self.__defult_width).render(self.__text, True, self.__color)
+        self.__rect.w = max(self.__defult_width, self.__txt_surface.get_width() + self.__padding * 2)
+
+    @property
+    def value(self) -> str:
+        return self.__text

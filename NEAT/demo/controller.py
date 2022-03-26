@@ -5,7 +5,7 @@ from NEAT.node import Node
 
 class DemoController:
     def __init__(self) -> None:
-        self.__model = DemoModel(2, 2)
+        self.__model = DemoModel()
     
     def update(self) -> None:
         pass
@@ -25,6 +25,29 @@ class DemoController:
     def add_node(self) -> None:
         self.__model.add_node()
 
+    def set_network(self, inputs: int, outputs: int) -> None:
+        self.__model.set_network(inputs, outputs)
+
+    def toggle_index(self) -> None:
+        self.__model.toggle_index()
+
+    def crossover(self) -> None:
+        self.__model.crossover()
+
+    def reset_network(self) -> None:
+        self.__model.reset_network()
+
+    def reset(self) -> None:
+        self.__model.reset()
+
     @property
     def network(self) -> Genome:
         return self.__model.network
+
+    @property
+    def index(self) -> int:
+        return self.__model.index
+
+    @property
+    def crossed(self) -> bool:
+        return self.__model.crossed
