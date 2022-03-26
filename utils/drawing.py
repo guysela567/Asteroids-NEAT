@@ -395,7 +395,6 @@ class ScreenManager:
 
         self.__screen = name
         screen = self.__screens[self.__screen]
-        self.__fps = screen.fps
 
         if hasattr(screen, 'switch_reset'): screen.switch_reset()
         if hasattr(screen, 'recieve_data'): screen.recieve_data(data)
