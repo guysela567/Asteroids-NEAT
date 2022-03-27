@@ -8,12 +8,13 @@ import random
 
 
 class Species:
+    '''A group of similar simulations, containing game state and genetic information.
+    Since NEAT encourages innovation,
+    each genome competes against other genomes in it's species
+    :param sim: the simulation to build this species from
+    '''
+    
     def __init__(self, sim: Simulation) -> None:
-        '''
-        A group of similar simulations, containing game state and genetic information.
-        Since NEAT encourages innovation,
-        each genome competes against other genomes in it's species.
-        '''
 
         self.__players: list[Simulation] = []
         self.__avg_fitness = 0
@@ -33,7 +34,9 @@ class Species:
         return self.same_species(genome)
 
     def same_species(self, genome: Genome) -> bool:
-        ''' Returns whether the given genome belongs to this species. '''
+        '''Returns whether the given genome belongs to this species
+        :param genome: the genome to check
+        '''
 
         excess_and_disjoint = Species.get_excess_disjoint(genome, self.__rep)
         avg_weight_diff = Species.avg_weight_difference(genome, self.__rep)
@@ -51,13 +54,16 @@ class Species:
         return self.__COMPATABILITY_THREASHOLD > compatability
 
     def add(self, sim: Simulation) -> None:
-        ''' Adds the given simulation to the species. '''
-
+        '''Adds the given simulation to the species
+        :param sim: the simulation to add'''
         self.__players.append(sim)
 
     @staticmethod
     def get_excess_disjoint(brain1: Genome, brain2: Genome) -> int:
-        ''' Returns the number excess and disjoint genes (genes that do not match) between the two given genomes. '''
+        '''Returns the number excess and disjoint genes (genes that do not match) between the two given genomes
+        :param brain1: first genome to compare with
+        :param brain2: second genome to compare with
+        '''
         
         matching_count = 0
         for g1 in brain1.genes:
@@ -70,7 +76,10 @@ class Species:
 
     @staticmethod
     def avg_weight_difference(brain1: Genome, brain2: Genome) -> float:
-        ''' Returns the average weight difference between two given genomes. '''
+        '''Returns the average weight difference between two given genomes
+        :param brain1: first genome to compare with
+        :param brain2: second genome to compare with
+        '''
 
         # No weights to compare
         if len(brain1.genes) == 0 or len(brain2.genes) == 0:
@@ -92,7 +101,7 @@ class Species:
         return total_diff / matching_count # Return average
 
     def sort_species(self) -> None:
-        ''' Sorts the species' simulations by fitness in descending order. '''
+        '''Sorts the species' simulations by fitness in descending order'''
 
         # No players    
         if len(self.__players) == 0:
@@ -113,12 +122,13 @@ class Species:
             self.__staleness += 1
 
     def set_avg_fitness(self) -> None:
-        ''' Sets average fitness of this species' simulations. '''
-
+        '''Sets average fitness of this species' simulations'''
         self.__avg_fitness = sum(sim.fitness for sim in self.__players) / len(self.__players)
         
     def get_child(self, innovation_history: list[ConnectionHistory]) -> Simulation:
-        ''' Gets a child from two players in this species. '''
+        '''Gets and returns a child from two players in this species
+        :innovation_history: global list of all previous mutations
+        '''
 
         baby: Simulation = None
         # 25% chance to skip crossover
@@ -138,10 +148,9 @@ class Species:
         return baby
     
     def select_player(self) -> Simulation:
-        '''
-        Gets a player based on its fitness.
+        '''Gets and returns a random player based on its fitness.
         Better players will have a higher chance of getting picked,
-        while worse players will still have a small chance of being chosen from the pool.
+        while worse players will still have a small chance of being chosen from the pool
         '''
 
         # Get a number between 0 and the fitness sum of all players in the species
@@ -159,8 +168,7 @@ class Species:
         return self.__players[0] # If by any chance this didn't work
 
     def cull(self):
-        '''
-        As a part of the natural selection process, 
+        '''As a part of the natural selection process, 
         this method kills the bottom half of the species' players
         That didn't make it to the next generation.
         '''
@@ -169,9 +177,8 @@ class Species:
             self.__players = self.__players[len(self.__players) // 2:]
 
     def apply_fitness_sharing(self) -> None:
-        '''
-        In order to protect innovative and unique players, the fitness of each player
-        is divided by the number of the players in its species.
+        '''Divide sthe fitness of each player by the number of the players in its species, 
+        used to protect innovative and unique players.
         '''
 
         for sim in self.__players:

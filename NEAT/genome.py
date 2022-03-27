@@ -10,12 +10,15 @@ import json
 
 
 class Genome:
+    '''Genotype for the neural network.
+    This class consists of genes and nodes used in the phenotype network,
+    and acts as a "brain" for each player in the simulation
+    :param inputs: number of inputs for the neural network
+    :param outputs: number of outputs for the neural network
+    :param crossover: whether this genome is a child made by crossover
+    '''
+
     def __init__(self, inputs: int, outputs: int, crossover: bool = False) -> None:
-        '''
-        Genotype for the neural network.
-        Consists of genes and nodes used in the phenotype network.
-        Acts as a "brain" for each player in the simulation.
-        '''
 
         self.__inputs = inputs
         self.__outputs = outputs
@@ -47,7 +50,9 @@ class Genome:
         self.__next_node += 1
 
     def get_node(self, number: int) -> Node:
-        ''' Returns the node with a matching number. '''
+        '''Returns the node with a matching number
+        :param number: the node number
+        '''
 
         for node in self.__nodes:
             if node.number == number:
@@ -60,9 +65,8 @@ class Genome:
             self.add_connection(innovation_history)
 
     def connect_nodes(self) -> None:
-        '''
-        Adds the output connections to nodes according to the genes list.
-        This allows each node to access its next node during feed forward.
+        '''Adds the output connections to nodes according to the genes list.
+        This allows each node to access its next node during feed forward
         '''
         
         # Clear all existing connections
@@ -74,7 +78,9 @@ class Genome:
             gene.from_node.output_connections.append(gene)
 
     def feed_forward(self, inputs: list[float]) -> list[float]:
-        ''' Feeds in input values through the neural network and returns the output list. '''
+        '''Feeds in input values through the neural network and returns the output list
+        :param inputs: list of inputs to feed 
+        '''
 
         # Set the outputs for the inputs
         for i in range(self.__inputs):
@@ -99,9 +105,8 @@ class Genome:
         return outputs
 
     def generate_phenotype(self) -> None:
-        '''
-        Generates the neural network as a list of the nodes
-        in correct order to be engaged during feed forward.
+        '''Generates the neural network as a list of the nodes
+        in correct order to be engaged during feed forward
         '''
 
         self.connect_nodes()
@@ -114,7 +119,9 @@ class Genome:
                     self.__phenotype.append(node)
 
     def add_node(self, innovation_history: list[ConnectionHistory]) -> None:
-        ''' Mutates the neural network by adding a new node between two random nodes. '''
+        '''Mutates the neural network by adding a new node between two random nodes
+        :param innovation_history: global list of all previous mutations
+        '''
 
         # If nothing is connected add a new connection instead
         if len(self.__genes) == 0:
@@ -166,7 +173,9 @@ class Genome:
         self.connect_nodes()
 
     def add_connection(self, innovation_history: list[ConnectionHistory]) -> None:
-        ''' Mutates the neural network by connecting two random nodes. '''
+        '''Mutates the neural network by connecting two random nodes
+        :param innovation_history: global list of all previous mutations
+        '''
 
         # Cannot add a connection to a fully connected network
         if self.fully_connected():
@@ -193,12 +202,14 @@ class Genome:
         self.connect_nodes()
 
     def get_innovation_number(self, innovation_history: list[ConnectionHistory], from_node: Node, to_node: Node) -> int:
-        '''
-        Returns the innovation number for the new mutation.
+        '''Returns the innovation number for the new mutation.
         If the mutation has never occured before then a new 
         unique innovation number will be given. However, if
         the mutation matches a previous mutation then it will
-        be given the same innovation number as the previous one's.
+        be given the same innovation number as the previous one's
+        :param innovation_history: global list of all previous mutations
+        :from_node: the start node of the gene
+        :to_node: the target node of the gene
         '''
 
         is_new = True
@@ -221,7 +232,7 @@ class Genome:
         return innovation_number
     
     def fully_connected(self) -> bool:
-        ''' Returns whether the neural network is fully connected or not. '''
+        '''Returns whether the neural network is fully connected'''
 
         max_connections = 0
         nodes_in_layers = [0 for _ in range(self.__layers)]
@@ -241,11 +252,11 @@ class Genome:
         return max_connections == len(self.__genes)
         
     def mutate(self, innovation_history: list[ConnectionHistory]) -> None:
-        '''
-        Mutates the genome in one or more of the three options:
-        - Mutate weights (80% chance).
-        - Add a new connection (5% chance).
-        - Add a new node (1% chance).
+        '''Mutates the genome in one or more of the three options:
+        - Mutate weights (80% chance)
+        - Add a new connection (5% chance)
+        - Add a new node (1% chance)
+        :param innovation_history: global list of all previous mutations
         '''
 
         # Add a new connection for first mutation
@@ -266,9 +277,9 @@ class Genome:
             self.add_node(innovation_history)
 
     def matching_gene_index(self, innovation_number: int) -> int:
-        '''
-        Returns the index of the gene matching the given innovation number.
-        Returns -1 if no gene was found.
+        '''Returns the index of the gene matching the given innovation number,
+        Returns -1 if no gene was found
+        :param innovation_number: the innovation number of the gene
         '''
 
         for i, gene in enumerate(self.__genes):
@@ -277,12 +288,12 @@ class Genome:
         return -1
 
     def crossover(self, parent2: Genome) -> Genome:
-        '''
-        Applies crossover of this genome as first parent and given genome as second parent,
+        '''Applies crossover of this genome as first parent and given genome as second parent,
         when this genome is the fittest. This will combine the two genomes to one
         genome inheriting from both of them, using the connections' innovation numbers.
         Genes that don't match are called disjoint and access genes,
-        These genes are inherited to the child from this genome.
+        These genes are inherited to the child from this genome
+        :param parent2: the secon parent for the crossover process
         '''
 
         # Copy attributes to child
@@ -335,7 +346,7 @@ class Genome:
         return child
     
     def clone(self) -> Genome:
-        ''' Returns a copy of this genome. '''
+        '''Returns a copy of this genome'''
 
         clone = Genome(self.__inputs, self.__outputs, crossover=True)
 
@@ -356,6 +367,7 @@ class Genome:
         return clone
     
     def to_json(self) -> dict:
+        '''Returns a dictionary containing useful information, used for storing the genome in a file'''
         return {
             'inputs': self.__inputs,
             'outputs': self.__outputs,
@@ -367,11 +379,19 @@ class Genome:
         }
 
     def save(self, filename: str) -> None:
+        '''Saves this genome to a json file
+        :filename: path of the file
+        '''
+
         with open(filename, 'w') as f:
             f.write(json.dumps(self.to_json(), indent=2))
 
     @classmethod
     def load(cls, filename: str) -> Genome:
+        '''Loads a new Genome from json file
+        :param filename: path of the file
+        '''
+        
         with open(filename, 'r') as f:
             data = json.load(f)
 

@@ -7,8 +7,10 @@ from functools import lru_cache
 
 
 class Node:
+    '''Represents a neuron in the neural network
+    :param number: the serial number of this node'''
+
     def __init__(self, number: int) -> None:
-        ''' Represents a neuron in the neural network. '''
 
         self.__number = number
         self.__input_sum = 0
@@ -17,7 +19,9 @@ class Node:
         self.__layer = 0
 
     def engage(self) -> None:
-        ''' Sends its output to the inputs of the nodes it's connected to. '''
+        '''Sends its output to the inputs of the nodes it's connected to,
+        used in the feedforward process
+        '''
 
         if self.__layer != 0: # No activation for inputs and bias
             self.__output_value = Node.sigmoid(self.__input_sum)
@@ -28,16 +32,16 @@ class Node:
                 connection.to_node.input_sum += connection.weight * self.__output_value
 
     @staticmethod
-    @lru_cache(maxsize=10)
+    @lru_cache(maxsize=10000)
     def sigmoid(x: float) -> float:
-        ''' Sigmoid activation function.  '''
-        
+        '''Sigmoid activation function
+        :param x: the input for the sigmoid function'''
         return 1 / (1 + math.exp(-x))
 
     def is_connected_to(self, node: Node) -> bool:
-        ''' 
-        Returns whether this node is connected to the given node.
-        This is used when adding a new connection.
+        ''' Returns whether this node is connected to the given node,
+        used when adding a new connection
+        :param node: the node to check
         '''
 
         # Nodes in the same layer cannot be connected
@@ -51,13 +55,13 @@ class Node:
             return any(connection.to_node == node for connection in self.__output_connections)
 
     def clone(self) -> Node:
-        ''' Returns a copy of this node. '''
-        
+        '''Returns a copy of this node'''
         clone = Node(self.__number)
         clone.layer = self.__layer
         return clone
 
     def to_json(self) -> dict:
+        '''Returns a dictionary containing useful information of this node, used in storing the node in a file'''
         return { 
             'number': self.__number,
             'layer': self.__layer,
@@ -65,6 +69,10 @@ class Node:
 
     @classmethod
     def load(cls, data: dict) -> Node:
+        '''Loads a node from a dictionary
+        :param data: the data to load
+        '''
+
         node = cls(data['number'])
         node.layer = data['layer']
         return node

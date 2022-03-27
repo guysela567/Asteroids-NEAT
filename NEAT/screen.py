@@ -8,6 +8,10 @@ import numpy as np
 
 
 class PopulationScreen(GameScreen):
+    '''Graphical screen used for viewing the training process
+    :param population_size: size of the genetic algorithm population
+    '''
+
     def __init__(self, population_size: int = Constants.POPULATION_SIZE) -> None:
         super().__init__()
 
@@ -18,6 +22,8 @@ class PopulationScreen(GameScreen):
         self.__gen_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 25)
 
     def update(self) -> None:
+        '''Updates the controller and master game logic'''
+
         if not self.__population.done():
             self.__population.update(iterations=Constants.ITERATIONS)
 
@@ -29,6 +35,11 @@ class PopulationScreen(GameScreen):
             self.__index = 0
     
     def on_key_down(self, key: int, unicode: str) -> None:
+        '''handles key press events
+        :param key: the key of the event
+        :param unicode: the unicode value of the key
+        '''
+
         if key == self.keys['SPACE']:
             self.next_player()
 
@@ -36,6 +47,16 @@ class PopulationScreen(GameScreen):
             self.redirect('menu')
 
     def draw_network(self, network: Genome, x: float, y: float, w: float, h: float, r: float, show_labels: bool = True) -> None:
+        '''Draws the neural network on the screen
+        :param genome: the genotype of the network to draw
+        :param x: the X coordinate for the top left corner of the drawing
+        :param y: the Y coordinate for the top left corner of the drawing
+        :param w: the maximum width of the drawing
+        :param h: the maximum height of the drawing,
+        :param r: the radius of the neurons in the drawing
+        :param show_labels: whether or not to draw the node numbers
+        '''
+
         nodes_by_layers: list[list[Node]] = []
         node_poses: list[tuple[int, int]] = []
         node_numbers: list[int] = []
@@ -71,7 +92,7 @@ class PopulationScreen(GameScreen):
                 self.text(str(num), *pos, center=True)
 
     def draw(self) -> None:
-        ''' Update graphics. '''
+        '''Updates graphics'''
 
         self.draw_background()
 
@@ -99,6 +120,8 @@ class PopulationScreen(GameScreen):
         self.draw_network(self.controller.brain, 0, self.height - 300, 400, 300, 5, show_labels=False)
 
     def next_index(self) -> None:
+        '''Proceeds to next index of simulation in current batch'''
+        
         self.__index += 1
 
         if self.__index >= Constants.BATCH_SIZE:
@@ -107,7 +130,9 @@ class PopulationScreen(GameScreen):
         self.controller = self.__population.batch[self.__index]
 
     def next_player(self) -> None:
-        ''' Assume that at least one player is alive. '''
+        '''Proceeds to the next simulation in the current batch,
+        assuming that at least one player is alive
+        '''
 
         if self.__population.current_batch_done() \
             or len(self.__population.players) < 2:

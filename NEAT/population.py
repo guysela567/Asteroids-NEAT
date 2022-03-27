@@ -11,11 +11,12 @@ import os
 
 
 class Population:
+    '''The population of all thinking beings (Genomes),
+    Applies the genetic algorithm for each simulation
+    :param size: the size of the population
+    '''
+
     def __init__(self, size: int) -> None:
-        '''
-        The population of all thinking beings.
-        Applies the principles of natural selection for each simulation.
-        '''
 
         self.__size = size
         self.__generation = 1
@@ -54,41 +55,48 @@ class Population:
         self.__batch = self.get_current_batch()
 
     def update(self, iterations: int = 1) -> None:
-        ''' Updates the population. '''
+        '''Updates the population
+        :param iterations: the number of iterations to update by
+        '''
 
         if self.current_batch_done():
             self.next_batch()
         self.update_current_batch(iterations=iterations)
 
     def update_alive(self, iterations: int = 1) -> None:
-        ''' Updates all alive simulations. '''
+        '''Updates all alive simulations
+        :param iterations: the number of iterations to update by
+        '''
         
         for sim in self.__players:
             if not sim.dead:
                 sim.update(iterations=iterations)
 
     def update_current_batch(self, iterations: int = 1) -> None:
-        ''' Update all alive simulations in batch. '''
+        '''Updates all alive simulations in batch
+        :param iterations: the number of iterations to update by
+        '''
 
         for sim in self.__batch:
             if not sim.dead:
                 sim.update(iterations=iterations)
 
     def done(self) -> None:
-        ''' Returns whether all player simulations are dead. '''
-
+        '''Returns whether all player simulations are dead'''
         for sim in self.__players:
             if not sim.dead:
                 return False
         return True
 
     def current_batch_done(self) -> bool:
+        '''Returns whether the current batch is done (all simulations in the batch are dead)'''
         for sim in self.__batch:
             if not sim.dead:
                 return False
         return True
     
     def get_current_batch(self) -> list[Simulation]:
+        '''Returns the current batch of simulations'''
         start = Constants.BATCH_SIZE * self.__batch_index
         end = start + Constants.BATCH_SIZE
         if end > len(self.__players):
@@ -96,13 +104,13 @@ class Population:
         return self.__players[start:end]
 
     def next_batch(self) -> None:
+        '''Proceeds to next batch of the generation'''
         self.__batch_index += 1
         self.__batch = self.get_current_batch()
 
     def natural_selection(self) -> None:
-        '''
-        Simulates nature's natural selection process,
-        called at the end of each generation.
+        '''Simulates nature's natural selection process,
+        called at the end of each generation
         '''
         
         self.__generation += 1
@@ -179,15 +187,13 @@ class Population:
                 self.__species.append(Species(sim))
             
     def calculate_fitness(self) -> None:
-        ''' Calculates the fitness of all of the simulations. '''
-        
+        '''Calculates the fitness of all of the simulations'''
         for sim in self.__players:
             sim.calculate_fitness()
 
     def sort_species(self) -> None:
-        '''
-        Sorts the species and the players within each species
-        based on their fitness, in descending order.
+        '''Sorts the species and the players within each species
+        based on their fitness, sorted in descending order
         '''
 
         # Sort players in each species
@@ -210,8 +216,7 @@ class Population:
                 self.__species.pop(i)
     
     def kill_bad_species(self) -> None:
-        ''' Removes the species which cannot reproduce. '''
-
+        '''Removes the species which cannot reproduce (fitness is too low)'''
         avg_sum = self.get_avg_fitness_sum()
 
         # Skip best species
@@ -228,8 +233,7 @@ class Population:
                 self.__species.pop(i)
 
     def cull_species(self) -> None:
-        ''' Kills the bottom half of simulations for each species '''
-
+        '''Kills the bottom half of simulations for each species'''
         for s in self.__species:
             # As a result of re-speciating, some sepcies
             # may be kept without any players
@@ -241,8 +245,7 @@ class Population:
                 s.set_avg_fitness()
 
     def get_avg_fitness_sum(self) -> float:
-        ''' Returns the average fitness sum of all species in the population. '''
-
+        '''Returns the average fitness sum of all species in the population'''
         return sum(s.avg_fitness for s in self.__species)
 
     @property

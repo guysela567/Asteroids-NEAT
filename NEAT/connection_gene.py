@@ -9,8 +9,14 @@ import random
 
 
 class ConnectionGene:
+    '''Connects between two nodes in the neural network
+    :param from_node: the start node of the gene
+    :param to_node: the target node of the gene
+    :param weight: the weight of the gene
+    :innovation_number: the innovation number for the gene
+    '''
+
     def __init__(self, from_node: Node, to_node: Node, weight: float, innovation_number: int) -> None:
-        ''' Connects between two nodes in the neural network. '''
         
         self.__from_node = from_node
         self.__to_node = to_node
@@ -19,11 +25,10 @@ class ConnectionGene:
         self.__innovation_number = innovation_number # Unique number used to compare gemomes
 
     def mutate_weight(self) -> None:
-        '''
-        Changes/tweaks the node's weight based on probability.
+        '''Changes/tweaks the node's weight based on probability.
         Each mutation of this type has a:
-        10% chance of completely changing the weight.
-        90% chance of slightly changing the weight.
+        - 10% chance of completely changing the weight
+        - 90% chance of slightly changing the weight
         '''
 
         rand = random.random()
@@ -36,13 +41,17 @@ class ConnectionGene:
             self.__weight = min(1, max(-1, self.__weight))
 
     def clone(self, from_node: Node, to_node: Node) -> ConnectionGene:
-        ''' Returns a copy of this connection gene. '''
+        '''Returns a copy of this connection gene
+        :param from_node: the start node of the clone
+        :param to_node: the target node of the clone
+        '''
 
         clone = ConnectionGene(from_node, to_node, self.__weight, self.__innovation_number)
         clone.enabled = self.__enabled
         return clone
 
     def to_json(self) -> dict:
+        '''Returns a dictionary containing useful information of the gene, used to store the gene in a file'''
         return {
             'from_node': self.__from_node.number,
             'to_node': self.__to_node.number,
@@ -53,6 +62,11 @@ class ConnectionGene:
 
     @classmethod
     def load(cls, genome: Genome, data: dict) -> ConnectionGene:
+        '''Loads the gene from a dictionary
+        :param genome: the genome of the loaded gene
+        :param data: the data of this gene
+        '''
+        
         from_node = genome.get_node(data['from_node'])
         to_node = genome.get_node(data['to_node'])
         gene = cls(from_node, to_node, data['weight'], data['innovation_number'])
