@@ -10,36 +10,49 @@ from components.player import Player
 
 
 class Controller:
+    '''Connects between the game screen (the view) and the model holding the game data
+    :param ai: whether to use AI for the player agent
+    '''
+
     def __init__(self, ai: bool = False) -> None:
         self.__model = Model(ai=ai)
 
     def update(self) -> None:
-        # Update model
+        '''Updates the game model'''
         if not self.__model.paused:
             self.__model.update(1 / Constants.FPS)
 
     def toggle_pause(self) -> None:
+        '''Toggles between play/pause'''
         self.__model.toggle_pause()
 
     def start_boost(self) -> None:
+        '''Starts boosting the player'''
         self.__model.player.start_boost()
 
     def stop_boost(self) -> None:
+        '''Stops boosting the player'''
         self.__model.player.stop_boost()
 
     def start_rotate(self, dir: int) -> None:
+        '''Starts rotating the player
+        :param dir: the direction of the player (1 for anti-clockwize, 1 for clockwize)'''
         self.__model.player.start_rotate(dir)
 
     def stop_rotate(self) -> None:
+        '''Stops rotating the player'''
         self.__model.player.stop_rotate()
     
     def shoot(self) -> None:
+        '''Fires a projectile from the player'''
         self.__model.player.shoot()
 
     def think(self) -> None:
+        '''Makes the vision list and acts according to the neural network predictions'''
         self.__model.think()
 
     def reset(self) -> None:
+        '''Resets the model'''
         self.__model.reset()
     
     @property

@@ -13,6 +13,10 @@ import random, math, copy
 
 
 class Model:
+    '''Holds all of the data and data-manipulating functions for the main game
+    :param ai: whether to use AI for the player agent
+    '''
+
     def __init__(self, ai: bool = False) -> None:    
         self.__ai = ai
         self.__seed = 0 if self.__ai else -1
@@ -43,6 +47,10 @@ class Model:
             self.__brain = Genome(Constants.RAY_AMOUNT * 2 + 1, 4)
 
     def update(self, delta_time: float) -> None:
+        '''Updates the game data
+        :param delta_time: the time that has passed since last update, measured in milliseconds
+        '''
+
         # Update player
         self.__player.update(delta_time)
 
@@ -57,6 +65,8 @@ class Model:
         self.__lifespan += 1
 
     def handle_collisions(self) -> None:
+        '''Handles collisions between every game component'''
+
         # Asteroid with projectile collision
         for projectile in reversed(self.__player.projectiles):
             for asteroid in reversed(self.__asteroids):
@@ -105,6 +115,8 @@ class Model:
                 self.__spawn_asteroids()
 
     def think(self) -> int:
+        '''Makes the vision list and acts according to the neural network predictions'''
+
         if not self.__ai:
             return
 
@@ -126,6 +138,8 @@ class Model:
     
     @staticmethod
     def generate_asteroid() -> Asteroid:
+        '''Generates a random asteroid'''
+
         # TODO Needs more refactoring
 
         spawn_gap = 50
@@ -151,6 +165,8 @@ class Model:
         return Asteroid(x, y, angle=angle)
 
     def __spawn_asteroids(self) -> None:
+        '''Spawns new asteroids on screen'''
+        
         if self.__ai:
             self.__asteroids = copy.deepcopy(Model.generate_wave_by_seed(self.__seed, self.__asteroid_amount))
         else: 
@@ -158,15 +174,20 @@ class Model:
                                 for _ in range(self.__asteroid_amount)]
 
     @staticmethod
-    @lru_cache(maxsize=100)
+    @lru_cache(maxsize=1000)
     def generate_wave_by_seed(seed: int, length: int) -> None:
-        return [Model.generate_asteroid()
-                for _ in range(length)]
+        '''Generates a seeded wave of asteroids based on the wave length and seed value
+        :param seed: the seed in which to generate the wave by
+        :param length: the wave length of the asteroids'''
+        return [Model.generate_asteroid() for _ in range(length)]
 
     def toggle_pause(self) -> None:
+        '''Toggles between play/pause'''
         self.__paused = not self.__paused
 
     def reset(self) -> None:
+        '''Resets all of the data of the game'''
+
         # Reset player
         self.__player = Player(Constants.WINDOW_WIDTH * 0.5, Constants.WINDOW_HEIGHT * 0.5)
 

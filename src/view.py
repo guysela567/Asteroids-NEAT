@@ -12,6 +12,8 @@ from utils.constants import Constants
 
 
 class View(ScreenManager):
+    '''The view inherits from the screen manager and handles all of the screens in the app'''
+
     def __init__(self) -> None:
         super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, Constants.FPS)
 

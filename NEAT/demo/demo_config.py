@@ -3,6 +3,8 @@ from utils.constants import Constants
 
 
 class DemoConfigScreen(Screen):
+    '''Graphical screen for selecting options and sending them to the demo screen'''
+
     def __init__(self) -> None:
         super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, 'Topology Demo Configuration')
         
@@ -16,6 +18,8 @@ class DemoConfigScreen(Screen):
         self.__back_image = Image('assets/sprites/back.png')
 
     def draw(self) -> None:
+        '''Updates graphics'''
+
         self.background(0)
         self.fill(255)
 
@@ -34,6 +38,11 @@ class DemoConfigScreen(Screen):
         self.__button.draw()
 
     def on_key_down(self, key: int, unicode: int) -> None:
+        '''Handles key dowm events
+        :param key: id of the pressed key
+        :param unicode: unicode of the key
+        '''
+
         self.__inputs_box.handle_keydown(key, unicode)
         self.__outputs_box.handle_keydown(key, unicode)
 
@@ -41,6 +50,8 @@ class DemoConfigScreen(Screen):
             self.redirect('demo-select')
 
     def on_mouse_down(self) -> None:
+        '''Handles mouse press events'''
+
         self.__inputs_box.handle_mousedown(self.mouse_pos)
         self.__outputs_box.handle_mousedown(self.mouse_pos)
 
@@ -54,5 +65,6 @@ class DemoConfigScreen(Screen):
                 self.redirect('topology-demo', { 'inputs': int(ins), 'outputs': int(outs) })
 
     def switch_reset(self) -> None:
+        '''Resets the screen for every screen-switch'''
         self.__inputs_box.clear()
         self.__outputs_box.clear()

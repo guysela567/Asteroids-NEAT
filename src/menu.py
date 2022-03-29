@@ -3,6 +3,8 @@ from utils.constants import Constants
 
 
 class MenuScreen(Screen):
+    '''Graphical screen containing the main menu of the game'''
+
     def __init__(self) -> None:
         super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, 'Asteroids Menu')
 
@@ -16,6 +18,8 @@ class MenuScreen(Screen):
         self.__background_animation = [Image(f'assets/sprites/menu/{i}.gif') for i in range(81)]
     
     def draw(self) -> None:
+        '''Updates graphics'''
+
         self.background(0)
         self.image(self.__background_animation[self.__animation_step], 300, 50, 800, 800)
         
@@ -29,6 +33,8 @@ class MenuScreen(Screen):
             self.__animation_step = 0
 
     def on_mouse_down(self) -> None:
+        '''Handles mouse down events'''
+
         if self.__quit_button.mouse_hover():
             self.quit()
 
@@ -42,4 +48,5 @@ class MenuScreen(Screen):
             self.redirect('demo-select')
 
     def switch_reset(self) -> None:
+        '''Resets the screen for every screen-switch'''
         self.__animation_step = 0

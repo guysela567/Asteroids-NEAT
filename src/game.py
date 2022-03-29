@@ -15,6 +15,8 @@ import math
 
 
 class GameScreen(Screen):
+    '''Graphical screen for viewing the asteroids game'''
+
     def __init__(self) -> None:
         super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, Constants.WINDOW_TITLE)
         
@@ -57,7 +59,8 @@ class GameScreen(Screen):
         self.__score_font = self.load_font('assets/fonts/HyperspaceBold.ttf', 36)
 
     def draw(self) -> None:
-        # Update graphics
+        '''Updates graphics'''
+
         self.draw_background()
         self.draw_sprites(self.__controller.player, self.__controller.asteroids)
         self.draw_score(self.__controller.score, self.__controller.high_score)
@@ -67,17 +70,21 @@ class GameScreen(Screen):
 
         self.draw_pause_resume()
 
-        # for asteroid in self.__controller.asteroids:
-        #     self.draw_poly(asteroid.sprite.rect_verts)
-
     def draw_pause_resume(self) -> None:
+        '''Draws the pause/resume button'''
         image = self.__resume_image if self.__controller.paused else self.__pause_image
         self.image(image, *self.__pause_pos, *self.__pause_dims)
 
     def update(self) -> None:
+        '''Updates the game controller'''
         self.__controller.update()
 
     def on_key_down(self, key: int, unicode: str) -> None:
+        '''Handles key down events
+        :param key: id of the pressed key
+        :param unicode: unicode of the pressed key
+        '''
+
         if key == self.keys['p']:
             self.__controller.toggle_pause()
             self.reset_animations()
@@ -98,6 +105,10 @@ class GameScreen(Screen):
             self.redirect('menu')
 
     def on_key_up(self, key: int) -> None:
+        '''Handles key release events
+        :param key: id of the released key
+        '''
+
         if key == self.keys['UP']:
             self.__controller.stop_boost()
 
@@ -106,6 +117,7 @@ class GameScreen(Screen):
             self.__controller.stop_rotate()
 
     def on_mouse_down(self) -> None:
+        '''Handles mouse down events'''
         if self.__pause_pos[0] < self.mouse_pos[0] < self.__pause_pos[0] + self.__pause_dims[0] \
             and self.__pause_pos[1] < self.mouse_pos[1] < self.__pause_pos[1] + self.__pause_dims[1]:
             self.__controller.toggle_pause()
@@ -120,7 +132,10 @@ class GameScreen(Screen):
                 self.redirect('menu')
 
     def draw_background(self) -> None:
-        self.background(0)  # Clear screen to background color
+        '''Draws the background, including the stars'''
+
+        # Clear screen to background color
+        self.background(0)
 
         # Draw stars
         self.fill(255)
@@ -128,6 +143,11 @@ class GameScreen(Screen):
             self.circle(x, y, size)
 
     def draw_sprites(self, player: Player, asteroids: list[Asteroid]) -> None:
+        '''Draws the player and the asteroid sprites on the screen
+        :param player: the game player
+        :param asteroids: list of the game asteroids
+        '''
+
         self.draw_sprite('player', player.hitbox, player.angle)  # Draw player
 
         # Draw asteroids
@@ -146,6 +166,10 @@ class GameScreen(Screen):
         # self.fill(255)
 
     def draw_thurst(self, player: Player) -> None:
+        '''Draws the thrust image behind the player
+        :param player: the game player
+        '''
+
         if player.boosting:
             r = player.hitbox.height * .5 + 7.5
             x = player.hitbox.pos.x + r * math.cos(player.angle_radians)
@@ -155,6 +179,9 @@ class GameScreen(Screen):
             self.image(thrust, *thrust.get_rect((x, y)))
 
     def draw_score(self, score: int, high_score: int) -> None:
+        '''Draws score and high score on the screen
+        :param score: the current score
+        :param high_score: all-time high score'''
         self.set_font(self.__score_font)
 
         # Draw score
@@ -164,6 +191,7 @@ class GameScreen(Screen):
         self.text(f'HIGH SCORE: {high_score}', 25, 25)
     
     def reset_animations(self) -> None:
+        '''Resets all animations'''
         self.__animations = {
             'blur': 0,
             'pause_title': -200,
@@ -171,6 +199,7 @@ class GameScreen(Screen):
         }
 
     def apply_pause_animation(self) -> None:
+        '''Starts the pause animation'''
         if self.__animations['blur'] < 200: 
             self.__animations['blur'] += 50
         if self.__animations['pause_title'] < 200:
@@ -179,6 +208,7 @@ class GameScreen(Screen):
             self.__animations['pause_buttons'] += 50
 
     def draw_paused(self) -> None:
+        '''Draws the screen in paused mode'''
         self.apply_pause_animation()
         self.blur(self.__animations['blur'])
         self.fill(255)
@@ -193,6 +223,12 @@ class GameScreen(Screen):
         self.__quit_button.draw()
 
     def draw_sprite(self, component: str, hitbox: Hitbox, angle: float, alpha: int = 255) -> None:
+        '''Draws a given sprite on the screen
+        :param component: name of the sprite
+        :param hitbox: the hitbox of the sprite
+        :param angle: the angle in which to rotate the sprite
+        :param alpha: the opacity for the sprite'''
+
         raw_image = self.__sprites[component][hitbox.index]
         image = Image.rotate(Image.resize(raw_image, hitbox.width, hitbox.height), angle)
 
@@ -202,6 +238,7 @@ class GameScreen(Screen):
         image.alpha = temp # Revert to normal opacity to prevent affecting cached images
 
     def draw_rays(self, ray_set: RaySet) -> None:
+        '''Draws the vision rays on screen'''
         for ray in ray_set:
             if ray.is_looped:
                 self.fill(200, 150, 0)
@@ -214,13 +251,18 @@ class GameScreen(Screen):
                 self.line(*ray, 5)
 
 
-    def draw_poly(self, verts) -> None:
+    def draw_poly(self, verts: list[tuple[float, float]]) -> None:
+        '''Draws a polygon from given list of vertecies
+        :param verts: list of coordinate tuples representing the polygon vertecies
+        '''
+
         for i in range(len(verts)):
             pos1 = verts[i]
             pos2 = verts[i + 1] if i < len(verts) - 1 else verts[0]
             self.line(*pos1, *pos2, 5)
 
     def switch_reset(self) -> None:
+        '''Resets the screen for every screen-switch'''
         self.__controller.reset()
 
     @property

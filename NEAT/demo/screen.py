@@ -10,6 +10,8 @@ import numpy as np
 
 
 class DemoScreen(Screen):
+    '''Graphical screen for simulating topology changes and crossover in the NEAT algorithm'''
+
     def __init__(self) -> None:
         super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, 'NEAT Demo')
         self.__controller = DemoController()
@@ -27,10 +29,9 @@ class DemoScreen(Screen):
         self.__crossover_button = Button(self, self.width - 230, 200, 200, 80, (255, 255, 255), 'Apply Crossover')
         self.__reset_button = Button(self, self.width * .5 - 50, 200, 150, 80, (255, 255, 255), 'Reset')
 
-    def update(self) -> None:
-        self.__controller.update()  
-
     def draw(self) -> None:
+        '''Updates graphics'''
+
         self.background(200)
         
         self.set_font(self.__title_font)
@@ -54,6 +55,15 @@ class DemoScreen(Screen):
         self.image(self.__back_image, 10, 10, 65, 65)
 
     def draw_network(self, network: Genome, x: float, y: float, w: float, h: float, r: float) -> None:
+        '''Draws a neural network on the screen
+        :param network: genome of the network
+        :param x: X coordinate for the top left corner of the drawing
+        "param y: Y coordinate for the top left corner of the drawing
+        :param w: maximum width of the drawing
+        :param h: maximum height of the drawing
+        :param r: radius for neurons in the drawing
+        '''
+
         nodes_by_layers: list[list[Node]] = []
         node_poses: list[tuple[int, int]] = []
         node_numbers: list[int] = []
@@ -99,6 +109,11 @@ class DemoScreen(Screen):
             self.text(str(num + 1), *pos, center=True)     
     
     def on_key_down(self, key: int, unicode: str) -> None:
+        '''Handles key down events
+        :param key: id of the pressed key
+        :param unicode: unicode of the pressed key
+        '''
+
         if key == self.keys['ESCAPE']:
             self.redirect('demo-config')
 
@@ -129,4 +144,5 @@ class DemoScreen(Screen):
             self.__controller.reset()
 
     def recieve_data(self, data: dict) -> None:
+        '''Handles data sent by other screens and sets the base network'''
         self.__controller.set_network(data['inputs'], data['outputs'])

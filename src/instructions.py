@@ -3,6 +3,8 @@ from utils.constants import Constants
 
 
 class InstructionsScreen(Screen):
+    '''Graphical screen containing instructions for the game'''
+
     def __init__(self) -> None:
         super().__init__(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT, 'Instructions')
 
@@ -24,6 +26,8 @@ class InstructionsScreen(Screen):
         self.draw_text()
 
     def draw_text(self) -> None:
+        '''Draws the instructions on the screen'''
+
         drawing_y = self.height * .5 - 125
         drawing_gap = 100
         drawing_x = 100
@@ -78,6 +82,11 @@ class InstructionsScreen(Screen):
         self.image(self.__back_image, *Constants.BACK_RECT)
 
     def on_key_down(self, key: int, unicode: str) -> None:
+        '''Handles key down events
+        :param key: id of the pressed key
+        :param unicode: unicode of the pressed key
+        '''
+
         if key == self.keys['RETURN']:
             self.redirect('game')
         
@@ -85,6 +94,7 @@ class InstructionsScreen(Screen):
             self.redirect('menu')
 
     def on_mouse_down(self) -> None:
+        '''Handles mouse down events'''
         x, y, w, h = Constants.BACK_RECT
         if x < self.mouse_pos[0] < x + w and y < self.mouse_pos[1] < y + h:
             self.redirect('menu')
