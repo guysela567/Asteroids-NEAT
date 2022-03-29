@@ -11,6 +11,11 @@ import math
 
 
 class Player():
+    '''Phyisical component for the game player
+    :param x: X coordinate of the player's position
+    :param y: Y coordinate of the player's position
+    '''
+
     def __init__(self, x, y) -> None:
         self.__pos = PositionVector(x, y)
 
@@ -33,6 +38,10 @@ class Player():
         self.__ray_set = RaySet(self.__pos, self.__angle, Constants.RAY_AMOUNT)
 
     def update(self, delta_time: float) -> None:
+        '''Updates the player
+        :param delta_time: the time that has past since last update, measured in seconds
+        '''
+
         # Rotation
         if self.__rotating:
             self.__set_rotation()
@@ -65,6 +74,7 @@ class Player():
         self.__ray_set.pos = self.__pos
 
     def __update_projectiles(self) -> None:
+        '''Updates all of the fired projectiles'''
         for projectile in reversed(self.__projectiles):
             if projectile.deleted:  # Remove deleted projectiles
                 self.__projectiles.remove(projectile)
@@ -72,6 +82,8 @@ class Player():
                 projectile.update()
 
     def shoot(self) -> None:
+        '''Fires a new projectile'''
+
         if not self.__can_shoot:
             return
 
@@ -87,32 +99,42 @@ class Player():
         #     self.__vel.mag += Constants.PLAYER_SHOOT_KNOCKBACK
 
     def __set_rotation(self) -> None:
+        '''Sets the rotation of the player based on current speed and direction'''
         self.__angle += self.__turn_speed * self.__rotate_dir
         self.__ray_set.rotate(self.__turn_speed * self.__rotate_dir)
 
     def boost(self) -> None:
+        '''Boosts the player once'''
         self.__vel.angle = self.__angle
         self.__vel.lerp_mag(-Constants.PLAYER_BOOST_SPEED,
                             Constants.PLAYER_AIR_FRICTION)
 
     def __slow_down(self) -> None:
+        '''Slows down the player untill full stop'''
         self.__vel.lerp_mag(0, Constants.PLAYER_AIR_FRICTION)
 
     def start_boost(self) -> None:
+        '''Starts boosting the player'''
         self.__boosting = True
 
     def stop_boost(self) -> None:
+        '''Stops boosting the player'''
         self.__boosting = False
 
     def start_rotate(self, dir: int) -> None:
+        '''Starts rotating the player
+        :param dir: direction of rotation (1 for anti-clockwize, -1 for clockwize)'''
         self.__rotating = True
         self.__rotate_dir = dir
 
     def rotate(self, dir: int) -> None:
+        '''Rotates the player once
+        :param dir: direction of rotation (1 for anti-clockwizr, -1 for clockwize)'''
         self.__angle += self.__turn_speed * dir
         self.__ray_set.rotate(self.__turn_speed * dir)
 
     def stop_rotate(self) -> None:
+        '''Stops rotating the player'''
         self.__rotating = False
         self.__rotate_dir = 0
 

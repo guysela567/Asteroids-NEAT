@@ -6,6 +6,12 @@ import math
 
 
 class Projectile:
+    '''Physical component for a single projectile
+    :param x: X coordinate of the projectile's position
+    :param y: Y coordinate of the projectile's position
+    :param angle: direction angle of the projectile, measured in radians
+    '''
+
     def __init__(self, x: float, y: float, angle: float) -> None:
         self.__pos = PositionVector(x, y)
         self.__angle = angle
@@ -19,9 +25,11 @@ class Projectile:
         self.__deleted = False
 
     def delete(self) -> None:
+        '''Deletes this projectile, as it is "dead"'''
         self.__deleted = True
 
     def update(self) -> None:
+        '''Updates the projectile'''
         self.__pos += self.__vel
         self.__pos.handle_offscreen(self.__hitbox)
 

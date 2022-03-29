@@ -48,7 +48,7 @@ class Model:
 
     def update(self, delta_time: float) -> None:
         '''Updates the game data
-        :param delta_time: the time that has passed since last update, measured in milliseconds
+        :param delta_time: the time that has passed since last update, measured in seconds
         '''
 
         # Update player

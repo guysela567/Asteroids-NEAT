@@ -7,6 +7,12 @@ import random
 
 
 class Asteroid:
+    '''Physical component for a single asteroid
+    :param x: X coordinate of the asteroid's position
+    :param y: Y coordinate of the asteroid's position
+    :param angle: direction angle of the asteroid, measured in radians
+    :param hits: number of hits took to split this asteroid (0 for default size)'''
+
     def __init__(self, x: float, y: float, angle: float = None, hits: int = 0) -> None:
         self.__pos = PositionVector(x, y)
         self.__hits = hits
@@ -23,6 +29,8 @@ class Asteroid:
         # TODO Add destruction vfx
 
     def update(self, delta_time: float) -> None:
+        '''Updates the asteroid
+        :param delta_time: the time that has passed since last update, measured in seconds'''
         self.__pos += self.__vel
         self.__pos.handle_offscreen(self.__hitbox)
 
