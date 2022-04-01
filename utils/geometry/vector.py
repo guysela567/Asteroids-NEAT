@@ -131,7 +131,7 @@ class DirectionVector:
 
     def normalized(self) -> DirectionVector:
         '''Returns the vector after normalization, does not apply to original vector'''
-        return DirectionVector(self.__x / self.__mag, self.__y / self.__mag)
+        return DirectionVector(1, self.__angle)
 
     def copy(self) -> DirectionVector:
         '''Returns a copy of this vector'''

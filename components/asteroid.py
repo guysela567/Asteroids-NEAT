@@ -50,11 +50,11 @@ class Asteroid:
         return self.__pos.y
 
     @property
-    def hits(self) -> float:
+    def hits(self) -> int:
         return self.__hits
     
     @property
-    def sprite_index(self) -> None:
+    def sprite_index(self) -> int:
         return self.__hitbox.index
 
     @property
@@ -62,5 +62,5 @@ class Asteroid:
         return -(int(math.degrees(self.__angle)) - 90) % 360
 
     @property
-    def velocity(self) -> float:
+    def velocity(self) -> DirectionVector:
         return self.__vel

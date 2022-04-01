@@ -31,8 +31,9 @@ class Ray:
         return iter((*self.__pos, *self.end))
 
     def update(self) -> None:
-        '''Updates the ray's looped pos and projection end'''
-        m = self.__dir.y / self.__dir.x # (y2 - y1) / (x2 - x1)
+        '''Updates the ray's looped position and projection end'''
+
+        m = self.__dir.y / self.__dir.x # m = (y2 - y1) / (x2 - x1)
         b = self.__pos.y - m * self.__pos.x # b = y - mx
         
         # Pointing right: check right border
@@ -57,14 +58,15 @@ class Ray:
     
     def check_bottom_intersection(self, m: float, b: float) -> bool:
         '''Checks for intersection with the bottom of the screen,
-        sets the looped pos and projection end
+        sets the looped position and projection end
         :param m: slope of the ray
         :param b: intersection with Y axis of the ray
-        :returns: whether the Ray intersects with the bottom of the screen'''
+        :returns: whether the Ray intersects with the bottom of the screen
+        '''
         
-        # Border Y = height
-        x = (Constants.WINDOW_HEIGHT - b) / m
-        if 0 < x < Constants.WINDOW_WIDTH:
+        x = (Constants.WINDOW_HEIGHT - b) / m # Substitute Y = height
+        if 0 < x < Constants.WINDOW_WIDTH: # Check if point is inside the screen
+            # Update projection end and looped position accordingly
             self.__projection_end = PositionVector(x, Constants.WINDOW_HEIGHT)
             self.__looped_pos = PositionVector(x, 0)
             return True
@@ -72,14 +74,15 @@ class Ray:
 
     def check_top_intersection(self, m: float, b: float) -> bool:
         '''Checks for intersection with the top of the screen,
-        sets the looped pos and projection end
+        sets the looped position and projection end
         :param m: slope of the ray
         :param b: intersection with Y axis of the ray
-        :returns: whether the Ray intersects with the top of the screen'''
+        :returns: whether the Ray intersects with the top of the screen
+        '''
 
-        # Border Y = 0
-        x = -b / m
-        if 0 < x < Constants.WINDOW_WIDTH:
+        x = -b / m # Substitute Y = 0
+        if 0 < x < Constants.WINDOW_WIDTH: # Check if point is inside the screen
+            # Update projection end and looped position accordingly
             self.__projection_end = PositionVector(x, 0)
             self.__looped_pos = PositionVector(x, Constants.WINDOW_HEIGHT)
             return True
@@ -87,14 +90,15 @@ class Ray:
 
     def check_right_intersection(self, m: float, b: float) -> bool:
         '''Checks for intersection with the right edge of the screen,
-        sets the looped pos and projection end
+        sets the looped position and projection end
         :param m: slope of the ray
         :param b: intersection with Y axis of the ray
-        :returns: whether the Ray intersects with the right edge of the screen'''
+        :returns: whether the Ray intersects with the right edge of the screen
+        '''
 
-        # Border X = width
-        y = m * Constants.WINDOW_WIDTH + b
-        if 0 < y < Constants.WINDOW_HEIGHT:
+        y = m * Constants.WINDOW_WIDTH + b # Substitute X = width
+        if 0 < y < Constants.WINDOW_HEIGHT: # Check if point is inside the screen
+            # Update projection end and looped position accordingly
             self.__projection_end = PositionVector(Constants.WINDOW_WIDTH, y)
             self.__looped_pos = PositionVector(0, y)
             return True
@@ -102,14 +106,15 @@ class Ray:
 
     def check_left_intersection(self, b: float) -> bool:
         '''Checks for intersection with the left edge of the screen,
-        sets the looped pos and projection end
+        sets the looped position and projection end
         :param m: slope of the ray
         :param b: intersection with Y axis of the ray
-        :returns: whether the Ray intersects with the left edge of the screen'''
+        :returns: whether the Ray intersects with the left edge of the screen
+        '''
 
-        # Border X = 0
-        y = b
-        if 0 < y < Constants.WINDOW_HEIGHT:
+        y = b # Substitute X = 0
+        if 0 < y < Constants.WINDOW_HEIGHT: # Check if point is inside the screen
+            # Update projection end and looped position accordingly
             self.__projection_end = PositionVector(0, y)
             self.__looped_pos = PositionVector(Constants.WINDOW_WIDTH, y)
             return True
@@ -120,8 +125,10 @@ class Ray:
         :param pos1: beginning position of the line segment
         :param pos2: end position of the line segment
         :returns: intersection point with the line segment,
-        returns None if there is no intersection'''
+        returns None if there is no intersection
+        '''
 
+        # Use the looped position if looped is True
         start_pos = self.__looped_pos if looped else self.__pos
 
         # Better notation
@@ -145,7 +152,7 @@ class Ray:
         t = numerator_t / denominator
         u = numerator_u / denominator
 
-        # Check for intersection with u and t
+        # Check for intersection using the values of t and u
         return PositionVector(x1 + t * (x2 - x1), y1 + t * (y2 - y1)) \
             if u >= 0 and 0 <= t <= 1 else None
     
@@ -156,20 +163,26 @@ class Ray:
         :looped: whether or not to use the looped version of the ray
         '''
 
+        # Seek for closest intersection
         closest = None
         closest_dist = 0
 
+        # Use the looped positon if looped is True
         start_pos = self.__looped_pos if looped else self.__pos
 
-        # Iterate through each polygon segment
+        # Iterate through every polygon segment
         verts = hitbox.rect_verts
         for i in range(len(verts)):
-            pos1 = verts[i]
+            pos1 = verts[i] # Get the first vertex in the line segment
+            # Last vertex connects to the first vertex
             pos2 = verts[i + 1] if i < len(verts) - 1 else verts[0]
 
+            # Check for intersection with that line segment
             point = self.intersects_line(pos1, pos2, looped=looped)
-            if point is not None:
+            if point is not None: # Check if there is an intersection point
+                # Calculate distance between that point and the ray origin point
                 dist = start_pos.distance(point)
+                # Update position if distance is the smallest
                 if dist < closest_dist or closest is None:
                     closest = point
                     closest_dist = dist
@@ -183,29 +196,37 @@ class Ray:
         :looped: whether or not to use the looped version of the ray
         '''
         
+        # Seek for closest intersection
         closest = None
         closest_dist = 0
 
+        # Use the looped position if looped is True
         start_pos = self.__looped_pos if looped else self.__pos
 
-        # Get closest point
+        # Iterate through every asteroid
         for asteroid in asteroids:
+            # Check for intersection with hitbox
             point = self.intersects_polygon(asteroid.hitbox, looped=looped)
             if point:
+                # Calculate distance between that point and the ray origin point
                 dist = start_pos.distance(point)
+                # Update position if distance is the smallest
                 if dist < closest_dist or closest is None:
                     closest = point
                     closest_dist = dist
 
+        # If looped is True and there is an intersection
+        # set the ray as a looped ray
         self.__looped = looped and closest
-        self.__intersection = closest
-
+        self.__intersection = closest # Update intersection point
+        # Set the asteroid that the ray intersects with
         self.__hit = asteroid if closest else None
         return closest
 
     def rotate(self, angle: float) -> None:
         '''Rotates the ray by a given angle
-        :param angle: angle to rotate by, measured in radians'''
+        :param angle: angle to rotate by, measured in radians
+        '''
 
         self.__dir.angle += angle
         self.update()
@@ -261,7 +282,8 @@ class RaySet:
     '''A set of multiple rays, whom origins start at the origin of the set
     :param pos: origin position of the ray set
     :angle: offset angle of the ray set
-    :amount: the amount of rays in the ray set'''
+    :amount: the amount of rays in the ray set
+    '''
 
     def __init__(self, pos: PositionVector, angle: float, amount: int) -> None:
         self.__pos = pos
@@ -272,42 +294,44 @@ class RaySet:
     def __iter__(self):
         return iter(self.__rays)
 
-    # def intersects_line(self, pos1: tuple[float, float], pos2: tuple[float, float]) -> bool:
-    #     return any(self.__rays.intersects_line(pos1, pos2))
-    
-    # def intersects_polygon(self, verts: list[tuple[float, float]]) -> bool:
-    #     return any(self.__rays.intersects_polygon(verts))
-
     def cast(self, asteroids: list[Asteroid]) -> list[float]:
         '''Casts each ray in ray set on the environment,
         Results processed into the inputs of the neural network
         :param asteroids: list of asteroids on the screen
-        :returns: list of distances and redshift values from
-        asteroids in respect to the ray set position '''
+        :returns: list of distances and redshift values of the asteroids
+        '''
 
-        dists: list[float] = []
+        # Start with an empty list
+        vision: list[float] = []
 
+        # Iterate through every ray
         for ray in self.__rays:
             hit = False
             dist = 0
 
+            # Check for intersection with asteroids
             point = ray.intersects_asteroids(asteroids)
             if point:
+                # Calculate distance and set hit to True
                 dist = ray.pos.distance(point)
                 hit = True
 
-            elif ray.looped_pos:
+            elif ray.looped_pos: # Else check if ray has a looped position
+                # Check for intersection with looped ray
                 point = ray.intersects_asteroids(asteroids, looped=True)
                 if point:
+                    # Calculate distance and set hit to True
                     dist = ray.looped_pos.distance(point) + ray.length
                     hit = True
 
-            if hit:
-                redshift = ray.dir.normalized().dot(ray.hit.velocity)
-                dists.extend((1 / dist, redshift))
-            else: dists.extend((0, 0))
+            if hit: # If there is an intersection
+                # Calculate the cosine of the deviation angle using the dot product
+                redshift = (ray.dir.dot(ray.hit.velocity)) / (ray.dir.mag * ray.hit.velocity.mag)
+                # Normalize distance and append it with the redshift value
+                vision.extend((1 / dist, redshift))
+            else: vision.extend((0, 0)) # Zero if there is no intersection
 
-        return dists
+        return vision
 
     def rotate(self, angle: float) -> None:
         '''Rotates every ray in the ray set by a given angle
