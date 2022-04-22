@@ -54,6 +54,10 @@ class Population:
         self.__batch_index = 0
         self.__batch = self.get_current_batch()
 
+        # Create/clear file
+        with open('data/logs.txt', 'w') as f:
+            f.write('')
+
     def update(self, iterations: int = 1) -> None:
         '''Updates the population
         :param iterations: the number of iterations to update by
@@ -125,7 +129,7 @@ class Population:
             for s in range(4): # Save best genome of 4 best species to file
                 self.__species[0].champion.brain.save(f'data/model/gen{self.__generation - 1}_spec{s + 1}.json')
         
-        with open('data/log.txt', 'w') as f:
+        with open('data/logs.txt', 'a') as f:
             print(f'new generation: {self.__generation}', file=f)
             print(f'number of mutations: {len(self.__innovation_history)}', file=f)
             print(f'number of species: {len(self.__species)}', file=f)

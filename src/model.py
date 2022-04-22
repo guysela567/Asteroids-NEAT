@@ -17,7 +17,7 @@ class Model:
     :param ai: whether to use AI for the player agent
     '''
 
-    def __init__(self, ai: bool = False) -> None:    
+    def __init__(self, ai: bool = False) -> None:
         self.__ai = ai
         self.__seed = 0 if self.__ai else -1
 
@@ -109,10 +109,9 @@ class Model:
         # Asteroid with player collision
         if any(asteroid.hitbox.collides(self.__player.hitbox) for asteroid in self.__asteroids):
             self.__dead = True
-            self.__score = 0
 
             if not self.__ai:
-                self.__spawn_asteroids()
+                self.reset()
 
     def think(self) -> int:
         '''Makes the vision list and acts according to the neural network predictions'''
@@ -124,15 +123,15 @@ class Model:
         vision.append(int(self.__player.can_shoot))
         results = self.__brain.feed_forward(vision)
         
-        if results[0] > .5:
+        if results[0] > .8:
             self.__player.boost()
 
-        if results[1] > .5: 
+        if results[1] > .8: 
             self.__player.rotate(1)
-        elif results[2] > .5:
+        elif results[2] > .8:
             self.__player.rotate(-1)
 
-        if results[3] > .5:
+        if results[3] > .8:
             self.__player.shoot()
             self.__shots_fired += 1
     
@@ -196,9 +195,8 @@ class Model:
         self.__asteroids = []
         self.__spawn_asteroids()
 
-        # Reset score system
+        # Reset score
         self.__score = 0
-        self.__high_score = 0
 
         # Reset game logic
         self.__paused = False

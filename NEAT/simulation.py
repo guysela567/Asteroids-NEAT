@@ -21,7 +21,7 @@ class Simulation(Controller):
     def calculate_fitness(self) -> None:
         '''Calculates score used to determine player's survival in next generations'''
         accuracy = self.shots_hit / self.shots_fired
-        self.__fitness = (self.high_score + 1) * 10
+        self.__fitness = (self.score + 1) * 10
         self.__fitness += self.lifespan
         self.__fitness *= accuracy ** 2
 

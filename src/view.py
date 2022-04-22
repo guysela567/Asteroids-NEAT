@@ -1,14 +1,15 @@
-from NEAT.demo.demo_config import DemoConfigScreen
 from utils.drawing import ScreenManager
+from utils.constants import Constants
 
 from src.menu import MenuScreen
 from src.game import GameScreen
 from src.instructions import InstructionsScreen
-from NEAT.screen import PopulationScreen
-from NEAT.demo.screen import DemoScreen
 from src.demo_select import DemoSelectScreen
 
-from utils.constants import Constants
+from NEAT.demo.demo_config import DemoConfigScreen
+from NEAT.screen import PopulationScreen
+from NEAT.demo.screen import DemoScreen
+
 
 
 class View(ScreenManager):
@@ -19,10 +20,10 @@ class View(ScreenManager):
 
         self.init_screen(GameScreen(), 'game')
         self.init_screen(InstructionsScreen(), 'instructions')
-        self.init_screen(PopulationScreen(), 'population-demo')
+        # self.init_screen(PopulationScreen(), 'population-demo')
         self.init_screen(DemoScreen(), 'topology-demo')
         self.init_screen(MenuScreen(), 'menu')
         self.init_screen(DemoSelectScreen(), 'demo-select')
         self.init_screen(DemoConfigScreen(), 'demo-config')
 
-        self.set_screen('topology-demo', { 'inputs': 5, 'outputs': 5 })
+        self.set_screen('game')

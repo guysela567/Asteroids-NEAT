@@ -35,13 +35,13 @@ class Constants:
     #-- AI --#
     # Training
     TRAINING = True
-    ITERATIONS = 5
+    ITERATIONS = 1
     BATCH_SIZE = 50
 
     # Neural Network and Population
     RAY_AMOUNT = 16
-    POPULATION_SIZE = 500 if TRAINING else 1
-    STARTING_CONNECTIONS = 0
+    POPULATION_SIZE = 350 if TRAINING else 1
+    STARTING_CONNECTIONS = (2 * RAY_AMOUNT + 2) * 4
     
     # File system
     GEN_TAKEN = 5
