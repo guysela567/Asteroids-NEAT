@@ -1,10 +1,10 @@
 from utils.drawing import ScreenManager
 from utils.constants import Constants
 
-from src.menu import MenuScreen
-from src.game import GameScreen
-from src.instructions import InstructionsScreen
-from src.demo_select import DemoSelectScreen
+from src.screens.menu import MenuScreen
+from src.screens.game import GameScreen
+from src.screens.instructions import InstructionsScreen
+from src.screens.demo_select import DemoSelectScreen
 
 from NEAT.demo.demo_config import DemoConfigScreen
 from NEAT.screen import PopulationScreen
