@@ -35,28 +35,26 @@ class Population:
         self.__innovation_history: list[ConnectionHistory] = []
 
         # Create file saving Directory if it does not exist
-        if not os.path.exists('data'):
-            os.mkdir('data')
-        if not os.path.exists('data/model'):
-            os.mkdir('data/model')
+        if Constants.TRAINING:
+            if not os.path.exists('data'):
+                os.mkdir('data')
+            if not os.path.exists('data/model'):
+                os.mkdir('data/model')
 
         # Populate with simulations
         self.__players = [Simulation() for _ in range(self.__size)]
         for sim in self.__players:
-            if Constants.TRAINING:
-                for _ in range(Constants.STARTING_CONNECTIONS):
-                    sim.brain.add_connection(self.__innovation_history)
-                sim.brain.mutate(self.__innovation_history)
-                sim.brain.generate_phenotype()
-            else:
-                sim.brain = Genome.load(f'data/model/gen{Constants.GEN_TAKEN}_spec{Constants.SPEC_TAKEN}.json')
+            # Start with an extra mutation for variaty
+            sim.brain.mutate(self.__innovation_history)
+            sim.brain.generate_phenotype()
 
         self.__batch_index = 0
         self.__batch = self.get_current_batch()
 
-        # Create/clear file
-        with open('data/logs.txt', 'w') as f:
-            f.write('')
+        # Create/clear logs file
+        if Constants.TRAINING:
+            with open('data/logs.txt', 'w') as f:
+                f.write('')
 
     def update(self, iterations: int = 1) -> None:
         '''Updates the population
@@ -126,15 +124,17 @@ class Population:
         self.kill_bad_species() # Kill species which cannot reproduce
 
         if Constants.TRAINING:
-            for s in range(4): # Save best genome of 4 best species to file
-                self.__species[0].champion.brain.save(f'data/model/gen{self.__generation - 1}_spec{s + 1}.json')
-        
-        with open('data/logs.txt', 'a') as f:
-            print(f'new generation: {self.__generation}', file=f)
-            print(f'number of mutations: {len(self.__innovation_history)}', file=f)
-            print(f'number of species: {len(self.__species)}', file=f)
-            print(f'best fitness: {self.__species[0].best_fitness}', file=f)
-            print('------------------------------------------------------', file=f)
+            for s in range(10): # Save best genome of 10 best species to file
+                if len(self.__species) >= s + 1:
+                    self.__species[s].champion.brain.save(f'data/model/gen{self.__generation - 1}_spec{s + 1}.json')
+
+            # Log results
+            with open('data/logs.txt', 'a') as f:
+                print(f'new generation: {self.__generation}', file=f)
+                print(f'number of mutations: {len(self.__innovation_history)}', file=f)
+                print(f'number of species: {len(self.__species)}', file=f)
+                print(f'best fitness: {self.__species[0].best_fitness}', file=f)
+                print('------------------------------------------------------', file=f)
 
         # Repopulate with new simulations
         avg_sum = self.get_avg_fitness_sum()

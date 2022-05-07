@@ -19,7 +19,7 @@ class Genome:
     '''
 
     def __init__(self, inputs: int, outputs: int, crossover: bool = False) -> None:
-
+        self.__local_next_innovation_number = 0
         self.__inputs = inputs
         self.__outputs = outputs
         self.__layers = 2
@@ -49,6 +49,23 @@ class Genome:
         self.__nodes.append(Node(self.__bias_node))
         self.__next_node += 1
 
+        # Fully connect nodes
+        for i in range(inputs):
+            for j in range(outputs):
+                self.__genes.append(ConnectionGene(self.__nodes[i], 
+                                    self.__nodes[inputs + j], 
+                                    random.uniform(-1, 1), 
+                                    self.__local_next_innovation_number))
+                self.__local_next_innovation_number += 1
+
+        # Connect the bias
+        for i in range(outputs):
+            self.__genes.append(ConnectionGene(self.__nodes[self.__bias_node], 
+                                self.__nodes[inputs + i], 
+                                random.uniform(-1, 1), 
+                                self.__local_next_innovation_number))
+            self.__local_next_innovation_number += 1
+        
     def get_node(self, number: int) -> Node:
         '''Returns the node with a matching number
         :param number: the node number
@@ -59,10 +76,6 @@ class Genome:
                 return node
 
         return None
-
-    def fully_connect(self, innovation_history: list[ConnectionHistory]) -> None:
-        for _ in range((self.__inputs + 1) * self.__outputs):
-            self.add_connection(innovation_history)
 
     def connect_nodes(self) -> None:
         '''Adds the output connections to nodes according to the genes list.
@@ -255,7 +268,7 @@ class Genome:
         '''Mutates the genome in one or more of the three options:
         - Mutate weights (80% chance)
         - Add a new connection (5% chance)
-        - Add a new node (1% chance)
+        - Add a new node (3% chance)
         :param innovation_history: global list of all previous mutations
         '''
 
@@ -272,8 +285,8 @@ class Genome:
         if random.random() < 0.05:
             self.add_connection(innovation_history)
 
-        # 1% chance of adding a new node
-        if random.random() < 0.01:
+        # 3% chance of adding a new node
+        if random.random() < 0.03:
             self.add_node(innovation_history)
 
     def matching_gene_index(self, innovation_number: int) -> int:

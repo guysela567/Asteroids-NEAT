@@ -20,10 +20,10 @@ class View(ScreenManager):
 
         self.init_screen(GameScreen(), 'game')
         self.init_screen(InstructionsScreen(), 'instructions')
-        # self.init_screen(PopulationScreen(), 'population-demo')
+        self.init_screen(PopulationScreen(), 'population-demo')
         self.init_screen(DemoScreen(), 'topology-demo')
         self.init_screen(MenuScreen(), 'menu')
         self.init_screen(DemoSelectScreen(), 'demo-select')
         self.init_screen(DemoConfigScreen(), 'demo-config')
 
-        self.set_screen('game')
+        self.set_screen('menu')

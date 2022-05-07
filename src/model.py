@@ -20,6 +20,7 @@ class Model:
     def __init__(self, ai: bool = False) -> None:
         self.__ai = ai
         self.__seed = 0 if self.__ai else -1
+        self.__ai_playing = False
 
         # Initialize player
         self.__player = Player(Constants.WINDOW_WIDTH * 0.5, 
@@ -43,13 +44,22 @@ class Model:
         self.__lifespan = 0
         self.__dead = False
 
-        if self.__ai: # Generate neural network only if ai is true
+        if self.__ai: # Generate neural network only if AI is true
             self.__brain = Genome(Constants.RAY_AMOUNT * 2 + 1, 4)
+        else: # Else load pre-trained model
+            self.__brain = Genome.load('data/model/gen96_spec10.json')
+
+    def set_ai(self, ai: bool) -> None:
+        self.__ai_playing = ai
 
     def update(self, delta_time: float) -> None:
         '''Updates the game data
         :param delta_time: the time that has passed since last update, measured in seconds
         '''
+
+        # Make AI move
+        if self.__ai_playing:
+            self.think()
 
         # Update player
         self.__player.update(delta_time)
@@ -76,13 +86,13 @@ class Model:
 
                     if asteroid.hits < Constants.ASTEROID_HITS - 1:
                         # Split asteroids into two parts
-
                         random_angle = random.uniform(-math.pi * .5, math.pi * .5)
                         self.__asteroids.append(Asteroid(
                             asteroid.x, asteroid.y,
                             random_angle,
                             asteroid.hits + 1))
 
+                        # 180 degrees angle from first split
                         self.__asteroids.append(Asteroid(
                             asteroid.x, asteroid.y,
                             random_angle + math.pi,
@@ -92,7 +102,7 @@ class Model:
                     self.__score += Constants.SCORE_SYSTEM[asteroid.hits]
 
                     # High score beat
-                    if self.__score > self.__high_score:
+                    if self.__score > self.__high_score and not self.__ai_playing:
                         self.__high_score = self.__score
 
                     # Delete old asteroid
@@ -120,7 +130,7 @@ class Model:
             return
 
         vision = self.__player.ray_set.cast(self.__asteroids)
-        vision.append(int(self.__player.can_shoot))
+        vision.append(int(self.__player.can_shoot and vision[0] != 0))
         results = self.__brain.feed_forward(vision)
         
         if results[0] > .8:
@@ -250,6 +260,10 @@ class Model:
     @property
     def seed(self) -> int:
         return self.__seed
+
+    @property
+    def ai_playing(self) -> bool:
+        return self.__ai_playing
 
     @brain.setter
     def brain(self, brain: Genome) -> None:

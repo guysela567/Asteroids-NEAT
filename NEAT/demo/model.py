@@ -44,7 +44,6 @@ class DemoModel:
         :param inputs: number of selected inputs in the neural network
         :param outputs: number of selected outputs in the neural network'''
         self.__default_network = Genome(inputs, outputs)
-        self.__default_network.fully_connect(self.__innovation_history)
 
         self.__networks = []
         for _ in range(2):

@@ -22,7 +22,7 @@ class Species:
 
         self.__players.append(sim)
         self.__best_fitness = sim.fitness # Only genome so it's the best
-        self.__rep = sim.brain.clone() # Best player's brain to compare new genomes to
+        self.__rep = sim.brain.clone() # Brain to compare new genomes to
         self.__champion = sim.clone()
 
         # Compatability
@@ -41,10 +41,8 @@ class Species:
         excess_and_disjoint = Species.get_excess_disjoint(genome, self.__rep)
         avg_weight_diff = Species.avg_weight_difference(genome, self.__rep)
 
-        # Normalizes the delta function for large genomes
-        # normalizer = len(genome.genes) - 20
-        # if normalizer < 1: # Must be bigger than or equal to 1
-        #     normalizer = 1
+        # Since all genomes are large and have roughly the same size
+        # there is no need to normalize any parameters
         normalizer = 1
 
         # The delta function itself

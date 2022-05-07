@@ -54,6 +54,9 @@ class Controller:
     def reset(self) -> None:
         '''Resets the model'''
         self.__model.reset()
+
+    def set_ai(self, ai: bool) -> None:
+        self.__model.set_ai(ai)
     
     @property
     def player(self) -> Player:
@@ -98,6 +101,10 @@ class Controller:
     @property
     def seed(self) -> int:
         return self.__model.seed
+    
+    @property
+    def ai_playing(self) -> bool:
+        return self.__model.ai_playing
 
     @brain.setter
     def brain(self, brain: Genome) -> None:

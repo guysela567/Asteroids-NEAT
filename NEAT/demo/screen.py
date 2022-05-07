@@ -36,7 +36,7 @@ class DemoScreen(Screen):
         
         self.set_font(self.__title_font)
         self.text('Configure Topology', self.width * .5, 50, center=True)
-        self.text('For Child' if self.__controller.crossed else f'For Genome No. {self.__controller.index + 1}', self.width * .5, 110, center=True)
+        self.text('Child' if self.__controller.crossed else f'For Genome No. {self.__controller.index + 1}', self.width * .5, 110, center=True)
 
         self.fill(0)
         self.line(0, 300, self.width, 300, 5)
@@ -58,7 +58,7 @@ class DemoScreen(Screen):
         '''Draws a neural network on the screen
         :param network: genome of the network
         :param x: X coordinate for the top left corner of the drawing
-        "param y: Y coordinate for the top left corner of the drawing
+        :param y: Y coordinate for the top left corner of the drawing
         :param w: maximum width of the drawing
         :param h: maximum height of the drawing
         :param r: radius for neurons in the drawing

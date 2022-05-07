@@ -84,37 +84,41 @@ class GameScreen(Screen):
         :param key: id of the pressed key
         :param unicode: unicode of the pressed key
         '''
-
-        if key == self.keys['p']:
-            self.__controller.toggle_pause()
-            self.reset_animations()
-
-        elif key == self.keys['UP']:
-            self.__controller.start_boost()
-
-        elif key == self.keys['RIGHT']:
-            self.__controller.start_rotate(1)
-
-        elif key == self.keys['LEFT']:
-            self.__controller.start_rotate(-1)
-
-        elif key == self.keys['SPACE']:
-            self.__controller.shoot()
-
-        elif key == self.keys['ESCAPE']:
+        
+        if key == self.keys['ESCAPE']:
             self.redirect('menu')
+
+        # Disabled for AI mode
+        if not self.__controller.ai_playing:
+            if key == self.keys['p']:
+                self.__controller.toggle_pause()
+                self.reset_animations()
+
+            elif key == self.keys['UP']:
+                self.__controller.start_boost()
+
+            elif key == self.keys['RIGHT']:
+                self.__controller.start_rotate(1)
+
+            elif key == self.keys['LEFT']:
+                self.__controller.start_rotate(-1)
+
+            elif key == self.keys['SPACE']:
+                self.__controller.shoot()
 
     def on_key_up(self, key: int) -> None:
         '''Handles key release events
         :param key: id of the released key
         '''
 
-        if key == self.keys['UP']:
-            self.__controller.stop_boost()
+        # Disabled for AI mode
+        if not self.__controller.ai_playing:
+            if key == self.keys['UP']:
+                self.__controller.stop_boost()
 
-        elif key == self.keys['RIGHT'] and self.__controller.player.rotate_dir == 1 \
-                or key == self.keys['LEFT'] and self.__controller.player.rotate_dir == -1:
-            self.__controller.stop_rotate()
+            elif key == self.keys['RIGHT'] and self.__controller.player.rotate_dir == 1 \
+                    or key == self.keys['LEFT'] and self.__controller.player.rotate_dir == -1:
+                self.__controller.stop_rotate()
 
     def on_mouse_down(self) -> None:
         '''Handles mouse down events'''
@@ -264,6 +268,11 @@ class GameScreen(Screen):
     def switch_reset(self) -> None:
         '''Resets the screen for every screen-switch'''
         self.__controller.reset()
+
+    def recieve_data(self, data: dict) -> None:
+        '''Handles data sent by other screens and sets the AI mode accordingly'''
+        if hasattr(data, 'ai'):
+            self.__controller.set_ai(data['ai'])
 
     @property
     def controller(self) -> Controller:
