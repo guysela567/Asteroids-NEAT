@@ -271,8 +271,7 @@ class GameScreen(Screen):
 
     def recieve_data(self, data: dict) -> None:
         '''Handles data sent by other screens and sets the AI mode accordingly'''
-        if hasattr(data, 'ai'):
-            self.__controller.set_ai(data['ai'])
+        self.__controller.set_ai(data['ai_playing'])
 
     @property
     def controller(self) -> Controller:

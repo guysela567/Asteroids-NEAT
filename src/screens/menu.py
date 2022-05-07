@@ -42,7 +42,7 @@ class MenuScreen(Screen):
             self.redirect('instructions')
 
         elif self.__ai_button.mouse_hover():
-            self.redirect('game', { 'ai': True })
+            self.redirect('game', { 'ai_playing': True })
 
         elif self.__demo_button.mouse_hover():
             self.redirect('demo-select')

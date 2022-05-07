@@ -30,9 +30,6 @@ class Species:
         self.__WEIGHT_DIFFERENCE_COEFFICIENT = 0.8
         self.__COMPATABILITY_THREASHOLD = 1
 
-    def __contains__(self, genome: Genome) -> bool:
-        return self.same_species(genome)
-
     def same_species(self, genome: Genome) -> bool:
         '''Returns whether the given genome belongs to this species
         :param genome: the genome to check
@@ -171,8 +168,11 @@ class Species:
         That didn't make it to the next generation.
         '''
 
-        if len(self.__players) > 2: # If length is lesser than or equals to 2 keep all players
-            self.__players = self.__players[len(self.__players) // 2:]
+        # Keep all players if length is lesser than or equals to 2
+        if (len(self.__players) > 2):
+            # Iterate backwards
+            for i in range(len(self.__players) - 1, len(self.__players) // 2, -1):
+                self.__players.pop(i)
 
     def apply_fitness_sharing(self) -> None:
         '''Divide sthe fitness of each player by the number of the players in its species, 

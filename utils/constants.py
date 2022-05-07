@@ -32,15 +32,12 @@ class Constants:
     # Score
     SCORE_SYSTEM = (20, 50, 100)
 
-    #-- AI --#
-    # Training
-    TRAINING = False
-    ITERATIONS = 1
-    BATCH_SIZE = 50
-
-    # Neural Network and Population
+    # Neural Network and Training parameters
+    TRAINING = True
     RAY_AMOUNT = 16
     POPULATION_SIZE = 300
+    BATCH_SIZE = 50
+    ITERATIONS = 10
     
     # File system
     GEN_TAKEN = 52

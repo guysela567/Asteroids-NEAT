@@ -18,8 +18,8 @@ class Model:
     '''
 
     def __init__(self, ai: bool = False) -> None:
-        self.__ai = ai
-        self.__seed = 0 if self.__ai else -1
+        self.__ai_training = ai
+        self.__seed = 0 if self.__ai_training else -1
         self.__ai_playing = False
 
         # Initialize player
@@ -38,16 +38,18 @@ class Model:
         # Game logic
         self.__paused = False
 
+        # TODO: Implement lives system
+
         # AI and stats
         self.__shots_fired = 4
         self.__shots_hit = 1
         self.__lifespan = 0
         self.__dead = False
 
-        if self.__ai: # Generate neural network only if AI is true
+        if self.__ai_training: # Generate neural network only if AI is true
             self.__brain = Genome(Constants.RAY_AMOUNT * 2 + 1, 4)
         else: # Else load pre-trained model
-            self.__brain = Genome.load('data/model/gen96_spec10.json')
+            self.__brain = Genome.load('data/old/model/gen10_spec1.json')
 
     def set_ai(self, ai: bool) -> None:
         self.__ai_playing = ai
@@ -120,14 +122,11 @@ class Model:
         if any(asteroid.hitbox.collides(self.__player.hitbox) for asteroid in self.__asteroids):
             self.__dead = True
 
-            if not self.__ai:
+            if not self.__ai_training:
                 self.reset()
 
     def think(self) -> int:
         '''Makes the vision list and acts according to the neural network predictions'''
-
-        if not self.__ai:
-            return
 
         vision = self.__player.ray_set.cast(self.__asteroids)
         vision.append(int(self.__player.can_shoot and vision[0] != 0))
@@ -149,8 +148,6 @@ class Model:
     def generate_asteroid() -> Asteroid:
         '''Generates a random asteroid'''
 
-        # TODO Needs more refactoring
-
         spawn_gap = 50
 
         # Inside screen
@@ -163,9 +160,6 @@ class Model:
             else random.uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap)  # Inside sreen
 
         # Pick a random point on screen
-        # random_point = PositionVector(random.uniform(
-        #     spawn_gap, Constants.WINDOW_WIDTH - spawn_gap),
-        #     random.uniform(spawn_gap, Constants.WINDOW_HEIGHT - spawn_gap))
         random_point = PositionVector(Constants.WINDOW_WIDTH * .5, Constants.WINDOW_HEIGHT * .5)
 
         # Get the angle between asteroid's position and random point
@@ -176,7 +170,7 @@ class Model:
     def __spawn_asteroids(self) -> None:
         '''Spawns new asteroids on screen'''
         
-        if self.__ai:
+        if self.__ai_training:
             self.__asteroids = copy.deepcopy(Model.generate_wave_by_seed(self.__seed, self.__asteroid_amount))
         else: 
             self.__asteroids = [Model.generate_asteroid()

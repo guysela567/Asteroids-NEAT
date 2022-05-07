@@ -26,8 +26,6 @@ class Asteroid:
         self.__vel = DirectionVector(
             Constants.ASTEROID_VELOCITY[self.__hits], self.__angle + math.pi)
 
-        # TODO Add destruction vfx
-
     def update(self, delta_time: float) -> None:
         '''Updates the asteroid
         :param delta_time: the time that has passed since last update, measured in seconds'''

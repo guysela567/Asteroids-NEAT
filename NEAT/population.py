@@ -22,13 +22,6 @@ class Population:
         self.__generation = 1
         
         self.__batch_amount = math.ceil(self.__size / Constants.BATCH_SIZE)
-
-        # TODO: ADD the following features:
-        # self.__best_player: Simulation = None
-        # self.__best_score = 0
-        # self.__gen_players: list[Simulation] = []
-        # self.__mass_extinction_event = False
-        
         self.__species: list[Species] = []
 
         # Record of all mutations in this population
@@ -48,6 +41,9 @@ class Population:
             sim.brain.mutate(self.__innovation_history)
             sim.brain.generate_phenotype()
 
+        self.__best_player: Simulation = self.__players[0].clone()
+        self.__best_score = 0
+
         self.__batch_index = 0
         self.__batch = self.get_current_batch()
 
@@ -64,6 +60,13 @@ class Population:
         if self.current_batch_done():
             self.next_batch()
         self.update_current_batch(iterations=iterations)
+
+    def set_best_player(self) -> None:
+        '''Sets the best player and best score ever seen in this generation'''
+        best = self.__species[0].players[0]
+        if best.score > self.__best_score:
+            self.__best_score = best.score
+            self.__best_player = best.clone()
 
     def update_alive(self, iterations: int = 1) -> None:
         '''Updates all alive simulations
@@ -120,21 +123,24 @@ class Population:
         self.calculate_fitness() # Calculate fitness for each simulation
         self.sort_species() # Sort from best to worst, based on fitness
         self.cull_species() # Kill genomes that have not survived
+        self.set_best_player() # Update best player and best score ever
         self.kill_stale_species(15) # Kill species which have not improved for a while
         self.kill_bad_species() # Kill species which cannot reproduce
 
         if Constants.TRAINING:
-            for s in range(10): # Save best genome of 10 best species to file
+            for s in range(5): # Save best genome of 10 best species to file
                 if len(self.__species) >= s + 1:
                     self.__species[s].champion.brain.save(f'data/model/gen{self.__generation - 1}_spec{s + 1}.json')
+            # Save/update best ever genome
+            self.__best_player.brain.save('data/best.json')
 
             # Log results
             with open('data/logs.txt', 'a') as f:
-                print(f'new generation: {self.__generation}', file=f)
-                print(f'number of mutations: {len(self.__innovation_history)}', file=f)
-                print(f'number of species: {len(self.__species)}', file=f)
-                print(f'best fitness: {self.__species[0].best_fitness}', file=f)
-                print('------------------------------------------------------', file=f)
+                f.write(f'new generation: {self.__generation}\n')
+                f.write(f'number of mutations: {len(self.__innovation_history)}\n')
+                f.write(f'number of species: {len(self.__species)}\n')
+                f.write(f'best score: {self.__best_score}\n')
+                f.write('------------------------------------------------------\n')
 
         # Repopulate with new simulations
         avg_sum = self.get_avg_fitness_sum()
@@ -180,7 +186,7 @@ class Population:
 
             # Check for each species if simulation fits
             for s in self.__species:
-                if sim.brain in s:
+                if s.same_species(sim.brain):
                     s.add(sim)
                     species_found = True
                     break
@@ -225,28 +231,19 @@ class Population:
 
         # Skip best species
         for i in range(len(self.__species) - 1, 0, -1): # Iterate backwards
-            # Kill empty species
-            # this is caused by emptying each species
-            # in the speciate function
-            if len(self.__species[i].players) == 0:
-                self.__species.pop(i)
-
             # Compare this species with the rest of the species
             if (self.__species[i].avg_fitness / avg_sum) * self.__size < 1:
-                # Kill it if it far worse than the rest
+                # Kill it if it is far worse than the rest
                 self.__species.pop(i)
 
     def cull_species(self) -> None:
         '''Kills the bottom half of simulations for each species'''
         for s in self.__species:
-            # As a result of re-speciating, some sepcies
-            # may be kept without any players
-            if len(s.players) > 0:
-                s.cull()
-                # Apply fitness sharing and set average fitness 
-                # for the updated amount of simulations
-                s.apply_fitness_sharing()
-                s.set_avg_fitness()
+            s.cull()
+            # Apply fitness sharing and set average fitness 
+            # for the updated amount of simulations
+            s.apply_fitness_sharing()
+            s.set_avg_fitness()
 
     def get_avg_fitness_sum(self) -> float:
         '''Returns the average fitness sum of all species in the population'''

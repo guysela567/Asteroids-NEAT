@@ -57,7 +57,7 @@ class DemoSelectScreen(Screen):
             self.redirect('demo-config')
 
         if self.__population_button.mouse_hover():
-            self.redirect('population-demo')
+            self.redirect('population-demo', { 'ai_playing': False })
 
         x, y, w, h = Constants.BACK_RECT
         if x < self.mouse_pos[0] < x + w and y < self.mouse_pos[1] < y + h:

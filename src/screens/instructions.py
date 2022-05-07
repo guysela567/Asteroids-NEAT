@@ -88,7 +88,7 @@ class InstructionsScreen(Screen):
         '''
 
         if key == self.keys['RETURN']:
-            self.redirect('game', { 'ai': False })
+            self.redirect('game', { 'ai_playing': False })
         
         elif key == self.keys['ESCAPE']:
             self.redirect('menu')
