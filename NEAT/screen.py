@@ -105,7 +105,7 @@ class PopulationScreen(GameScreen):
 
         self.fill(255)
         self.draw_sprites(self.controller.player, self.controller.asteroids)
-        self.draw_score(self.controller.score, self.controller.high_score)
+        self.draw_score(self.controller.score)
 
         if self.controller.paused:
             self.draw_paused()

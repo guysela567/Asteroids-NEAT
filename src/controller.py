@@ -51,12 +51,13 @@ class Controller:
         '''Makes the vision list and acts according to the neural network predictions'''
         self.__model.think()
 
+    def dump_highscore(self) -> None:
+        '''Saves the model's highscore to a file'''
+        self.__model.dump_highscore()
+
     def reset(self) -> None:
         '''Resets the model'''
         self.__model.reset()
-
-    def set_ai(self, ai: bool) -> None:
-        self.__model.set_ai(ai)
     
     @property
     def player(self) -> Player:
@@ -106,6 +107,18 @@ class Controller:
     def ai_playing(self) -> bool:
         return self.__model.ai_playing
 
+    @property
+    def ai_training(self) -> bool:
+        return self.__model.ai_training
+
+    @property
+    def game_over(self) -> bool:
+        return self.__model.game_over
+    
+    @property
+    def lives(self) -> int:
+        return self.__model.lives
+
     @brain.setter
     def brain(self, brain: Genome) -> None:
         self.__model.brain = brain
@@ -113,4 +126,8 @@ class Controller:
     @seed.setter
     def seed(self, seed: int) -> None:
         self.__model.seed = seed
+
+    @ai_playing.setter
+    def ai_playing(self, ai) -> None:
+        self.__model.ai_playing = ai
         

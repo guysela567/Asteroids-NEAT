@@ -36,9 +36,7 @@ class Node:
     def sigmoid(x: float) -> float:
         '''Sigmoid activation function
         :param x: the input for the sigmoid function'''
-        try:
-            return 1 / (1 + math.exp(-x))
-        except: print(x)
+        return 1 / (1 + math.exp(-x))
 
     def is_connected_to(self, node: Node) -> bool:
         ''' Returns whether this node is connected to the given node,

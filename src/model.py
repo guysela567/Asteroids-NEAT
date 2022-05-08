@@ -9,7 +9,7 @@ from utils.geometry.vector import PositionVector
 
 from NEAT.genome import Genome
 
-import random, math, copy
+import random, math, copy, json
 
 
 class Model:
@@ -33,10 +33,14 @@ class Model:
 
         # Score system
         self.__score = 0
-        self.__high_score = 0
+        # Load highscore from file
+        with open('data/game_data.json', 'r') as f:
+            self.__high_score = json.load(f)['highscore']
 
         # Game logic
         self.__paused = False
+        self.__lives = 5
+        self.__game_over = False
 
         # TODO: Implement lives system
 
@@ -49,10 +53,7 @@ class Model:
         if self.__ai_training: # Generate neural network only if AI is true
             self.__brain = Genome(Constants.RAY_AMOUNT * 2 + 1, 4)
         else: # Else load pre-trained model
-            self.__brain = Genome.load('data/old/model/gen10_spec1.json')
-
-    def set_ai(self, ai: bool) -> None:
-        self.__ai_playing = ai
+            self.__brain = Genome.load('data/fix/best.json')
 
     def update(self, delta_time: float) -> None:
         '''Updates the game data
@@ -104,7 +105,8 @@ class Model:
                     self.__score += Constants.SCORE_SYSTEM[asteroid.hits]
 
                     # High score beat
-                    if self.__score > self.__high_score and not self.__ai_playing:
+                    if self.__score > self.__high_score \
+                        and not self.__ai_playing and not self.__ai_training:
                         self.__high_score = self.__score
 
                     # Delete old asteroid
@@ -121,9 +123,16 @@ class Model:
         # Asteroid with player collision
         if any(asteroid.hitbox.collides(self.__player.hitbox) for asteroid in self.__asteroids):
             self.__dead = True
-
+            
             if not self.__ai_training:
-                self.reset()
+                # Proceed to next life cycle
+                self.__lives -= 1
+                if self.__lives > 0:
+                    self.reset(true_reset=False)
+                else:
+                    # Game over
+                    self.__game_over = True
+                    self.__paused = True
 
     def think(self) -> int:
         '''Makes the vision list and acts according to the neural network predictions'''
@@ -188,7 +197,12 @@ class Model:
         '''Toggles between play/pause'''
         self.__paused = not self.__paused
 
-    def reset(self) -> None:
+    def dump_highscore(self) -> None:
+        '''Saves the highscore to a file'''
+        with open('data/game_data.json', 'w') as f:
+            f.write(f'{{ "highscore": {self.high_score} }}')
+
+    def reset(self, true_reset: bool = True) -> None:
         '''Resets all of the data of the game'''
 
         # Reset player
@@ -199,11 +213,14 @@ class Model:
         self.__asteroids = []
         self.__spawn_asteroids()
 
-        # Reset score
-        self.__score = 0
+        # Reset score and lives on true reset
+        if true_reset: 
+            self.__score = 0
+            self.__lives = 5
 
         # Reset game logic
         self.__paused = False
+        self.__game_over = False
 
         # Reset genetic information
         self.__shots_fired = 4
@@ -259,6 +276,18 @@ class Model:
     def ai_playing(self) -> bool:
         return self.__ai_playing
 
+    @property
+    def ai_training(self) -> bool:
+        return self.__ai_training
+    
+    @property
+    def game_over(self) -> bool:
+        return self.__game_over
+
+    @property
+    def lives(self) -> int:
+        return self.__lives
+
     @brain.setter
     def brain(self, brain: Genome) -> None:
         self.__brain = brain
@@ -266,3 +295,7 @@ class Model:
     @seed.setter
     def seed(self, seed: int) -> None:
         self.__seed = seed
+
+    @ai_playing.setter
+    def ai_playing(self, ai: bool) -> None:
+        self.__ai_playing = ai

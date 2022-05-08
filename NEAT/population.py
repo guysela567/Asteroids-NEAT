@@ -128,7 +128,7 @@ class Population:
         self.kill_bad_species() # Kill species which cannot reproduce
 
         if Constants.TRAINING:
-            for s in range(5): # Save best genome of 10 best species to file
+            for s in range(5): # Save best genome of 5 best species to file
                 if len(self.__species) >= s + 1:
                     self.__species[s].champion.brain.save(f'data/model/gen{self.__generation - 1}_spec{s + 1}.json')
             # Save/update best ever genome
@@ -239,11 +239,12 @@ class Population:
     def cull_species(self) -> None:
         '''Kills the bottom half of simulations for each species'''
         for s in self.__species:
-            s.cull()
-            # Apply fitness sharing and set average fitness 
-            # for the updated amount of simulations
-            s.apply_fitness_sharing()
-            s.set_avg_fitness()
+            if len(s.players) > 0:
+                s.cull()
+                # Apply fitness sharing and set average fitness 
+                # for the updated amount of simulations
+                s.apply_fitness_sharing()
+                s.set_avg_fitness()
 
     def get_avg_fitness_sum(self) -> float:
         '''Returns the average fitness sum of all species in the population'''

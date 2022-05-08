@@ -63,11 +63,12 @@ class GameScreen(Screen):
 
         self.draw_background()
         self.draw_sprites(self.__controller.player, self.__controller.asteroids)
-        self.draw_score(self.__controller.score, self.__controller.high_score)
+        self.draw_score(self.__controller.score, self.__controller.high_score, self.__controller.lives)
 
-        if self.__controller.paused:
+        if self.__controller.game_over:
+            self.draw_game_over()
+        elif self.__controller.paused:
             self.draw_paused()
-
         self.draw_pause_resume()
 
     def draw_pause_resume(self) -> None:
@@ -86,6 +87,7 @@ class GameScreen(Screen):
         '''
         
         if key == self.keys['ESCAPE']:
+            self.__controller.dump_highscore()
             self.redirect('menu')
 
         # Disabled for AI mode
@@ -122,17 +124,24 @@ class GameScreen(Screen):
 
     def on_mouse_down(self) -> None:
         '''Handles mouse down events'''
-        if self.__pause_pos[0] < self.mouse_pos[0] < self.__pause_pos[0] + self.__pause_dims[0] \
+
+        # Start over
+        if self.__controller.game_over:
+            self.__controller.reset()
+
+        # Hover on pause/resume button
+        elif self.__pause_pos[0] < self.mouse_pos[0] < self.__pause_pos[0] + self.__pause_dims[0] \
             and self.__pause_pos[1] < self.mouse_pos[1] < self.__pause_pos[1] + self.__pause_dims[1]:
             self.__controller.toggle_pause()
             self.reset_animations()
 
-        if self.__controller.paused:
+        elif self.__controller.paused:
             if self.__resume_button.mouse_hover():
                 self.__controller.toggle_pause()
                 self.reset_animations()
 
             if self.__quit_button.mouse_hover():
+                self.__controller.dump_highscore()
                 self.redirect('menu')
 
     def draw_background(self) -> None:
@@ -182,17 +191,24 @@ class GameScreen(Screen):
             thrust = Image.rotate(self.__thrust_image, player.angle)
             self.image(thrust, *thrust.get_rect((x, y)))
 
-    def draw_score(self, score: int, high_score: int) -> None:
+    def draw_score(self, score: int, high_score: int = None, lives: int = None) -> None:
         '''Draws score and high score on the screen
         :param score: the current score
         :param high_score: all-time high score'''
         self.set_font(self.__score_font)
 
-        # Draw score
-        self.text(f'SCORE: {score}', 25, 100)
+        if high_score is not None:
+            # Draw score
+            self.text(f'SCORE: {score}', 25, 100)
 
-        # Draw high score
-        self.text(f'HIGH SCORE: {high_score}', 25, 25)
+            # Draw high score
+            self.text(f'HIGH SCORE: {high_score}', 25, 25)
+        else:
+            # Only draw score
+            self.text(f'SCORE: {score}', 25, 25)
+
+        if lives is not None:
+            self.text(f'LIVES: {lives}', 25, self.height - 75)
     
     def reset_animations(self) -> None:
         '''Resets all animations'''
@@ -210,6 +226,14 @@ class GameScreen(Screen):
             self.__animations['pause_title'] += 50
         if self.__animations['pause_buttons'] < self.width * .5 - 150:
             self.__animations['pause_buttons'] += 50
+    
+    def draw_game_over(self) -> None:
+        '''Draws the screen in game over mode'''
+        self.blur(200)
+        self.set_font(self.__title_font)
+        self.text('Game Over', self.width * .5, 200, center=True)
+        self.set_font(self.__button_font)
+        self.text('Press anywhere to try try again.', self.width * .5, self.height * .5, center=True)
 
     def draw_paused(self) -> None:
         '''Draws the screen in paused mode'''
@@ -271,7 +295,7 @@ class GameScreen(Screen):
 
     def recieve_data(self, data: dict) -> None:
         '''Handles data sent by other screens and sets the AI mode accordingly'''
-        self.__controller.set_ai(data['ai_playing'])
+        self.__controller.ai_playing = data['ai_playing']
 
     @property
     def controller(self) -> Controller:

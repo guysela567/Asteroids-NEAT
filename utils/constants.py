@@ -33,11 +33,11 @@ class Constants:
     SCORE_SYSTEM = (20, 50, 100)
 
     # Neural Network and Training parameters
-    TRAINING = True
+    TRAINING = False
     RAY_AMOUNT = 16
     POPULATION_SIZE = 300
     BATCH_SIZE = 50
-    ITERATIONS = 10
+    ITERATIONS = 1
     
     # File system
     GEN_TAKEN = 52
