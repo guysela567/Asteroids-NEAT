@@ -41,7 +41,7 @@ class Population:
             sim.brain.generate_phenotype()
 
         self.__best_player: Simulation = self.__players[0].clone()
-        self.__best_fitness = 0
+        self.__best_score = 0
 
         self.__batch_index = 0
         self.__batch = self.get_current_batch()
@@ -63,8 +63,8 @@ class Population:
     def set_best_player(self) -> None:
         '''Sets the best player and best score ever seen in this generation'''
         best = self.__species[0].players[0]
-        if best.fitness > self.__best_fitness:
-            self.__best_fitness = best.fitness
+        if best.score > self.__best_score:
+            self.__best_score = best.score
             self.__best_player = best.clone()
 
     def update_alive(self, iterations: int = 1) -> None:
@@ -138,8 +138,7 @@ class Population:
                 f.write(f'new generation: {self.__generation}\n')
                 f.write(f'number of mutations: {len(self.__innovation_history)}\n')
                 f.write(f'number of species: {len(self.__species)}\n')
-                f.write(f'best fitness: {self.__best_fitness}\n')
-                f.write(f'best score: {self.__best_player.score}\n')
+                f.write(f'best score: {self.__best_score}\n')
                 f.write('------------------------------------------------------\n')
 
         # Repopulate with new simulations
