@@ -21,8 +21,8 @@ class Simulation(Controller):
     def calculate_fitness(self) -> None:
         '''Calculates score used to determine player's survival in next generations'''
         accuracy = self.shots_hit / self.shots_fired
-        self.__fitness = (self.score + 1) * 10
-        self.__fitness += self.lifespan
+        self.__fitness = (self.score + 1) * 100
+        self.__fitness += self.lifespan * 50
         self.__fitness *= accuracy ** 2
     
     def crossover(self, parent2: Simulation) -> Simulation:
@@ -39,9 +39,12 @@ class Simulation(Controller):
     def clone(self) -> Simulation:
         '''Returns a copy of this simulation with the same genome brain'''
         copy = Simulation()
-        copy.brain = self.brain
+        # Copy brain
+        copy.brain = self.brain.clone()
         copy.brain.generate_phenotype()
-        copy.fitness = self.__fitness
+        # Copy score and fitness values
+        copy.score = self.score
+        copy.fitness = self.fitness
         return copy
     
     @property

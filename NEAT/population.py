@@ -17,9 +17,8 @@ class Population:
     '''
 
     def __init__(self, size: int) -> None:
-
         self.__size = size
-        self.__generation = 1
+        self.__generation = 0
         
         self.__batch_amount = math.ceil(self.__size / Constants.BATCH_SIZE)
         self.__species: list[Species] = []
@@ -42,7 +41,7 @@ class Population:
             sim.brain.generate_phenotype()
 
         self.__best_player: Simulation = self.__players[0].clone()
-        self.__best_score = 0
+        self.__best_fitness = 0
 
         self.__batch_index = 0
         self.__batch = self.get_current_batch()
@@ -64,8 +63,8 @@ class Population:
     def set_best_player(self) -> None:
         '''Sets the best player and best score ever seen in this generation'''
         best = self.__species[0].players[0]
-        if best.score > self.__best_score:
-            self.__best_score = best.score
+        if best.fitness > self.__best_fitness:
+            self.__best_fitness = best.fitness
             self.__best_player = best.clone()
 
     def update_alive(self, iterations: int = 1) -> None:
@@ -123,9 +122,9 @@ class Population:
         self.calculate_fitness() # Calculate fitness for each simulation
         self.sort_species() # Sort from best to worst, based on fitness
         self.cull_species() # Kill genomes that have not survived
-        self.set_best_player() # Update best player and best score ever
         self.kill_stale_species(15) # Kill species which have not improved for a while
         self.kill_bad_species() # Kill species which cannot reproduce
+        self.set_best_player() # Update best player and best score ever
 
         if Constants.TRAINING:
             for s in range(5): # Save best genome of 5 best species to file
@@ -139,7 +138,8 @@ class Population:
                 f.write(f'new generation: {self.__generation}\n')
                 f.write(f'number of mutations: {len(self.__innovation_history)}\n')
                 f.write(f'number of species: {len(self.__species)}\n')
-                f.write(f'best score: {self.__best_score}\n')
+                f.write(f'best fitness: {self.__best_fitness}\n')
+                f.write(f'best score: {self.__best_player.score}\n')
                 f.write('------------------------------------------------------\n')
 
         # Repopulate with new simulations
@@ -232,7 +232,8 @@ class Population:
         # Skip best species
         for i in range(len(self.__species) - 1, 0, -1): # Iterate backwards
             # Compare this species with the rest of the species
-            if (self.__species[i].avg_fitness / avg_sum) * self.__size < 1:
+            if len(self.__species[i].players) == 0 or \
+                (self.__species[i].avg_fitness / avg_sum) * self.__size < 1:
                 # Kill it if it is far worse than the rest
                 self.__species.pop(i)
 

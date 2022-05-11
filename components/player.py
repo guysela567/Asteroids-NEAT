@@ -93,11 +93,6 @@ class Player():
         self.__projectiles.append(Projectile(x, y, self.__angle))
         self.__can_shoot = False
 
-        # Apply knockback force
-        # if not self.__boosting:
-        #     self.__vel.angle = self.__angle
-        #     self.__vel.mag += Constants.PLAYER_SHOOT_KNOCKBACK
-
     def __set_rotation(self) -> None:
         '''Sets the rotation of the player based on current speed and direction'''
         self.__angle += self.__turn_speed * self.__rotate_dir

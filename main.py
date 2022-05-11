@@ -10,8 +10,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-
-# TODO: 
-# - update code and images in project book
-# - finish tables of classes in project book
-# - finish description of 2nd Demo UI and reflection

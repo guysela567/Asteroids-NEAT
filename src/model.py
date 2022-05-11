@@ -9,7 +9,7 @@ from utils.geometry.vector import PositionVector
 
 from NEAT.genome import Genome
 
-import random, math, copy, json
+import random, math, copy, json, os
 
 
 class Model:
@@ -33,9 +33,15 @@ class Model:
 
         # Score system
         self.__score = 0
+
+        self.__high_score = 0
         # Load highscore from file
-        with open('data/game_data.json', 'r') as f:
-            self.__high_score = json.load(f)['highscore']
+        if os.path.exists('data/game_data.json'):
+            with open('data/game_data.json', 'r') as f:
+                self.__high_score = json.load(f)['highscore']
+        else:
+            with open('data/game_data.json', 'w') as f:
+                f.write(json.dumps({ 'highscore': self.__high_score }))
 
         # Game logic
         self.__paused = False
@@ -53,7 +59,7 @@ class Model:
         if self.__ai_training: # Generate neural network only if AI is true
             self.__brain = Genome(Constants.RAY_AMOUNT * 2 + 1, 4)
         else: # Else load pre-trained model
-            self.__brain = Genome.load('data/fix/best.json')
+            self.__brain = Genome.load('data/brain_data.json')
 
     def update(self, delta_time: float) -> None:
         '''Updates the game data
@@ -200,7 +206,7 @@ class Model:
     def dump_highscore(self) -> None:
         '''Saves the highscore to a file'''
         with open('data/game_data.json', 'w') as f:
-            f.write(f'{{ "highscore": {self.high_score} }}')
+            f.write(json.dumps({ 'highscore': self.__high_score }))
 
     def reset(self, true_reset: bool = True) -> None:
         '''Resets all of the data of the game'''
@@ -299,3 +305,7 @@ class Model:
     @ai_playing.setter
     def ai_playing(self, ai: bool) -> None:
         self.__ai_playing = ai
+
+    @score.setter
+    def score(self, score: int) -> None:
+        self.__score = score

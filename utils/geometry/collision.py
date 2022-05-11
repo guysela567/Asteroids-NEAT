@@ -7,7 +7,7 @@ import random
 
 class SpriteDimensions:
     '''This class is used to store the dimensions of each sprite in the game'''
-    dimensions = {}
+    dimensions: dict[str, tuple[int, int]] = {}
 
 class Hitbox:
     '''The hitbox class is responsible for collision detection of the different sprites

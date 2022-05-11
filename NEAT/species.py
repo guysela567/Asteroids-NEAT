@@ -28,7 +28,7 @@ class Species:
         # Compatability
         self.__EXCESS_COEFFICIENT = 1.5
         self.__WEIGHT_DIFFERENCE_COEFFICIENT = 0.8
-        self.__COMPATABILITY_THREASHOLD = 1
+        self.__COMPATABILITY_THREASHOLD = 2
 
     def same_species(self, genome: Genome) -> bool:
         '''Returns whether the given genome belongs to this species

@@ -130,4 +130,8 @@ class Controller:
     @ai_playing.setter
     def ai_playing(self, ai) -> None:
         self.__model.ai_playing = ai
+
+    @score.setter
+    def score(self, score: int) -> None:
+        self.__model.score = score
         
