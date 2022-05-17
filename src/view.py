@@ -7,8 +7,8 @@ from src.screens.instructions import InstructionsScreen
 from src.screens.demo_select import DemoSelectScreen
 
 from NEAT.demo.demo_config import DemoConfigScreen
-from NEAT.screen import PopulationScreen
-from NEAT.demo.screen import DemoScreen
+from NEAT.pop_screen import PopulationScreen
+from NEAT.demo.demo_screen import DemoScreen
 
 
 

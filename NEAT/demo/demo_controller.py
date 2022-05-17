@@ -1,4 +1,4 @@
-from NEAT.demo.model import DemoModel
+from NEAT.demo.demo_model import DemoModel
 from NEAT.genome import Genome
 from NEAT.node import Node
 

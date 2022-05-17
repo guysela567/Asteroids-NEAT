@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from utils.drawing import Button, Screen, Image
 from utils.constants import Constants
-from NEAT.demo.controller import DemoController
+from NEAT.demo.demo_controller import DemoController
 from NEAT.genome import Genome
 from NEAT.node import Node
 
