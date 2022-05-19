@@ -1,10 +1,10 @@
-from src.view import View
+from src.asteroids_game import AsteroidsGame
 
 
 def main() -> None:
     ''' Main method '''
 
-    game = View()
+    game = AsteroidsGame()
     game.start()
 
 

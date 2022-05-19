@@ -22,7 +22,7 @@ class Simulation(Controller):
         '''Calculates score used to determine player's survival in next generations'''
         accuracy = self.shots_hit / self.shots_fired
         self.__fitness = (self.score + 1) * 100
-        self.__fitness += self.lifespan * 50
+        self.__fitness += self.lifespan * 5
         self.__fitness *= accuracy ** 2
     
     def crossover(self, parent2: Simulation) -> Simulation:
