@@ -88,12 +88,12 @@ class TextBox:
     '''
 
     def __init__(self, screen: Screen, x: float, y: float, w: float, h: float, text: str = '') -> None:
-        self.__defult_width = w
+        self.__default_width = w
         self.__screen = screen
         self.__rect = pg.Rect(x, y, w, h)
         self.__color = (0, 0, 0)
         self.__text = text
-        self.__txt_surface = pg.font.SysFont('monospace', self.__defult_width).render(self.__text, True, self.__color)
+        self.__txt_surface = pg.font.SysFont('monospace', self.__default_width).render(self.__text, True, self.__color)
         self.__active = False
         self.__padding = 10
 
@@ -122,10 +122,10 @@ class TextBox:
                 if unicode.isdigit() and int(self.__text + unicode) < 10:
                     self.__text += unicode
 
-            self.__txt_surface = pg.font.SysFont('monospace', self.__defult_width).render(self.__text, True, self.__color)
-            self.__rect.w = max(self.__defult_width, self.__txt_surface.get_width() + self.__padding * 2)
+            self.__txt_surface = pg.font.SysFont('monospace', self.__default_width).render(self.__text, True, self.__color)
+            self.__rect.w = max(self.__default_width, self.__txt_surface.get_width() + self.__padding * 2)
 
-    def draw(self):
+    def draw(self) -> None:
         '''Draws the button on the screen'''
         pg.draw.rect(self.__screen.surface, (255, 255, 255), self.__rect, border_radius=10)
         self.__screen.surface.blit(self.__txt_surface, (self.__rect.x + self.__padding, self.__rect.y))
@@ -135,8 +135,8 @@ class TextBox:
         '''Clears all the text in the text box'''
         self.__active = False
         self.__text = ''
-        self.__txt_surface = pg.font.SysFont('monospace', self.__defult_width).render(self.__text, True, self.__color)
-        self.__rect.w = max(self.__defult_width, self.__txt_surface.get_width() + self.__padding * 2)
+        self.__txt_surface = pg.font.SysFont('monospace', self.__default_width).render(self.__text, True, self.__color)
+        self.__rect.w = max(self.__default_width, self.__txt_surface.get_width() + self.__padding * 2)
 
     @property
     def value(self) -> str:

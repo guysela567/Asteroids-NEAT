@@ -37,10 +37,6 @@ class Constants:
     POPULATION_SIZE = 300
     BATCH_SIZE = 50
     ITERATIONS = 1
-    
-    # File system
-    GEN_TAKEN = 52
-    SPEC_TAKEN = 1
 
     # GRAPHICS
     TEXT_COLOR = (240, 240, 192)
