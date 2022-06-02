@@ -3,3 +3,4 @@ __pycache__
 *.docx
 training_data
 game_data.json
+*.pptx

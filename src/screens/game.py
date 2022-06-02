@@ -233,7 +233,7 @@ class GameScreen(Screen):
         self.set_font(self.__title_font)
         self.text('Game Over', self.width * .5, 200, center=True)
         self.set_font(self.__button_font)
-        self.text('Press anywhere to try try again.', self.width * .5, self.height * .5, center=True)
+        self.text('Press anywhere to try again.', self.width * .5, self.height * .5, center=True)
 
     def draw_paused(self) -> None:
         '''Draws the screen in paused mode'''
